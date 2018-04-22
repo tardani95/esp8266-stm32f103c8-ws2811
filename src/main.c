@@ -20,10 +20,10 @@ Info        : 2018-04-09
 /* Private define  */
 
 
-
 /* Private macro */
 /* Private variables */
-
+uint16_t led_pin = GPIO_Pin_13; /* on port C*/
+uint16_t button_pin = GPIO_Pin_14; /* on port B*/
 
 
 /* Private function prototypes */
@@ -66,7 +66,7 @@ int main(void)
 
 	/* led gpio init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+	GPIO_InitStructure.GPIO_Pin = led_pin;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -78,117 +78,135 @@ int main(void)
 
 	/* button init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Pin = button_pin;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	/*timer init*/
-	//	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	//	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	//	TIM_TimeBase_InitStructure.TIM_Period = 999;
-	//	TIM_TimeBase_InitStructure.TIM_Prescaler = 71;
-	//	TIM_TimeBaseInit(TIM1, &TIM_TimeBase_InitStructure);
-	//
-	//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-	//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-	//	TIM_OC_InitStructure.TIM_Pulse = 100;
-	//
-	//	TIM_CtrlPWMOutputs(TIM1, ENABLE);
-	//	TIM_OC2Init(TIM1, &TIM_OC_InitStructure);
-	//	TIM_Cmd(TIM1, ENABLE);
-	//
-	//
-	//	//timer2 ch2
-	//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-	//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-	//	TIM_OC_InitStructure.TIM_Pulse = 500;
-	//
-	//	TIM_OC2Init(TIM2, &TIM_OC_InitStructure);
-	//
-	//	TIM_Cmd(TIM2, ENABLE);
-	//
-	//	//timer3 ch1
-	//	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	//	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	//	TIM_TimeBase_InitStructure.TIM_Period = 1499;
-	//	TIM_TimeBase_InitStructure.TIM_Prescaler = 71;
-	//	TIM_TimeBaseInit(TIM3, &TIM_TimeBase_InitStructure);
-	//
-	//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-	//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-	//	TIM_OC_InitStructure.TIM_Pulse = 100;
-	//	TIM_OC1Init(TIM3, &TIM_OC_InitStructure);
-	//
-	//	//timer3 ch2
-	//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-	//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-	//	TIM_OC_InitStructure.TIM_Pulse = 500;
-	//	TIM_OC2Init(TIM3, &TIM_OC_InitStructure);
-	//
-	//	TIM_Cmd(TIM3, ENABLE);
-	//
-	//	//timer4 ch1
-	//	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	//	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	//	TIM_TimeBase_InitStructure.TIM_Period = 4999;
-	//	TIM_TimeBase_InitStructure.TIM_Prescaler = 71;
-	//	TIM_TimeBaseInit(TIM4, &TIM_TimeBase_InitStructure);
-	//
-	//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-	//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-	//	TIM_OC_InitStructure.TIM_Pulse = 100;
-	//	TIM_OC1Init(TIM4, &TIM_OC_InitStructure);
-	//
-	//	//timer4 ch2
-	//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-	//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-	//	TIM_OC_InitStructure.TIM_Pulse = 500;
-	//	TIM_OC2Init(TIM4, &TIM_OC_InitStructure);
-	//
-	//	TIM_Cmd(TIM4, ENABLE);
+//		TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+//		TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+//		TIM_TimeBase_InitStructure.TIM_Period = 999;
+//		TIM_TimeBase_InitStructure.TIM_Prescaler = 71;
+//		TIM_TimeBaseInit(TIM1, &TIM_TimeBase_InitStructure);
+//
+//		TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+//		TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+//		TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
+//		TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+//		TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+//		TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+//		TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
+//		TIM_OC_InitStructure.TIM_Pulse = 100;
+//
+//		TIM_CtrlPWMOutputs(TIM1, ENABLE);
+//		TIM_OC2Init(TIM1, &TIM_OC_InitStructure);
+//		TIM_Cmd(TIM1, ENABLE);
+//
+//
+//		//timer2 ch2
+//		TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+//		TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+//		TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
+//		TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+//		TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+//		TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+//		TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
+//		TIM_OC_InitStructure.TIM_Pulse = 500;
+//
+//		TIM_OC2Init(TIM2, &TIM_OC_InitStructure);
+//
+//		TIM_Cmd(TIM2, ENABLE);
+//
+//		//timer3 ch1
+//		TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+//		TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+//		TIM_TimeBase_InitStructure.TIM_Period = 1499;
+//		TIM_TimeBase_InitStructure.TIM_Prescaler = 71;
+//		TIM_TimeBaseInit(TIM3, &TIM_TimeBase_InitStructure);
+//
+//		TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+//		TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+//		TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
+//		TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+//		TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+//		TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+//		TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
+//		TIM_OC_InitStructure.TIM_Pulse = 100;
+//		TIM_OC1Init(TIM3, &TIM_OC_InitStructure);
+//
+//		//timer3 ch2
+//		TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+//		TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+//		TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
+//		TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+//		TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+//		TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+//		TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
+//		TIM_OC_InitStructure.TIM_Pulse = 500;
+//		TIM_OC2Init(TIM3, &TIM_OC_InitStructure);
+//
+//		TIM_Cmd(TIM3, ENABLE);
+//
+//		//timer4 ch1
+//		TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+//		TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+//		TIM_TimeBase_InitStructure.TIM_Period = 4999;
+//		TIM_TimeBase_InitStructure.TIM_Prescaler = 71;
+//		TIM_TimeBaseInit(TIM4, &TIM_TimeBase_InitStructure);
+//
+//		TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+//		TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+//		TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
+//		TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+//		TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+//		TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+//		TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
+//		TIM_OC_InitStructure.TIM_Pulse = 100;
+//		TIM_OC1Init(TIM4, &TIM_OC_InitStructure);
+//
+//		//timer4 ch2
+//		TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+//		TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+//		TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
+//		TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+//		TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+//		TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+//		TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
+//		TIM_OC_InitStructure.TIM_Pulse = 500;
+//		TIM_OC2Init(TIM4, &TIM_OC_InitStructure);
+//
+//		TIM_Cmd(TIM4, ENABLE);
 
-	uint8_t readValue = 1;
 
-	GPIO_WriteBit(GPIOC,GPIO_Pin_13,Bit_RESET);
+	/* variable to read output data register (ODR)*/
+	uint32_t readValue = 0;
+
+	/*switch off the led by default*/
+	GPIO_WriteBit(GPIOC,led_pin,Bit_SET);
 
 	while(1)
 	{
 		/*
-		 * if you write 0 to the ledPin the it lights up
+		 * if you write 0 to the led_pin the it lights up
 		 * the button is wired with input pull up, so if you press the button the you read the value 0
+		 *
+		 * IDR - input data register
+		 * ODR - output data register
+		 *
+		 * bitwise and (&) to mask the IDR and shifted with 1 because
+		 * the input pin is on the 14th bit and the led pin is on the 13th
+		 *
 		 */
-		readValue = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_12);
-		GPIO_WriteBit(GPIOC,GPIO_Pin_13,readValue);
+
+		readValue = (GPIOB->IDR & button_pin)>>1;
+		GPIOC->ODR = readValue;
+		/*
+		 * equivalent for the upper lines
+		 *
+		 * readValue = GPIO_ReadInputDataBit(GPIOB, button_pin);
+		 * GPIO_WriteBit(GPIOC,led_pin,readValue);
+		 *
+		 */
 
 	}
   return 0;
