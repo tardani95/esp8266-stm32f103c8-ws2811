@@ -14,7 +14,16 @@ Info        : 2018-04-09
 #include <stdio.h>
 #include "stm32f10x.h"
 #include "stm32f10x_gpio.h"
-#include "stm32f10x_rcc.h" //reset and clock control
+#include "stm32f10x_rcc.h"  /* reset and clock control */
+#include "stm32f1xx_it.h" 	/* interrupt handler */
+#include "stm32f10x_exti.h" /* external interrupt*/
+
+
+/* High level functions for NVIC and SysTick (add-on to CMSIS functions)
+ * NVIC - Nested Vector Interrupt Controller
+ */
+#include "misc.h"
+
 
 /* Private typedef */
 /* Private define  */
@@ -52,6 +61,9 @@ int main(void)
 	SystemInit();
 
 	GPIO_InitTypeDef GPIO_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure; /* external interrupt init */
+	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
+
 //	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; // timer init
 //	TIM_OCInitTypeDef TIM_OC_InitStructure; // output compare init
 
@@ -79,7 +91,6 @@ int main(void)
 	/* button init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStructure.GPIO_Pin = button_pin;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	/*timer init*/
