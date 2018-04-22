@@ -15,9 +15,9 @@ Info        : 2018-04-09
 #include "stm32f10x.h"
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"  /* reset and clock control */
-#include "stm32f1xx_it.h" 	/* interrupt handler */
-#include "stm32f10x_exti.h" /* external interrupt*/
 
+#include "stm32f10x_exti.h" /* external interrupt*/
+#include "stm32f1xx_it.h" 	/* interrupt handler */
 
 /* High level functions for NVIC and SysTick (add-on to CMSIS functions)
  * NVIC - Nested Vector Interrupt Controller
@@ -76,9 +76,9 @@ int main(void)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_TIM1 | RCC_APB2Periph_AFIO, ENABLE);
 	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4, ENABLE);
 
-	/* led gpio init */
+	/* led && c14 && c15 gpio init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin = led_pin;
+	GPIO_InitStructure.GPIO_Pin = (led_pin | GPIO_Pin_14 | GPIO_Pin_15);
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -92,6 +92,25 @@ int main(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStructure.GPIO_Pin = button_pin;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	/* button interrupt init
+	 * the interrupt handler found in stm32f1xx_it.c
+	 */
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource14);
+
+	EXTI_InitStructure.EXTI_Line = EXTI_Line14;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+	NVIC_Init(&NVIC_InitStructure);
 
 	/*timer init*/
 //		TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -189,6 +208,7 @@ int main(void)
 //		TIM_Cmd(TIM4, ENABLE);
 
 
+
 	/* variable to read output data register (ODR)*/
 	uint32_t readValue = 0;
 
@@ -204,20 +224,16 @@ int main(void)
 		 * IDR - input data register
 		 * ODR - output data register
 		 *
-		 * bitwise and (&) to mask the IDR and shifted with 1 because
-		 * the input pin is on the 14th bit and the led pin is on the 13th
+		 * bitwise and (&) to mask the IDR
 		 *
 		 */
 
-		readValue = (GPIOB->IDR & button_pin)>>1;
-		GPIOC->ODR = readValue;
-		/*
-		 * equivalent for the upper lines
-		 *
-		 * readValue = GPIO_ReadInputDataBit(GPIOB, button_pin);
-		 * GPIO_WriteBit(GPIOC,led_pin,readValue);
-		 *
-		 */
+		readValue = (GPIOB->IDR & button_pin);
+		if(readValue){
+			GPIOC->ODR |= led_pin;
+		}else{
+			GPIOC->ODR &= (~led_pin);
+		}
 
 	}
   return 0;

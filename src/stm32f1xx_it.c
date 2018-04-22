@@ -29,6 +29,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_it.h"
+#include "stm32f10x_gpio.h"
+#include "stm32f10x_exti.h"
+
 
 /** @addtogroup IO_Toggle
   * @{
@@ -160,7 +163,23 @@ void SysTick_Handler(void)
 
 /**
   * @}
-  */ 
+  */
 
+/**
+  * @brief  This function handles the button interrupt request on portB, pin14.
+  * @param  None
+  * @retval None
+  */
+void EXTI15_10_IRQHandler(void){
+  EXTI_ClearITPendingBit(EXTI_Line14);
+
+  if((GPIOB->IDR & GPIO_Pin_14)){
+	GPIOC->ODR |= GPIO_Pin_14;
+	GPIOC->ODR |= GPIO_Pin_15;
+  }else{
+	GPIOC->ODR &= (~GPIO_Pin_14);
+	GPIOC->ODR &= (~GPIO_Pin_15);
+  }
+}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
