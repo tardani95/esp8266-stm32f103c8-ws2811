@@ -174,11 +174,11 @@ void EXTI15_10_IRQHandler(void){
   EXTI_ClearITPendingBit(EXTI_Line14);
 
   if((GPIOB->IDR & GPIO_Pin_14)){
-	GPIOC->ODR |= GPIO_Pin_14;
-	GPIOC->ODR |= GPIO_Pin_15;
+	GPIOC->ODR |= GPIO_Pin_13;
+	//GPIOC->ODR |= GPIO_Pin_15;
   }else{
-	GPIOC->ODR &= (~GPIO_Pin_14);
-	GPIOC->ODR &= (~GPIO_Pin_15);
+	GPIOC->ODR &= (~GPIO_Pin_13);
+	//GPIOC->ODR &= (~GPIO_Pin_15);
   }
 }
 

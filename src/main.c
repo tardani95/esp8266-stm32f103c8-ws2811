@@ -228,14 +228,15 @@ int main(void)
 		 *
 		 */
 
-		readValue = (GPIOB->IDR & button_pin);
+		/*readValue = (GPIOB->IDR & button_pin);
 		if(readValue){
 			GPIOC->ODR |= led_pin;
 		}else{
 			GPIOC->ODR &= (~led_pin);
-		}
+		}*/
 
+		/*GPIOC->ODR = (GPIO_Pin_14 | GPIO_Pin_13);
+		GPIOC->ODR = (~GPIO_Pin_14);*/
 	}
-  return 0;
 }
 
