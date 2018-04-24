@@ -36,7 +36,7 @@ Info        : 2018-04-09
 uint16_t led_pin = GPIO_Pin_13; /* on port C*/
 uint16_t button_pin = GPIO_Pin_14; /* on port B*/
 uint16_t pwm_pin = GPIO_Pin_0;
-
+//extern uint16_t repetition_counter = 0;
 
 /* Private function prototypes */
 /* Private functions */
@@ -79,8 +79,8 @@ int main(void)
 	 * pb0  - pwm output
 	 * pb13 - button input
 	 */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
 	/* led && c14 && c15 gpio init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -95,10 +95,10 @@ int main(void)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	/* pwm for external interrupt register change*/
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	/* button init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
@@ -127,9 +127,9 @@ int main(void)
 	/* pwm interrupt capture
 	 * the interrupt handler found in stm32f1xx_it.c
 	 */
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);
 
-	EXTI_InitStructure.EXTI_Line = EXTI_Line1;
+	EXTI_InitStructure.EXTI_Line = EXTI_Line0;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
@@ -137,7 +137,7 @@ int main(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
@@ -145,20 +145,20 @@ int main(void)
 
 
 	/*timer2 ch2 PA1*/
-	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBase_InitStructure.TIM_Period = 19999; 	// period = period + 1
-	TIM_TimeBase_InitStructure.TIM_Prescaler = 719; 	// divider = prescaler + 1
-	TIM_TimeBaseInit(TIM2, &TIM_TimeBase_InitStructure);
-
-	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC_InitStructure.TIM_Pulse = 10000;
-
-	TIM_OC2Init(TIM2, &TIM_OC_InitStructure);
-	TIM_Cmd(TIM2, ENABLE);
+//	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+//	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+//	TIM_TimeBase_InitStructure.TIM_Period = 19999; 	// period = period + 1
+//	TIM_TimeBase_InitStructure.TIM_Prescaler = 719; 	// divider = prescaler + 1
+//	TIM_TimeBaseInit(TIM2, &TIM_TimeBase_InitStructure);
+//
+//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+//	TIM_OC_InitStructure.TIM_Pulse = 10000;
+//
+//	TIM_OC2Init(TIM2, &TIM_OC_InitStructure);
+//	TIM_Cmd(TIM2, ENABLE);
 
 	/*timer3 ch3 init*/
 	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -174,7 +174,7 @@ int main(void)
 	TIM_OC_InitStructure.TIM_Pulse = 18;
 
 	TIM_OC3Init(TIM3, &TIM_OC_InitStructure);
-	//TIM_Cmd(TIM3, ENABLE);
+	TIM_Cmd(TIM3, ENABLE);
 
 
 	/* variable to read output data register (ODR)*/
@@ -187,58 +187,28 @@ int main(void)
 	//TIM3->CR1 |= TIM_CR1_CEN;
 	while(1)
 	{
-		/*
-		 * if you write 0 to the led_pin the it lights up
-		 * the button is wired with input pull up, so if you press the button the you read the value 0
-		 *
-		 * IDR - input data register
-		 * ODR - output data register
-		 *
-		 * bitwise and (&) to mask the IDR
-		 *
-		 */
-
-		/*readValue = (GPIOB->IDR & button_pin);
-		if(readValue){
-			GPIOC->ODR |= led_pin;
-		}else{
-			GPIOC->ODR &= (~led_pin);
-		}*/
-
-		/*GPIOC->ODR = (GPIO_Pin_14 | GPIO_Pin_13);
-		GPIOC->ODR = (~GPIO_Pin_14);*/
-
-		TIM3->CCR3 = 18;
-		TIM3->CR1 |= TIM_CR1_CEN;
-		delayMicroSec(delaytime);
-		//TIM3->CCR3 = 0;
-		//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-		//TIM3->CCR3 = 0;
-		//delayMicroSec(50);
-
-		//delayMicroSec(200000);
-
-		TIM3->CCR3 = 43;
-		//TIM3->CR1 |= TIM_CR1_CEN;
-		delayMicroSec(delaytime);
-		TIM3->CCR3 = 0;
-		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-		//TIM3->CCR3 = 0;
-
-		delayMicroSec(50);
-
-		delayMicroSec(40000);
-
-//		TIM3->CCR3 = 14;
-//		//TIM3->CR1 |= TIM_CR1_CEN;
-//		delayMicroSec(4500);
+		if(repetition_counter>22){
+			TIM3->CCR3 = 0;
+			//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+			repetition_counter = 0;
+			delayMicroSec(50);
+			TIM3->CCR3 = 18;
+			//TIM3->CR1 |= TIM_CR1_CEN;
+		}
+//		TIM3->CCR3 = 18;
+//		TIM3->CR1 |= TIM_CR1_CEN;
+//		delayMicroSec(delaytime);
+//		//TIM3->CCR3 = 0;
 //		//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-//		//GPIOB->BRR = pwm_pin;
-//		//GPIOB->ODR = (~pwm_pin);
+//		TIM3->CCR3 = 43;
+//		//TIM3->CR1 |= TIM_CR1_CEN;
+//		delayMicroSec(delaytime);
 //		TIM3->CCR3 = 0;
+//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+//
 //		delayMicroSec(50);
-
-		//delayMicroSec(1000000);
+//
+//		delayMicroSec(40000);
 
 	}
 }

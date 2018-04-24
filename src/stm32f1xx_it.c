@@ -41,6 +41,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+uint16_t repetition_counter = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -164,9 +165,37 @@ void SysTick_Handler(void)
 /**
   * @}
   */
-void EXTI1_IRQHandler(void){
-	EXTI_ClearITPendingBit(EXTI_Line1);
-	GPIOC->ODR ^= (GPIO_Pin_13);
+void EXTI0_IRQHandler(void){
+	EXTI->PR = EXTI_Line0;
+	repetition_counter++;
+	if(repetition_counter==24){
+//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+		TIM3->CCR3=0;
+//		TIM3->CR1 |= TIM_CR1_CEN;
+		return;
+	}
+	//EXTI_ClearITPendingBit(EXTI_Line1);
+	if (repetition_counter==1){
+//		TIM3->CCR3=18+(repetition_counter%2)*25;
+//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+		TIM3->CCR3=18;
+//		TIM3->CR1 |= TIM_CR1_CEN;
+		return;
+	}
+	if (repetition_counter==16){
+		//TIM3->CCR3=18+(repetition_counter%2)*25;
+		//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+		TIM3->CCR3=43;
+		//TIM3->CR1 |= TIM_CR1_CEN;
+		return;
+	}
+
+	//repetition_counter = 0;
+	/*if (~(repetition_counter%72)){
+		//TIM3->CCR3=0;
+	}
+	repetition_counter++;
+	//GPIOC->ODR ^= (GPIO_Pin_13);*/
 }
 
 
