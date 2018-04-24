@@ -79,8 +79,8 @@ int main(void)
 	 * pb0  - pwm output
 	 * pb13 - button input
 	 */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2, ENABLE);
 
 	/* led && c14 && c15 gpio init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -93,6 +93,12 @@ int main(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	/* pwm for external interrupt register change*/
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	/* button init */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
@@ -118,18 +124,54 @@ int main(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
 	NVIC_Init(&NVIC_InitStructure);
 
+	/* pwm interrupt capture
+	 * the interrupt handler found in stm32f1xx_it.c
+	 */
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+
+	EXTI_InitStructure.EXTI_Line = EXTI_Line1;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+	NVIC_Init(&NVIC_InitStructure);
+
+
+	/*timer2 ch2 PA1*/
+	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBase_InitStructure.TIM_Period = 19999; 	// period = period + 1
+	TIM_TimeBase_InitStructure.TIM_Prescaler = 719; 	// divider = prescaler + 1
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBase_InitStructure);
+
+	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OC_InitStructure.TIM_Pulse = 10000;
+
+	TIM_OC2Init(TIM2, &TIM_OC_InitStructure);
+	TIM_Cmd(TIM2, ENABLE);
+
 	/*timer3 ch3 init*/
 	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBase_InitStructure.TIM_Period = 29; 	// period = period + 1
-	TIM_TimeBase_InitStructure.TIM_Prescaler = 2; 	// divider = prescaler + 1
+	TIM_TimeBase_InitStructure.TIM_Period = 89; 	// period = period + 1
+	TIM_TimeBase_InitStructure.TIM_Prescaler = 0; 	// divider = prescaler + 1
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBase_InitStructure);
 
 	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
 	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
 	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC_InitStructure.TIM_Pulse = 6;
+	TIM_OC_InitStructure.TIM_Pulse = 18;
 
 	TIM_OC3Init(TIM3, &TIM_OC_InitStructure);
 	//TIM_Cmd(TIM3, ENABLE);
@@ -166,7 +208,7 @@ int main(void)
 		/*GPIOC->ODR = (GPIO_Pin_14 | GPIO_Pin_13);
 		GPIOC->ODR = (~GPIO_Pin_14);*/
 
-		TIM3->CCR3 = 6;
+		TIM3->CCR3 = 18;
 		TIM3->CR1 |= TIM_CR1_CEN;
 		delayMicroSec(delaytime);
 		//TIM3->CCR3 = 0;
@@ -176,7 +218,7 @@ int main(void)
 
 		//delayMicroSec(200000);
 
-		TIM3->CCR3 = 14;
+		TIM3->CCR3 = 43;
 		//TIM3->CR1 |= TIM_CR1_CEN;
 		delayMicroSec(delaytime);
 		TIM3->CCR3 = 0;

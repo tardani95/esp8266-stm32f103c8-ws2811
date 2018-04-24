@@ -164,6 +164,11 @@ void SysTick_Handler(void)
 /**
   * @}
   */
+void EXTI1_IRQHandler(void){
+	EXTI_ClearITPendingBit(EXTI_Line1);
+	GPIOC->ODR ^= (GPIO_Pin_13);
+}
+
 
 /**
   * @brief  This function handles the button interrupt request on portB, pin14.
