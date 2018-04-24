@@ -135,43 +135,14 @@ int main(void)
 	//TIM_Cmd(TIM3, ENABLE);
 
 
-//	//timer2 ch2
-//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-//	TIM_OC_InitStructure.TIM_Pulse = 500;
-//
-//	TIM_OC2Init(TIM2, &TIM_OC_InitStructure);
-//
-//	TIM_Cmd(TIM2, ENABLE);
-//
-//	//timer3 ch1
-//	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-//	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-//	TIM_TimeBase_InitStructure.TIM_Period = 1499;
-//	TIM_TimeBase_InitStructure.TIM_Prescaler = 71;
-//	TIM_TimeBaseInit(TIM3, &TIM_TimeBase_InitStructure);
-//
-//	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-//	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-//	TIM_OC_InitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;
-//	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-//	TIM_OC_InitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
-//	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-//	TIM_OC_InitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-//	TIM_OC_InitStructure.TIM_Pulse = 100;
-//	TIM_OC1Init(TIM3, &TIM_OC_InitStructure);
-
 	/* variable to read output data register (ODR)*/
 	//uint32_t readValue = 0;
+	int delaytime = 60;
 
 	/*switch off the led by default*/
 	GPIO_WriteBit(GPIOC,led_pin,Bit_SET);
-
+	GPIO_WriteBit(GPIOB,pwm_pin,Bit_RESET);
+	//TIM3->CR1 |= TIM_CR1_CEN;
 	while(1)
 	{
 		/*
@@ -195,26 +166,37 @@ int main(void)
 		/*GPIOC->ODR = (GPIO_Pin_14 | GPIO_Pin_13);
 		GPIOC->ODR = (~GPIO_Pin_14);*/
 
-//		TIM3->CCR3 = 6;
-//		TIM3->CR1 |= TIM_CR1_CEN;
-//		delayMicroSec(4500);
-//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-//		GPIOB->BRR = pwm_pin;
-//		delayMicroSec(50);
-//
+		TIM3->CCR3 = 6;
+		TIM3->CR1 |= TIM_CR1_CEN;
+		delayMicroSec(delaytime);
+		//TIM3->CCR3 = 0;
+		//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+		//TIM3->CCR3 = 0;
+		//delayMicroSec(50);
+
+		//delayMicroSec(200000);
+
+		TIM3->CCR3 = 14;
+		//TIM3->CR1 |= TIM_CR1_CEN;
+		delayMicroSec(delaytime);
+		TIM3->CCR3 = 0;
+		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+		//TIM3->CCR3 = 0;
+
+		delayMicroSec(50);
+
+		delayMicroSec(40000);
+
 //		TIM3->CCR3 = 14;
-//		TIM3->CR1 |= TIM_CR1_CEN;
+//		//TIM3->CR1 |= TIM_CR1_CEN;
 //		delayMicroSec(4500);
-//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-//		GPIOB->BRR = pwm_pin;
+//		//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+//		//GPIOB->BRR = pwm_pin;
+//		//GPIOB->ODR = (~pwm_pin);
+//		TIM3->CCR3 = 0;
 //		delayMicroSec(50);
 
-		GPIOC->ODR = (led_pin);
-		delayMicroSec(4500);
-		GPIOC->ODR = (~led_pin);
-		delayMicroSec(9000);
-
-
+		//delayMicroSec(1000000);
 
 	}
 }
