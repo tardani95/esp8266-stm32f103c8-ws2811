@@ -168,26 +168,29 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void){
 	EXTI->PR = EXTI_Line0;
 	repetition_counter++;
-	if(repetition_counter==24){
-//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-		TIM3->CCR3=0;
-//		TIM3->CR1 |= TIM_CR1_CEN;
-		return;
-	}
+
 	//EXTI_ClearITPendingBit(EXTI_Line1);
 	if (repetition_counter==1){
 //		TIM3->CCR3=18+(repetition_counter%2)*25;
 //		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-		TIM3->CCR3=18;
+		TIM3->CCR3=43;
 //		TIM3->CR1 |= TIM_CR1_CEN;
 		return;
 	}
 	if (repetition_counter==16){
 		//TIM3->CCR3=18+(repetition_counter%2)*25;
 		//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-		TIM3->CCR3=43;
+		TIM3->CCR3=18;
 		//TIM3->CR1 |= TIM_CR1_CEN;
 		return;
+	}
+
+	if(repetition_counter==23){
+			//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+		for(uint32_t i = 0; i<1;i++){
+		}
+		TIM3->CCR3=0;
+			//TIM3->CR1 |= TIM_CR1_CEN;
 	}
 
 	//repetition_counter = 0;

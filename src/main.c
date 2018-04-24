@@ -187,12 +187,14 @@ int main(void)
 	//TIM3->CR1 |= TIM_CR1_CEN;
 	while(1)
 	{
-		if(repetition_counter>22){
-			TIM3->CCR3 = 0;
+		if(repetition_counter>23){
 			//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+			//repetition_counter = 1;
 			repetition_counter = 0;
+			delayMicroSec(200);
+			TIM3->CCR3 = 0;
 			delayMicroSec(50);
-			TIM3->CCR3 = 18;
+			TIM3->CCR3 = 43;
 			//TIM3->CR1 |= TIM_CR1_CEN;
 		}
 //		TIM3->CCR3 = 18;
