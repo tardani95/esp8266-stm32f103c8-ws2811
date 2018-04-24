@@ -35,11 +35,16 @@ Info        : 2018-04-09
 /* Private variables */
 uint16_t led_pin = GPIO_Pin_13; /* on port C*/
 uint16_t button_pin = GPIO_Pin_14; /* on port B*/
+uint16_t pwm_pin = GPIO_Pin_0;
 
 
 /* Private function prototypes */
 /* Private functions */
-
+void delayMicroSec(uint32_t us){
+	us *= 5.15;
+	for(uint32_t i = 0; i<us;i++){
+	}
+}
 
 
 /**
@@ -116,18 +121,18 @@ int main(void)
 	/*timer3 ch3 init*/
 	TIM_TimeBase_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBase_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBase_InitStructure.TIM_Period = 9;
-	TIM_TimeBase_InitStructure.TIM_Prescaler = 8;
+	TIM_TimeBase_InitStructure.TIM_Period = 29; 	// period = period + 1
+	TIM_TimeBase_InitStructure.TIM_Prescaler = 2; 	// divider = prescaler + 1
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBase_InitStructure);
 
 	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
 	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
 	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC_InitStructure.TIM_Pulse = 2;
+	TIM_OC_InitStructure.TIM_Pulse = 6;
 
 	TIM_OC3Init(TIM3, &TIM_OC_InitStructure);
-	TIM_Cmd(TIM3, ENABLE);
+	//TIM_Cmd(TIM3, ENABLE);
 
 
 //	//timer2 ch2
@@ -189,6 +194,28 @@ int main(void)
 
 		/*GPIOC->ODR = (GPIO_Pin_14 | GPIO_Pin_13);
 		GPIOC->ODR = (~GPIO_Pin_14);*/
+
+//		TIM3->CCR3 = 6;
+//		TIM3->CR1 |= TIM_CR1_CEN;
+//		delayMicroSec(4500);
+//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+//		GPIOB->BRR = pwm_pin;
+//		delayMicroSec(50);
+//
+//		TIM3->CCR3 = 14;
+//		TIM3->CR1 |= TIM_CR1_CEN;
+//		delayMicroSec(4500);
+//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+//		GPIOB->BRR = pwm_pin;
+//		delayMicroSec(50);
+
+		GPIOC->ODR = (led_pin);
+		delayMicroSec(4500);
+		GPIOC->ODR = (~led_pin);
+		delayMicroSec(9000);
+
+
+
 	}
 }
 
