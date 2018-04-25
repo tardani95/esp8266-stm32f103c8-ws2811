@@ -29,8 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_it.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_exti.h"
+
 
 
 /** @addtogroup IO_Toggle
