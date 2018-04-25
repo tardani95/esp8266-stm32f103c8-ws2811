@@ -123,21 +123,10 @@ int main(void)
 
 
 
-	/*switch off the led by default*/
-	GPIO_WriteBit(GPIOC,led_pin,Bit_SET);
-
 	delayMicroSec(50000);
 	TIM3->CCR3 = 43;
-//	delayMicroSec(1000);
-//	TIM2->CCR2 = 45;
-//	TIM3->CCR3 = 0;
 	while(1){
-//		TIM2->CCR2 = 43;
-//		TIM3->CCR3 = 43;
-//		delayMicroSec(1000);
-//		TIM2->CCR2 = 0;
-//		TIM3->CCR3 = 0;
-//		delayMicroSec(55);
+
 	}
 }
 

@@ -29,7 +29,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_it.h"
-#include "periph.h"
 
 
 /** @addtogroup IO_Toggle
@@ -178,10 +177,15 @@ void EXTI0_IRQHandler(void){
 		TIM3->CCR3=43;
 	}*/
 	if(counter3 == (24*LED_NUMBER)){
+		TIM3->CCR3=18;
+		//counter3 = 0;
+		//TIM2->CCR2=50;
+		//return;
+	}
+	if(counter3 == (24*50)){
 		TIM3->CCR3=0;
 		counter3 = 0;
 		TIM2->CCR2=50;
-		return;
 	}
 
 }

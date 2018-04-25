@@ -18,14 +18,6 @@ uint16_t button_pin = GPIO_Pin_14; 		/* PB14 */
 uint16_t ledstrip_signal = GPIO_Pin_0; 	/* PB0  */
 uint16_t pwm_exti_pin 	= GPIO_Pin_1;	/* PA1  */
 
-#define FAST_MODE 1
-#define SYS_CLK 72 /* in MHz */
-#define PWM_PERIOD 1.25 /* in usec */
-
-#define TIM_PERIOD 89 /* 89 = (sys_clk * pwm_period)-1 */
-#define TIM_PRESCALER 1
-
-
 /******************************************************************************/
 /*            			         Functions                                    */
 /******************************************************************************/

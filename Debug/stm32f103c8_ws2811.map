@@ -1480,85 +1480,85 @@ LOAD /opt/Atollic_TrueSTUDIO_for_STM32_x86_64_9.0.0/ARMTools/bin/../lib/gcc/arm-
  .text.delayMicroSec
                 0x00000000080015a0       0x50 src/main.o
                 0x00000000080015a0                delayMicroSec
- .text.main     0x00000000080015f0       0xc0 src/main.o
+ .text.main     0x00000000080015f0       0xb0 src/main.o
                 0x00000000080015f0                main
  .text.Reset_Handler
-                0x00000000080016b0       0x50 src/startup_stm32f10x_md.o
-                0x00000000080016b0                Reset_Handler
+                0x00000000080016a0       0x50 src/startup_stm32f10x_md.o
+                0x00000000080016a0                Reset_Handler
  .text.Default_Handler
-                0x0000000008001700        0x2 src/startup_stm32f10x_md.o
-                0x0000000008001700                EXTI2_IRQHandler
-                0x0000000008001700                TIM1_CC_IRQHandler
-                0x0000000008001700                PVD_IRQHandler
-                0x0000000008001700                EXTI3_IRQHandler
-                0x0000000008001700                I2C2_EV_IRQHandler
-                0x0000000008001700                ADC1_2_IRQHandler
-                0x0000000008001700                SPI1_IRQHandler
-                0x0000000008001700                TAMPER_IRQHandler
-                0x0000000008001700                DMA1_Channel4_IRQHandler
-                0x0000000008001700                USART3_IRQHandler
-                0x0000000008001700                RTC_IRQHandler
-                0x0000000008001700                DMA1_Channel7_IRQHandler
-                0x0000000008001700                CAN1_RX1_IRQHandler
-                0x0000000008001700                TIM4_IRQHandler
-                0x0000000008001700                I2C1_EV_IRQHandler
-                0x0000000008001700                DMA1_Channel6_IRQHandler
-                0x0000000008001700                TIM3_IRQHandler
-                0x0000000008001700                RCC_IRQHandler
-                0x0000000008001700                TIM1_TRG_COM_IRQHandler
-                0x0000000008001700                DMA1_Channel1_IRQHandler
-                0x0000000008001700                Default_Handler
-                0x0000000008001700                EXTI9_5_IRQHandler
-                0x0000000008001700                SPI2_IRQHandler
-                0x0000000008001700                DMA1_Channel5_IRQHandler
-                0x0000000008001700                EXTI4_IRQHandler
-                0x0000000008001700                USB_LP_CAN1_RX0_IRQHandler
-                0x0000000008001700                USB_HP_CAN1_TX_IRQHandler
-                0x0000000008001700                DMA1_Channel3_IRQHandler
-                0x0000000008001700                TIM1_UP_IRQHandler
-                0x0000000008001700                WWDG_IRQHandler
-                0x0000000008001700                TIM2_IRQHandler
-                0x0000000008001700                TIM1_BRK_IRQHandler
-                0x0000000008001700                RTCAlarm_IRQHandler
-                0x0000000008001700                USART2_IRQHandler
-                0x0000000008001700                I2C2_ER_IRQHandler
-                0x0000000008001700                DMA1_Channel2_IRQHandler
-                0x0000000008001700                CAN1_SCE_IRQHandler
-                0x0000000008001700                FLASH_IRQHandler
-                0x0000000008001700                USART1_IRQHandler
-                0x0000000008001700                I2C1_ER_IRQHandler
-                0x0000000008001700                USBWakeUp_IRQHandler
+                0x00000000080016f0        0x2 src/startup_stm32f10x_md.o
+                0x00000000080016f0                EXTI2_IRQHandler
+                0x00000000080016f0                TIM1_CC_IRQHandler
+                0x00000000080016f0                PVD_IRQHandler
+                0x00000000080016f0                EXTI3_IRQHandler
+                0x00000000080016f0                I2C2_EV_IRQHandler
+                0x00000000080016f0                ADC1_2_IRQHandler
+                0x00000000080016f0                SPI1_IRQHandler
+                0x00000000080016f0                TAMPER_IRQHandler
+                0x00000000080016f0                DMA1_Channel4_IRQHandler
+                0x00000000080016f0                USART3_IRQHandler
+                0x00000000080016f0                RTC_IRQHandler
+                0x00000000080016f0                DMA1_Channel7_IRQHandler
+                0x00000000080016f0                CAN1_RX1_IRQHandler
+                0x00000000080016f0                TIM4_IRQHandler
+                0x00000000080016f0                I2C1_EV_IRQHandler
+                0x00000000080016f0                DMA1_Channel6_IRQHandler
+                0x00000000080016f0                TIM3_IRQHandler
+                0x00000000080016f0                RCC_IRQHandler
+                0x00000000080016f0                TIM1_TRG_COM_IRQHandler
+                0x00000000080016f0                DMA1_Channel1_IRQHandler
+                0x00000000080016f0                Default_Handler
+                0x00000000080016f0                EXTI9_5_IRQHandler
+                0x00000000080016f0                SPI2_IRQHandler
+                0x00000000080016f0                DMA1_Channel5_IRQHandler
+                0x00000000080016f0                EXTI4_IRQHandler
+                0x00000000080016f0                USB_LP_CAN1_RX0_IRQHandler
+                0x00000000080016f0                USB_HP_CAN1_TX_IRQHandler
+                0x00000000080016f0                DMA1_Channel3_IRQHandler
+                0x00000000080016f0                TIM1_UP_IRQHandler
+                0x00000000080016f0                WWDG_IRQHandler
+                0x00000000080016f0                TIM2_IRQHandler
+                0x00000000080016f0                TIM1_BRK_IRQHandler
+                0x00000000080016f0                RTCAlarm_IRQHandler
+                0x00000000080016f0                USART2_IRQHandler
+                0x00000000080016f0                I2C2_ER_IRQHandler
+                0x00000000080016f0                DMA1_Channel2_IRQHandler
+                0x00000000080016f0                CAN1_SCE_IRQHandler
+                0x00000000080016f0                FLASH_IRQHandler
+                0x00000000080016f0                USART1_IRQHandler
+                0x00000000080016f0                I2C1_ER_IRQHandler
+                0x00000000080016f0                USBWakeUp_IRQHandler
  .text.NMI_Handler
-                0x0000000008001702        0xc src/stm32f1xx_it.o
-                0x0000000008001702                NMI_Handler
+                0x00000000080016f2        0xc src/stm32f1xx_it.o
+                0x00000000080016f2                NMI_Handler
  .text.HardFault_Handler
-                0x000000000800170e        0x6 src/stm32f1xx_it.o
-                0x000000000800170e                HardFault_Handler
+                0x00000000080016fe        0x6 src/stm32f1xx_it.o
+                0x00000000080016fe                HardFault_Handler
  .text.MemManage_Handler
-                0x0000000008001714        0x6 src/stm32f1xx_it.o
-                0x0000000008001714                MemManage_Handler
+                0x0000000008001704        0x6 src/stm32f1xx_it.o
+                0x0000000008001704                MemManage_Handler
  .text.BusFault_Handler
-                0x000000000800171a        0x6 src/stm32f1xx_it.o
-                0x000000000800171a                BusFault_Handler
+                0x000000000800170a        0x6 src/stm32f1xx_it.o
+                0x000000000800170a                BusFault_Handler
  .text.UsageFault_Handler
-                0x0000000008001720        0x6 src/stm32f1xx_it.o
-                0x0000000008001720                UsageFault_Handler
+                0x0000000008001710        0x6 src/stm32f1xx_it.o
+                0x0000000008001710                UsageFault_Handler
  .text.SVC_Handler
-                0x0000000008001726        0xc src/stm32f1xx_it.o
-                0x0000000008001726                SVC_Handler
+                0x0000000008001716        0xc src/stm32f1xx_it.o
+                0x0000000008001716                SVC_Handler
  .text.DebugMon_Handler
-                0x0000000008001732        0xc src/stm32f1xx_it.o
-                0x0000000008001732                DebugMon_Handler
+                0x0000000008001722        0xc src/stm32f1xx_it.o
+                0x0000000008001722                DebugMon_Handler
  .text.PendSV_Handler
-                0x000000000800173e        0xc src/stm32f1xx_it.o
-                0x000000000800173e                PendSV_Handler
+                0x000000000800172e        0xc src/stm32f1xx_it.o
+                0x000000000800172e                PendSV_Handler
  .text.SysTick_Handler
-                0x000000000800174a        0xc src/stm32f1xx_it.o
-                0x000000000800174a                SysTick_Handler
- *fill*         0x0000000008001756        0x2 
+                0x000000000800173a        0xc src/stm32f1xx_it.o
+                0x000000000800173a                SysTick_Handler
+ *fill*         0x0000000008001746        0x2 
  .text.EXTI0_IRQHandler
-                0x0000000008001758       0x48 src/stm32f1xx_it.o
-                0x0000000008001758                EXTI0_IRQHandler
+                0x0000000008001748       0x58 src/stm32f1xx_it.o
+                0x0000000008001748                EXTI0_IRQHandler
  .text.EXTI1_IRQHandler
                 0x00000000080017a0       0x48 src/stm32f1xx_it.o
                 0x00000000080017a0                EXTI1_IRQHandler
@@ -1794,17 +1794,17 @@ OUTPUT(stm32f103c8_ws2811.elf elf32-littlearm)
  .debug_ranges  0x0000000000000590       0x68 src/stm32f1xx_it.o
  .debug_ranges  0x00000000000005f8       0x28 src/system_stm32f10x.o
 
-.debug_line     0x0000000000000000     0x2459
+.debug_line     0x0000000000000000     0x2458
  .debug_line    0x0000000000000000      0x246 Libraries/STM32F10x_StdPeriph_Driver/src/misc.o
  .debug_line    0x0000000000000246      0x2a9 Libraries/STM32F10x_StdPeriph_Driver/src/stm32f10x_exti.o
  .debug_line    0x00000000000004ef      0x3d3 Libraries/STM32F10x_StdPeriph_Driver/src/stm32f10x_gpio.o
  .debug_line    0x00000000000008c2      0x4ce Libraries/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.o
  .debug_line    0x0000000000000d90      0xb53 Libraries/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.o
- .debug_line    0x00000000000018e3      0x337 Libraries/my_lib/periph.o
- .debug_line    0x0000000000001c1a      0x2ee src/main.o
- .debug_line    0x0000000000001f08       0x7c src/startup_stm32f10x_md.o
- .debug_line    0x0000000000001f84      0x2a1 src/stm32f1xx_it.o
- .debug_line    0x0000000000002225      0x234 src/system_stm32f10x.o
+ .debug_line    0x00000000000018e3      0x336 Libraries/my_lib/periph.o
+ .debug_line    0x0000000000001c19      0x2ed src/main.o
+ .debug_line    0x0000000000001f06       0x7c src/startup_stm32f10x_md.o
+ .debug_line    0x0000000000001f82      0x2a2 src/stm32f1xx_it.o
+ .debug_line    0x0000000000002224      0x234 src/system_stm32f10x.o
 
 .debug_str      0x0000000000000000     0x22e4
  .debug_str     0x0000000000000000      0x3e0 Libraries/STM32F10x_StdPeriph_Driver/src/misc.o
