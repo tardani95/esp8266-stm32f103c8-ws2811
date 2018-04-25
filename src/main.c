@@ -77,6 +77,7 @@ int main(void)
 	/* enable the clock on the advanced peripheral buses - see the datasheet on page 11 */
 	/* pc13 - led output
 	 * pb0  - pwm output
+	 * pa1  - pwm for exti
 	 * pb13 - button input
 	 */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
@@ -87,6 +88,7 @@ int main(void)
 	GPIO_InitStructure.GPIO_Pin = (led_pin | GPIO_Pin_14 | GPIO_Pin_15);
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
 
 	/* pwm gpio init*/
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -167,6 +169,8 @@ int main(void)
 	TIM_TimeBase_InitStructure.TIM_Prescaler = 0; 	// divider = prescaler + 1
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBase_InitStructure);
 
+	//TIM_OCStructInit();
+
 	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;
 	TIM_OC_InitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
 	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
@@ -174,6 +178,7 @@ int main(void)
 	TIM_OC_InitStructure.TIM_Pulse = 18;
 
 	TIM_OC3Init(TIM3, &TIM_OC_InitStructure);
+	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 	TIM_Cmd(TIM3, ENABLE);
 
 
