@@ -16,7 +16,7 @@
 uint16_t led_pin	= GPIO_Pin_13; 		/* PC13 */
 uint16_t button_pin = GPIO_Pin_14; 		/* PB14 */
 uint16_t ledstrip_signal = GPIO_Pin_0; 	/* PB0  */
-uint16_t pwm_exti_pin 	= GPIO_Pin_1;		/* PA1  */
+uint16_t pwm_exti_pin 	= GPIO_Pin_1;	/* PA1  */
 
 #define FAST_MODE 1
 #define SYS_CLK 72 /* in MHz */

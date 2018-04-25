@@ -35,9 +35,9 @@ Info        : 2018-04-09
 
 /* Private macro */
 /* Private variables */
-uint16_t led_pin = GPIO_Pin_13; /* on port C*/
-uint16_t button_pin = GPIO_Pin_14; /* on port B*/
-uint16_t pwm_pin = GPIO_Pin_0;
+//uint16_t led_pin = GPIO_Pin_13; /* on port C*/
+//uint16_t button_pin = GPIO_Pin_14; /* on port B*/
+//uint16_t pwm_pin = GPIO_Pin_0;
 //extern uint16_t repetition_counter = 0;
 
 /* Private function prototypes */
@@ -125,9 +125,19 @@ int main(void)
 	/*switch off the led by default*/
 	GPIO_WriteBit(GPIOC,led_pin,Bit_SET);
 
-
+//	delayMicroSec(100);
+//	TIM2->CCR2 = 43;
+//	TIM3->CCR3 = 18;
+//	delayMicroSec(1000);
+//	TIM2->CCR2 = 0;
+//	TIM3->CCR3 = 0;
 	while(1){
-
+		TIM2->CCR2 = 43;
+		TIM3->CCR3 = 18;
+		delayMicroSec(1000);
+		TIM2->CCR2 = 0;
+		TIM3->CCR3 = 0;
+		delayMicroSec(50000);
 	}
 }
 

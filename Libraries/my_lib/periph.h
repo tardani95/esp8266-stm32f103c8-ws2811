@@ -25,6 +25,10 @@
  */
 #include "misc.h"
 /*========================================================================*/
+extern uint16_t led_pin; 			/* PC13 */
+extern uint16_t button_pin; 		/* PB14 */
+extern uint16_t ledstrip_signal; 	/* PB0  */
+extern uint16_t pwm_exti_pin;		/* PA1  */
 
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);
