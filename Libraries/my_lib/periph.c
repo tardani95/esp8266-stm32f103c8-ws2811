@@ -23,7 +23,7 @@ uint16_t pwm_exti_pin 	= GPIO_Pin_1;	/* PA1  */
 #define PWM_PERIOD 1.25 /* in usec */
 
 #define TIM_PERIOD 89 /* 89 = (sys_clk * pwm_period)-1 */
-#define TIM_PRESCALER 0
+#define TIM_PRESCALER 1
 
 
 /******************************************************************************/
@@ -223,6 +223,34 @@ void InitEXTI_TIM3_PWM(EXTI_InitTypeDef* EXTI_InitStructure, NVIC_InitTypeDef* N
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
 	NVIC_InitStructure->NVIC_IRQChannel = EXTI0_IRQn;
+	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 0x06;
+	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0x00;
+	NVIC_Init(NVIC_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the external interrupt on PA1 (tim2 ch2 pwm) and sets the nested vectored interrupt controller
+  * @param  EXTI_InitStructure: pointer to a EXTI_InitTypeDef structure which will
+  *         be initialized.
+  *         NVIC_InitStructure: pointer to a NVIC_InitTypeDef structure which will
+  *         be initialized.
+  * @retval None
+  */
+void InitEXTI_TIM2_PWM(EXTI_InitTypeDef* EXTI_InitStructure, NVIC_InitTypeDef* NVIC_InitStructure){
+	EXTI_StructInit(EXTI_InitStructure);
+
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+
+	EXTI_InitStructure->EXTI_Line = EXTI_Line1;
+	EXTI_InitStructure->EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure->EXTI_Trigger = EXTI_Trigger_Rising;
+	EXTI_InitStructure->EXTI_LineCmd = ENABLE;
+	EXTI_Init(EXTI_InitStructure);
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
+	NVIC_InitStructure->NVIC_IRQChannel = EXTI1_IRQn;
 	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 0x07;
 	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0x00;

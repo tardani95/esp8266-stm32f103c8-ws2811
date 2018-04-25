@@ -8,3 +8,4 @@ periph.c:140:6:InitTIM2_CLK	16	static
 periph.c:157:6:InitTIM2_CH2_PWM	16	static
 periph.c:181:6:InitEXTI_BTN	16	static
 periph.c:212:6:InitEXTI_TIM3_PWM	16	static
+periph.c:240:6:InitEXTI_TIM2_PWM	16	static

@@ -96,17 +96,17 @@ int main(void)
 
 	/* TIMER INIT */
 
-	/* tim3 clock init */
-	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
-
-	/* tim3 ch3 pwm init */
-	InitTIM3_CH3_PWM(&TIM_OC_InitStructure);
-
 	/* tim2 clock init */
 	InitTIM2_CLK(&TIM_TimeBase_InitStructure);
 
 	/* tim2 ch2 pwm inti */
 	InitTIM2_CH2_PWM(&TIM_OC_InitStructure);
+
+	/* tim3 clock init */
+	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
+
+	/* tim3 ch3 pwm init */
+	InitTIM3_CH3_PWM(&TIM_OC_InitStructure);
 
 
 
@@ -117,7 +117,8 @@ int main(void)
 	InitEXTI_BTN(&EXTI_InitStructure, &NVIC_InitStructure);
 
 	/* pwm interrupt capture */
-	InitEXTI_BTN(&EXTI_InitStructure, &NVIC_InitStructure);
+	InitEXTI_TIM3_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
+	InitEXTI_TIM2_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
 
 
 
@@ -125,19 +126,18 @@ int main(void)
 	/*switch off the led by default*/
 	GPIO_WriteBit(GPIOC,led_pin,Bit_SET);
 
-//	delayMicroSec(100);
-//	TIM2->CCR2 = 43;
-//	TIM3->CCR3 = 18;
+	delayMicroSec(50000);
+	TIM3->CCR3 = 43;
 //	delayMicroSec(1000);
-//	TIM2->CCR2 = 0;
+//	TIM2->CCR2 = 45;
 //	TIM3->CCR3 = 0;
 	while(1){
-		TIM2->CCR2 = 43;
-		TIM3->CCR3 = 18;
-		delayMicroSec(1000);
-		TIM2->CCR2 = 0;
-		TIM3->CCR3 = 0;
-		delayMicroSec(50000);
+//		TIM2->CCR2 = 43;
+//		TIM3->CCR3 = 43;
+//		delayMicroSec(1000);
+//		TIM2->CCR2 = 0;
+//		TIM3->CCR3 = 0;
+//		delayMicroSec(55);
 	}
 }
 

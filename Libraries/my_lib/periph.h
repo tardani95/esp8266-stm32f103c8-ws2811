@@ -30,6 +30,14 @@ extern uint16_t button_pin; 		/* PB14 */
 extern uint16_t ledstrip_signal; 	/* PB0  */
 extern uint16_t pwm_exti_pin;		/* PA1  */
 
+#define FAST_MODE 1
+#define SYS_CLK 72 /* in MHz */
+#define PWM_PERIOD 1.25 /* in usec */
+
+#define TIM_PERIOD 89 /* 89 = (sys_clk * pwm_period)-1 */
+#define TIM_PRESCALER 0
+#define LED_NUMBER 50
+
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);
 void InitGPIO_LSS(GPIO_InitTypeDef*);
@@ -42,5 +50,6 @@ void InitTIM2_CH2_PWM(TIM_OCInitTypeDef*);
 
 void InitEXTI_BTN(EXTI_InitTypeDef*, NVIC_InitTypeDef*);
 void InitEXTI_TIM3_PWM(EXTI_InitTypeDef*, NVIC_InitTypeDef*);
+void InitEXTI_TIM2_PWM(EXTI_InitTypeDef*, NVIC_InitTypeDef*);
 
 #endif /* PERIPH_H_ */
