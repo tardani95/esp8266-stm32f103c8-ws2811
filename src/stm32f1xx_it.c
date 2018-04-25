@@ -29,8 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_it.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_exti.h"
+#include "periph.h"
 
 
 /** @addtogroup IO_Toggle
@@ -41,7 +40,9 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-uint16_t repetition_counter = 0;
+uint16_t counter3 = 0;
+uint16_t counter2 = 0;
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -165,42 +166,38 @@ void SysTick_Handler(void)
 /**
   * @}
   */
+
+
 void EXTI0_IRQHandler(void){
 	EXTI->PR = EXTI_Line0;
-	repetition_counter++;
-
-	//EXTI_ClearITPendingBit(EXTI_Line1);
-	if (repetition_counter==1){
-//		TIM3->CCR3=18+(repetition_counter%2)*25;
-//		TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-		TIM3->CCR3=43;
-//		TIM3->CR1 |= TIM_CR1_CEN;
-		return;
-	}
-	if (repetition_counter==16){
-		//TIM3->CCR3=18+(repetition_counter%2)*25;
-		//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+	//EXTI_ClearITPendingBit(EXTI_Line0);
+	counter3++;
+	/*if(counter3%2){
 		TIM3->CCR3=18;
-		//TIM3->CR1 |= TIM_CR1_CEN;
+	}else{
+		TIM3->CCR3=43;
+	}*/
+	if(counter3 == (24*LED_NUMBER)){
+		TIM3->CCR3=0;
+		counter3 = 0;
+		TIM2->CCR2=50;
 		return;
 	}
 
-	if(repetition_counter==23){
-			//TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
-		for(uint32_t i = 0; i<1;i++){
-		}
-		TIM3->CCR3=0;
-			//TIM3->CR1 |= TIM_CR1_CEN;
-	}
-
-	//repetition_counter = 0;
-	/*if (~(repetition_counter%72)){
-		//TIM3->CCR3=0;
-	}
-	repetition_counter++;
-	//GPIOC->ODR ^= (GPIO_Pin_13);*/
 }
 
+void EXTI1_IRQHandler(void){
+	EXTI->PR = EXTI_Line1;
+	//EXTI_ClearITPendingBit(EXTI_Line1);
+	counter2++;
+
+
+	if(counter2==100){
+		TIM2->CCR2=0;
+		counter2 = 0;
+		TIM3->CCR3=43;
+	}
+}
 
 /**
   * @brief  This function handles the button interrupt request on portB, pin14.
