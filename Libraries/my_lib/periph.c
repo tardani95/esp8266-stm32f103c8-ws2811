@@ -17,10 +17,22 @@ uint16_t led_pin	= GPIO_Pin_13; 		/* PC13 */
 uint16_t button_pin = GPIO_Pin_14; 		/* PB14 */
 uint16_t ledstrip_signal = GPIO_Pin_0; 	/* PB0  */
 uint16_t pwm_exti_pin 	= GPIO_Pin_1;	/* PA1  */
+uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
 /******************************************************************************/
 /*            			         Functions                                    */
 /******************************************************************************/
+
+void InitLookUpTable(void){
+	uint8_t tempArray[4][3]={{1,0,0},{0,1,0},{0,0,1},{0,0,0}};
+	for(uint16_t i=0;i<4;++i){
+		for(uint16_t j=0;j<3;++j){
+			for(uint16_t k = 0; k<8; ++k){
+				look_up_table_2[i*24 + j*8 + k] = tempArray[i][j];
+			}
+		}
+	}
+}
 
 /**
   * @brief  This function initialize the LED on PC13 pin

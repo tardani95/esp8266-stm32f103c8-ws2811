@@ -41,6 +41,8 @@
 /* Private variables ---------------------------------------------------------*/
 uint16_t counter3 = 0;
 uint16_t counter2 = 0;
+uint8_t  tmp;
+uint8_t  look_up_table[4][3] = {{255,0,0},{0,255,0},{0,0,255},{0,0,0}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -171,23 +173,21 @@ void EXTI0_IRQHandler(void){
 	EXTI->PR = EXTI_Line0;
 	//EXTI_ClearITPendingBit(EXTI_Line0);
 	counter3++;
-	/*if(counter3%2){
-		TIM3->CCR3=18;
-	}else{
-		TIM3->CCR3=43;
-	}*/
+	if(counter3 == (24*LED_NUMBER)){
+		TIM3->CCR3=0;
+		counter3 = 0;
+		TIM2->CCR2=50;
+		return;
+	}
+
+	TIM3->CCR3 = look_up_table_2[counter3%96-1] ? 43 : 18;
+
 	if(counter3 == (24*LED_NUMBER_TO_LIGHT_UP)){
 		TIM3->CCR3=18;
 		//counter3 = 0;
 		//TIM2->CCR2=50;
 		//return;
 	}
-	if(counter3 == (24*LED_NUMBER)){
-		TIM3->CCR3=0;
-		counter3 = 0;
-		TIM2->CCR2=50;
-	}
-
 }
 
 void EXTI1_IRQHandler(void){
@@ -196,7 +196,7 @@ void EXTI1_IRQHandler(void){
 	counter2++;
 
 
-	if(counter2==25){
+	if(counter2>25){
 		TIM2->CCR2=0;
 		counter2 = 0;
 		TIM3->CCR3=43;

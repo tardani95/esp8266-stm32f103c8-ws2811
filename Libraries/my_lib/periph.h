@@ -25,10 +25,6 @@
  */
 #include "misc.h"
 /*========================================================================*/
-extern uint16_t led_pin; 			/* PC13 */
-extern uint16_t button_pin; 		/* PB14 */
-extern uint16_t ledstrip_signal; 	/* PB0  */
-extern uint16_t pwm_exti_pin;		/* PA1  */
 
 #define MODE_400kHz 1
 #define MODE_800kHz 0
@@ -39,6 +35,16 @@ extern uint16_t pwm_exti_pin;		/* PA1  */
 #define TIM_PRESCALER MODE_400kHz
 #define LED_NUMBER_TO_LIGHT_UP 98
 #define LED_NUMBER 100
+#define LOOK_UP_TABLE_SIZE 24*4
+
+
+extern uint16_t led_pin; 			/* PC13 */
+extern uint16_t button_pin; 		/* PB14 */
+extern uint16_t ledstrip_signal; 	/* PB0  */
+extern uint16_t pwm_exti_pin;		/* PA1  */
+extern uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
+
+void InitLookUpTable(void);
 
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);

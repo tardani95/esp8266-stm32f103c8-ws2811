@@ -75,6 +75,8 @@ int main(void)
 	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; // timer init
 	TIM_OCInitTypeDef TIM_OC_InitStructure; // output compare init
 
+	InitLookUpTable();
+
 
 	/* GPIO INIT */
 
