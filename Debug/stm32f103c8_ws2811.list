@@ -3171,8 +3171,8 @@ int main(void)
 
 
 
-	delayMicroSec(50000);
- 8001684:	f24c 3050 	movw	r0, #50000	; 0xc350
+	delayMicroSec(500);
+ 8001684:	f44f 70fa 	mov.w	r0, #500	; 0x1f4
  8001688:	f7ff ff8a 	bl	80015a0 <delayMicroSec>
 	TIM3->CCR3 = 43;
  800168c:	4b03      	ldr	r3, [pc, #12]	; (800169c <main+0xac>)
@@ -3437,40 +3437,41 @@ void EXTI0_IRQHandler(void){
 	if(counter3 == (24*LED_NUMBER)){
  800175e:	4b0e      	ldr	r3, [pc, #56]	; (8001798 <EXTI0_IRQHandler+0x50>)
  8001760:	881b      	ldrh	r3, [r3, #0]
- 8001762:	f5b3 7fb4 	cmp.w	r3, #360	; 0x168
- 8001766:	d102      	bne.n	800176e <EXTI0_IRQHandler+0x26>
+ 8001762:	2bf0      	cmp	r3, #240	; 0xf0
+ 8001764:	d102      	bne.n	800176c <EXTI0_IRQHandler+0x24>
 		TIM3->CCR3=18;
- 8001768:	4b0c      	ldr	r3, [pc, #48]	; (800179c <EXTI0_IRQHandler+0x54>)
- 800176a:	2212      	movs	r2, #18
- 800176c:	879a      	strh	r2, [r3, #60]	; 0x3c
+ 8001766:	4b0d      	ldr	r3, [pc, #52]	; (800179c <EXTI0_IRQHandler+0x54>)
+ 8001768:	2212      	movs	r2, #18
+ 800176a:	879a      	strh	r2, [r3, #60]	; 0x3c
 		//counter3 = 0;
 		//TIM2->CCR2=50;
 		//return;
 	}
 	if(counter3 == (24*50)){
- 800176e:	4b0a      	ldr	r3, [pc, #40]	; (8001798 <EXTI0_IRQHandler+0x50>)
- 8001770:	881b      	ldrh	r3, [r3, #0]
- 8001772:	f5b3 6f96 	cmp.w	r3, #1200	; 0x4b0
- 8001776:	d109      	bne.n	800178c <EXTI0_IRQHandler+0x44>
+ 800176c:	4b0a      	ldr	r3, [pc, #40]	; (8001798 <EXTI0_IRQHandler+0x50>)
+ 800176e:	881b      	ldrh	r3, [r3, #0]
+ 8001770:	f5b3 6f96 	cmp.w	r3, #1200	; 0x4b0
+ 8001774:	d109      	bne.n	800178a <EXTI0_IRQHandler+0x42>
 		TIM3->CCR3=0;
- 8001778:	4b08      	ldr	r3, [pc, #32]	; (800179c <EXTI0_IRQHandler+0x54>)
- 800177a:	2200      	movs	r2, #0
- 800177c:	879a      	strh	r2, [r3, #60]	; 0x3c
+ 8001776:	4b09      	ldr	r3, [pc, #36]	; (800179c <EXTI0_IRQHandler+0x54>)
+ 8001778:	2200      	movs	r2, #0
+ 800177a:	879a      	strh	r2, [r3, #60]	; 0x3c
 		counter3 = 0;
- 800177e:	4b06      	ldr	r3, [pc, #24]	; (8001798 <EXTI0_IRQHandler+0x50>)
- 8001780:	2200      	movs	r2, #0
- 8001782:	801a      	strh	r2, [r3, #0]
+ 800177c:	4b06      	ldr	r3, [pc, #24]	; (8001798 <EXTI0_IRQHandler+0x50>)
+ 800177e:	2200      	movs	r2, #0
+ 8001780:	801a      	strh	r2, [r3, #0]
 		TIM2->CCR2=50;
- 8001784:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000
- 8001788:	2232      	movs	r2, #50	; 0x32
- 800178a:	871a      	strh	r2, [r3, #56]	; 0x38
+ 8001782:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000
+ 8001786:	2232      	movs	r2, #50	; 0x32
+ 8001788:	871a      	strh	r2, [r3, #56]	; 0x38
 	}
 
 }
- 800178c:	bf00      	nop
- 800178e:	46bd      	mov	sp, r7
- 8001790:	bc80      	pop	{r7}
- 8001792:	4770      	bx	lr
+ 800178a:	bf00      	nop
+ 800178c:	46bd      	mov	sp, r7
+ 800178e:	bc80      	pop	{r7}
+ 8001790:	4770      	bx	lr
+ 8001792:	bf00      	nop
  8001794:	40010400 	.word	0x40010400
  8001798:	20000024 	.word	0x20000024
  800179c:	40000400 	.word	0x40000400
@@ -3494,10 +3495,10 @@ void EXTI1_IRQHandler(void){
  80017b4:	801a      	strh	r2, [r3, #0]
 
 
-	if(counter2==100){
+	if(counter2==25){
  80017b6:	4b0a      	ldr	r3, [pc, #40]	; (80017e0 <EXTI1_IRQHandler+0x40>)
  80017b8:	881b      	ldrh	r3, [r3, #0]
- 80017ba:	2b64      	cmp	r3, #100	; 0x64
+ 80017ba:	2b19      	cmp	r3, #25
  80017bc:	d109      	bne.n	80017d2 <EXTI1_IRQHandler+0x32>
 		TIM2->CCR2=0;
  80017be:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000

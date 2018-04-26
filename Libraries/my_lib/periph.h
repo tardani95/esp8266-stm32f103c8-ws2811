@@ -30,13 +30,14 @@ extern uint16_t button_pin; 		/* PB14 */
 extern uint16_t ledstrip_signal; 	/* PB0  */
 extern uint16_t pwm_exti_pin;		/* PA1  */
 
-#define FAST_MODE 1
+#define MODE_400kHz 1
+#define MODE_800kHz 0
 #define SYS_CLK 72 /* in MHz */
 #define PWM_PERIOD 1.25 /* in usec */
 
 #define TIM_PERIOD 89 /* 89 = (sys_clk * pwm_period)-1 */
-#define TIM_PRESCALER 1
-#define LED_NUMBER 15
+#define TIM_PRESCALER MODE_400kHz
+#define LED_NUMBER 10
 
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);

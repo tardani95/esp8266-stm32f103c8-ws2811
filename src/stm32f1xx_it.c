@@ -196,7 +196,7 @@ void EXTI1_IRQHandler(void){
 	counter2++;
 
 
-	if(counter2==100){
+	if(counter2==25){
 		TIM2->CCR2=0;
 		counter2 = 0;
 		TIM3->CCR3=43;

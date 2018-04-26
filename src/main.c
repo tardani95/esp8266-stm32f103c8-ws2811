@@ -123,7 +123,7 @@ int main(void)
 
 
 
-	delayMicroSec(50000);
+	delayMicroSec(500);
 	TIM3->CCR3 = 43;
 	while(1){
 
