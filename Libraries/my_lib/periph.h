@@ -47,6 +47,8 @@ extern uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 void InitLookUpTable(void);
 void RefreshLookUpTable(uint8_t, uint8_t, uint8_t);
 
+void AnimFadeInFadeOut(uint16_t, uint16_t, uint16_t);
+
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);
 void InitGPIO_LSS(GPIO_InitTypeDef*);

@@ -45,6 +45,41 @@ void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
 	}
 }
 
+void AnimFadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade_out_time){
+	for(uint8_t i=0;i<7;++i){
+		for(uint16_t temp = 0; temp<256; temp+=1){
+			switch(i){
+				case 0: RefreshLookUpTable(temp,0,0); break;
+				case 1: RefreshLookUpTable(0,temp,0); break;
+				case 2: RefreshLookUpTable(0,0,temp); break;
+				case 3: RefreshLookUpTable(temp,temp,0); break;
+				case 4: RefreshLookUpTable(0,temp,temp); break;
+				case 5: RefreshLookUpTable(temp,0,temp); break;
+				case 6: RefreshLookUpTable(temp,temp,temp); break;
+				default: break;
+			}
+			delayMicroSec(fade_in_time);
+
+		}
+		delayMicroSec(hold_time);
+		/* watch out! negative overflow! --> int16_t */
+		for(int16_t temp = 255; temp>=0; temp-=1){
+			switch(i){
+				case 0: RefreshLookUpTable(temp,0,0); break;
+				case 1: RefreshLookUpTable(0,temp,0); break;
+				case 2: RefreshLookUpTable(0,0,temp); break;
+				case 3: RefreshLookUpTable(temp,temp,0); break;
+				case 4: RefreshLookUpTable(0,temp,temp); break;
+				case 5: RefreshLookUpTable(temp,0,temp); break;
+				case 6: RefreshLookUpTable(temp,temp,temp); break;
+				default: break;
+			}
+			delayMicroSec(fade_out_time);
+
+		}
+	}
+}
+
 /**
   * @brief  This function initialize the LED on PC13 pin
   * @param  None
