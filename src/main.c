@@ -128,7 +128,21 @@ int main(void)
 	delayMicroSec(500);
 	TIM3->CCR3=look_up_table_2[0] ? 43 : 18;
 	while(1){
-
+		for(uint8_t i=0;i<7;++i){
+			for(uint16_t temp = 0; temp<256; temp+=10){
+				switch(i){
+					case 0: RefreshLookUpTable(temp,0,0); break;
+					case 1: RefreshLookUpTable(0,temp,0); break;
+					case 2: RefreshLookUpTable(0,0,temp); break;
+					case 3: RefreshLookUpTable(temp,temp,0); break;
+					case 4: RefreshLookUpTable(0,temp,temp); break;
+					case 5: RefreshLookUpTable(temp,0,temp); break;
+					case 6: RefreshLookUpTable(temp,temp,temp); break;
+					default: break;
+				}
+				delayMicroSec(100000);
+			}
+		}
 	}
 }
 

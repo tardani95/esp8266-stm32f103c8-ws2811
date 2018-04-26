@@ -34,6 +34,17 @@ void InitLookUpTable(void){
 	}
 }
 
+void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
+	uint8_t look_up_table_1[4][3]={{B,R,G},{B,R,G},{B,R,G},{B,R,G}};
+	for(uint16_t i=0;i<4;++i){
+		for(uint16_t j=0;j<3;++j){
+			for(uint16_t k = 0; k<8; ++k){
+				look_up_table_2[i*24 + j*8 + k] = look_up_table_1[i][j] & (0x80 >> k);
+			}
+		}
+	}
+}
+
 /**
   * @brief  This function initialize the LED on PC13 pin
   * @param  None
