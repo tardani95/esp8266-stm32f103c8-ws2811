@@ -37,7 +37,8 @@ extern uint16_t pwm_exti_pin;		/* PA1  */
 
 #define TIM_PERIOD 89 /* 89 = (sys_clk * pwm_period)-1 */
 #define TIM_PRESCALER MODE_400kHz
-#define LED_NUMBER 10
+#define LED_NUMBER_TO_LIGHT_UP 98
+#define LED_NUMBER 100
 
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);

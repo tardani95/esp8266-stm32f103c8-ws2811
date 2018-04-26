@@ -176,13 +176,13 @@ void EXTI0_IRQHandler(void){
 	}else{
 		TIM3->CCR3=43;
 	}*/
-	if(counter3 == (24*LED_NUMBER)){
+	if(counter3 == (24*LED_NUMBER_TO_LIGHT_UP)){
 		TIM3->CCR3=18;
 		//counter3 = 0;
 		//TIM2->CCR2=50;
 		//return;
 	}
-	if(counter3 == (24*50)){
+	if(counter3 == (24*LED_NUMBER)){
 		TIM3->CCR3=0;
 		counter3 = 0;
 		TIM2->CCR2=50;
