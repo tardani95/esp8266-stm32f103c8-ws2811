@@ -42,7 +42,6 @@
 uint16_t counter3 = 0;
 uint16_t counter2 = 0;
 uint8_t  tmp;
-uint8_t  look_up_table[4][3] = {{255,0,0},{0,255,0},{0,0,255},{0,0,0}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -180,7 +179,7 @@ void EXTI0_IRQHandler(void){
 		return;
 	}
 
-	TIM3->CCR3 = look_up_table_2[counter3%96-1] ? 43 : 18;
+	TIM3->CCR3 = look_up_table_2[counter3%96] ? 43 : 18;
 
 	if(counter3 == (24*LED_NUMBER_TO_LIGHT_UP)){
 		TIM3->CCR3=18;
@@ -199,7 +198,7 @@ void EXTI1_IRQHandler(void){
 	if(counter2>25){
 		TIM2->CCR2=0;
 		counter2 = 0;
-		TIM3->CCR3=43;
+		TIM3->CCR3=look_up_table_2[0] ? 43 : 18;
 	}
 }
 

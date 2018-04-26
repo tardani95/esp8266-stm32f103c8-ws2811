@@ -24,11 +24,11 @@ uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 /******************************************************************************/
 
 void InitLookUpTable(void){
-	uint8_t tempArray[4][3]={{1,0,0},{0,1,0},{0,0,1},{0,0,0}};
+	uint8_t look_up_table_1[4][3]={{0,200,0},{125,0,125},{0,0,255},{125,125,0}};
 	for(uint16_t i=0;i<4;++i){
 		for(uint16_t j=0;j<3;++j){
 			for(uint16_t k = 0; k<8; ++k){
-				look_up_table_2[i*24 + j*8 + k] = tempArray[i][j];
+				look_up_table_2[i*24 + j*8 + k] = look_up_table_1[i][j] & (0x80 >> k);
 			}
 		}
 	}

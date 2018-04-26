@@ -126,7 +126,7 @@ int main(void)
 
 
 	delayMicroSec(500);
-	TIM3->CCR3 = 43;
+	TIM3->CCR3=look_up_table_2[0] ? 43 : 18;
 	while(1){
 
 	}
