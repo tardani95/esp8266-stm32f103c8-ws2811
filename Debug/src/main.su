@@ -1,2 +1,2 @@
 main.c:45:6:delayMicroSec	32	static
-main.c:67:5:main	64	static
+main.c:67:5:main	56	static
