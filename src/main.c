@@ -42,11 +42,6 @@ Info        : 2018-04-09
 
 /* Private function prototypes */
 /* Private functions */
-void delayMicroSec(uint32_t us){
-	us *= 5.15;
-	for(uint32_t i = 0; i<us;i++){
-	}
-}
 
 
 /**
@@ -75,11 +70,10 @@ int main(void)
 	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; // timer init
 	TIM_OCInitTypeDef TIM_OC_InitStructure; // output compare init
 
-	InitLookUpTable();
 
-
+	/**************************************************/
 	/* GPIO INIT */
-
+	/**************************************************/
 	/* built-in led init */
 	InitGPIO_LED(&GPIO_InitStructure);
 	/*switch off the led by default*/
@@ -95,9 +89,9 @@ int main(void)
 	InitGPIO_PWM_EXTI(&GPIO_InitStructure);
 
 
-
+	/**************************************************/
 	/* TIMER INIT */
-
+	/**************************************************/
 	/* tim2 clock init */
 	InitTIM2_CLK(&TIM_TimeBase_InitStructure);
 
@@ -111,10 +105,10 @@ int main(void)
 	InitTIM3_CH3_PWM(&TIM_OC_InitStructure);
 
 
-
+	/**************************************************/
 	/* INTERRUPT INIT */
 	/* the interrupt handlers found in stm32f1xx_it.c */
-
+	/**************************************************/
 	/* button interrupt init */
 	InitEXTI_BTN(&EXTI_InitStructure, &NVIC_InitStructure);
 
@@ -123,7 +117,7 @@ int main(void)
 	InitEXTI_TIM2_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
 
 
-
+	InitLookUpTable();
 
 	delayMicroSec(500);
 	TIM3->CCR3=look_up_table_2[0] ? 43 : 18;

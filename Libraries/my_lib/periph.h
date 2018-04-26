@@ -33,7 +33,10 @@
 
 #define TIM_PERIOD 89 /* 89 = (sys_clk * pwm_period)-1 */
 #define TIM_PRESCALER MODE_400kHz
-#define LED_NUMBER_TO_LIGHT_UP 98
+
+/* indexing starts with 0 */
+#define LIGHT_UP_FROM_LED 18
+#define LIGHT_UP_TO_LED 36
 #define LED_NUMBER 100
 #define LOOK_UP_TABLE_SIZE 24*4
 
@@ -44,6 +47,7 @@ extern uint16_t ledstrip_signal; 	/* PB0  */
 extern uint16_t pwm_exti_pin;		/* PA1  */
 extern uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
+void delayMicroSec(uint32_t);
 void InitLookUpTable(void);
 void RefreshLookUpTable(uint8_t, uint8_t, uint8_t);
 
