@@ -130,8 +130,9 @@ Waiting for the packages:
 
 /* Private macro */
 /* Private variables */
-uint16_t receivedData = 0;
-
+uint8_t receivedData = 0;
+uint8_t rArray[20];
+uint8_t i=0;
 
 /* Private function prototypes */
 /* Private functions */
@@ -139,6 +140,11 @@ void USART1_IRQHandler(void){
 	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 	//USART_ClearITPendingBit(USART1, USART_IT_PE);
 	receivedData = USART_ReceiveData(USART1);
+	if(receivedData == '+'){
+		i=0;
+	}
+	rArray[i] = receivedData;
+	i++;
 }
 
 
