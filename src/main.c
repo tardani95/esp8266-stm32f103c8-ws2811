@@ -132,19 +132,41 @@ Waiting for the packages:
 /* Private variables */
 uint8_t receivedData = 0;
 uint8_t rArray[20];
+char startUPDListening[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
+uint8_t sendData = 0;
 uint8_t i=0;
 
 /* Private function prototypes */
 /* Private functions */
 void USART1_IRQHandler(void){
-	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-	//USART_ClearITPendingBit(USART1, USART_IT_PE);
-	receivedData = USART_ReceiveData(USART1);
-	if(receivedData == '+'){
-		i=0;
+	if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET){
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+
+		receivedData = USART_ReceiveData(USART1);
+		if(receivedData == '+'){
+			i=0;
+		}
+		rArray[i] = receivedData;
+		i++;
 	}
-	rArray[i] = receivedData;
-	i++;
+	if(USART_GetITStatus(USART1,USART_IT_TXE) == SET){
+		sendData = startUPDListening[i];
+		if(sendData == '\0'){
+			i=0;
+			USART_ClearITPendingBit(USART1, USART_IT_TXE);
+			USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+			return;
+		}
+		USART_SendData(USART1, startUPDListening[i]);
+		i++;
+	}
+
+}
+
+void delayMicroSec(uint32_t us){
+	us *= 5.15;
+	for(uint32_t i = 0; i<us;i++){
+	}
 }
 
 
@@ -224,9 +246,17 @@ int main(void)
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 	USART_Init(USART1,&USART_InitStructure);
 
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
 	USART_Cmd(USART1, ENABLE);
+
+
+	USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+	USART_Cmd(USART1, ENABLE);
+
+	delayMicroSec(500);
+
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+
 
 
 
