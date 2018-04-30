@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 main.c:62:5:main	56	static
+=======
+main.c:120:5:main	16	static
+main.c:252:6:__assert_func	24	static
+main.c:261:6:__assert	24	static
+>>>>>>> esp8266/master
