@@ -4,7 +4,7 @@ File        : main.c
 Author      : Daniel Tar
 Version     : 1.0
 Copyright   :
-Description : WS2811
+Description : Controlling WS2811 with an ESP8266 through an stm32f103c8 microcontoller
 Info        : 2018-04-09
 ******************************************************************************
 */
