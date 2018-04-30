@@ -35,8 +35,8 @@
 #define TIM_PRESCALER MODE_400kHz
 
 /* indexing starts with 0 */
-#define LIGHT_UP_FROM_LED 18
-#define LIGHT_UP_TO_LED 36
+#define LIGHT_UP_FROM_LED 0 /* 18 */
+#define LIGHT_UP_TO_LED 100   /* 36 */
 #define LED_NUMBER 100
 #define LOOK_UP_TABLE_SIZE 24*4
 
