@@ -111,6 +111,18 @@ Waiting for the packages:
 #include <stdio.h>
 #include "stm32f10x.h"
 
+#include "stm32f10x_rcc.h"
+
+#include "stm32f10x_gpio.h"
+
+#include "stm32f10x_tim.h"
+#include "stm32f1xx_it.h"
+#include "stm32f10x_exti.h"
+#include "misc.h"
+
+#include "stm32f10x_usart.h"
+
+
 /* Private typedef */
 /* Private define  */
 
@@ -118,12 +130,16 @@ Waiting for the packages:
 
 /* Private macro */
 /* Private variables */
- USART_InitTypeDef USART_InitStructure;
+uint16_t receivedData = 0;
 
 
 /* Private function prototypes */
 /* Private functions */
-
+void USART1_IRQHandler(void){
+	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+	//USART_ClearITPendingBit(USART1, USART_IT_PE);
+	receivedData = USART_ReceiveData(USART1);
+}
 
 
 /**
@@ -136,67 +152,102 @@ Waiting for the packages:
 
 int main(void)
 {
-  /**
-  *  IMPORTANT NOTE!
-  *  The symbol VECT_TAB_SRAM needs to be defined when building the project
-  *  if code has been located to RAM and interrupts are used. 
-  *  Otherwise the interrupt table located in flash will be used.
-  *  See also the <system_*.c> file and how the SystemInit() function updates 
-  *  SCB->VTOR register.  
-  *  E.g.  SCB->VTOR = 0x20000000;  
-  */
 
-  SystemInit();
+	SystemInit();
 
-  GPIO_InitTypeDef GPIO_InitStructure_OUT;
+	GPIO_InitTypeDef GPIO_InitStructure_OUT;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	USART_InitTypeDef USART_InitStructure;
 
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
 
-  /* USARTx configured as follow:
-          - BaudRate = 115200 baud
-          - Word Length = 8 Bits
-          - One Stop Bit
-          - No parity
-          - Hardware flow control disabled (RTS and CTS signals)
-          - Receive and transmit enabled
-   */
-  USART_InitStructure.USART_BaudRate = 115200;
-  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-  USART_InitStructure.USART_StopBits = USART_StopBits_1;
-  USART_InitStructure.USART_Parity = USART_Parity_No;
-  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	GPIO_InitStructure_OUT.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure_OUT.GPIO_Pin = GPIO_Pin_13;
+	GPIO_InitStructure_OUT.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure_OUT);
 
+	GPIO_WriteBit(GPIOC,GPIO_Pin_13,Bit_SET);
 
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-  GPIO_InitStructure_OUT.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure_OUT.GPIO_Pin = GPIO_Pin_13;
-  GPIO_InitStructure_OUT.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStructure_OUT);
+	/* init uart gpio pins */
+	/* tx */
+	GPIO_StructInit(&GPIO_InitStructure);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
 
-  GPIO_WriteBit(GPIOC,GPIO_Pin_13,Bit_RESET);
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	/* rx */
+	GPIO_StructInit(&GPIO_InitStructure);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
-  int i = 0;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
-  while(1)
-  {
-	  /* the built in led on PC13 blinks with 1 second duration */
-	  /* turn on PC13 */
-	  GPIO_WriteBit(GPIOC,GPIO_Pin_13,Bit_SET);
+	/* USART1 RX*/
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
-	  /* delay 1 sec */
-	  for (i=0;i<10000000;i++){
+	/* USARTx configured as follow:
+		  - BaudRate = 115200 baud
+		  - Word Length = 8 Bits
+		  - One Stop Bit
+		  - No parity
+		  - Hardware flow control disabled (RTS and CTS signals)
+		  - Receive and transmit enabled
+	*/
+	/* deinitialize before use */
+	USART_DeInit(USART1);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
-	  }
-	  /* turn off PC13 */
-	  GPIO_WriteBit(GPIOC,GPIO_Pin_13,Bit_RESET);
+	USART_StructInit(&USART_InitStructure);
+	USART_InitStructure.USART_BaudRate = 115200;
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+	USART_InitStructure.USART_Parity = USART_Parity_No;
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	USART_Init(USART1,&USART_InitStructure);
 
-	  /* delay 1 sec */
-	  for (i=0;i<10000000;i++){
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
-	  }
-  }
+	USART_Cmd(USART1, ENABLE);
 
-  return 0;
+
+
+
+	int i = 0;
+
+	while(1)
+	{
+		/* the built in led on PC13 blinks with 1 second duration */
+		/* turn on PC13 -> turn off LED */
+		GPIO_WriteBit(GPIOC,GPIO_Pin_13,Bit_SET);
+
+		/* delay 1 sec */
+		for (i=0;i<10000000;i++){
+
+		}
+		/* turn off PC13 -> turn on LED */
+		GPIO_WriteBit(GPIOC,GPIO_Pin_13,Bit_RESET);
+
+		/* delay 1 sec */
+		for (i=0;i<10000000;i++){
+
+		}
+	}
+
+	return 0;
 }
+
+
 
