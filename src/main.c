@@ -140,9 +140,9 @@ Waiting for the packages:
 
 uint8_t receivedData = 0;
 uint8_t rArray[20];
-char startUPDListening[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
+char startUPDListening[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n\0";
 uint8_t sendData = 0;
-uint8_t i=0;
+uint8_t uart_counter=0;
 
 
 /* Private function prototypes */
@@ -153,21 +153,22 @@ void USART1_IRQHandler(void){
 
 		receivedData = USART_ReceiveData(USART1);
 		if(receivedData == '+'){
-			i=0;
+			uart_counter=0;
 		}
-		rArray[i] = receivedData;
-		i++;
+		rArray[uart_counter] = receivedData;
+		uart_counter++;
 	}
+
 	if(USART_GetITStatus(USART1,USART_IT_TXE) == SET){
-		sendData = startUPDListening[i];
+		sendData = startUPDListening[uart_counter];
 		if(sendData == '\0'){
-			i=0;
+			uart_counter=0;
 			USART_ClearITPendingBit(USART1, USART_IT_TXE);
 			USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
 			return;
 		}
-		USART_SendData(USART1, startUPDListening[i]);
-		i++;
+		USART_SendData(USART1, startUPDListening[uart_counter]);
+		uart_counter++;
 	}
 
 }
@@ -200,10 +201,9 @@ int main(void)
 	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; // timer init
 	TIM_OCInitTypeDef TIM_OC_InitStructure; // output compare init
 
-  USART_InitTypeDef USART_InitStructure;
-  
-  
-  /* init uart gpio pins */
+	USART_InitTypeDef USART_InitStructure;
+
+	/* init uart gpio pins */
 	/* tx */
 	GPIO_StructInit(&GPIO_InitStructure);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
@@ -222,8 +222,6 @@ int main(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-
-	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* USART1 RX*/
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
@@ -260,11 +258,15 @@ int main(void)
 	USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
 	USART_Cmd(USART1, ENABLE);
 
-	delayMicroSec(500);
+	delayMicroSec(100000);
+
+	for(uint8_t i=0;i<20;i++){
+		rArray[i]=0;
+	}
 
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
-  
+
 
 
 	/**************************************************/
@@ -318,7 +320,8 @@ int main(void)
 	delayMicroSec(500);
 	TIM3->CCR3=look_up_table_2[0] ? 43 : 18;
 	while(1){
-		AnimFadeInFadeOut(2000,1000,3000);
+		//AnimFadeInFadeOut(2000,1000,3000);
+		RefreshLookUpTable(rArray[7],rArray[8],rArray[9]);
 	}
 }
 
