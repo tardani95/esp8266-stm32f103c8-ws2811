@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE eagle SYSTEM "eagle.dtd">
+<eagle version="7.4.0">
+<drawing>
+<settings>
+<setting alwaysvectorfont="no"/>
+<setting verticaltext="up"/>
+</settings>
+<grid distance="0.00625" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<layers>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
+<layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
+<layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
+<layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
+<layer number="34" name="bFinish" color="6" fill="6" visible="no" active="yes"/>
+<layer number="35" name="tGlue" color="7" fill="4" visible="no" active="yes"/>
+<layer number="36" name="bGlue" color="7" fill="5" visible="no" active="yes"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="no" active="yes"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
+<layer number="39" name="tKeepout" color="4" fill="11" visible="yes" active="yes"/>
+<layer number="40" name="bKeepout" color="1" fill="11" visible="yes" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
+<layer number="43" name="vRestrict" color="2" fill="10" visible="yes" active="yes"/>
+<layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
+<layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
+<layer number="93" name="Pins" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="94" name="Symbols" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="95" name="Names" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="96" name="Values" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="97" name="Info" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="98" name="Guide" color="6" fill="1" visible="yes" active="yes"/>
+</layers>
+<library>
+<packages>
+<package name="SDVR_TINY">
+<wire x1="-8.89" y1="5.715" x2="-8.89" y2="-5.715" width="0.03175" layer="21"/>
+<wire x1="-8.89" y1="-5.715" x2="8.89" y2="-5.715" width="0.03175" layer="21"/>
+<wire x1="8.89" y1="-5.715" x2="8.89" y2="5.715" width="0.03175" layer="21"/>
+<wire x1="8.89" y1="5.715" x2="-8.89" y2="5.715" width="0.03175" layer="21"/>
+<pad name="P$1" x="-7.62" y="4.60375" drill="0.8" diameter="1.524" shape="square"/>
+<pad name="P$2" x="-7.62" y="-4.60375" drill="0.8" diameter="1.524" shape="square"/>
+<pad name="P$3" x="7.62" y="4.60375" drill="0.8" diameter="1.524" shape="square"/>
+<pad name="P$4" x="7.62" y="-4.60375" drill="0.8" diameter="1.524" shape="square"/>
+</package>
+<package name="SDVR_SMALL">
+<wire x1="-11.47625" y1="-8.65875" x2="11.47625" y2="-8.65875" width="0.02" layer="21"/>
+<wire x1="11.47625" y1="-8.65875" x2="11.47625" y2="8.65875" width="0.02" layer="21"/>
+<wire x1="11.47625" y1="8.65875" x2="-11.47625" y2="8.65875" width="0.02" layer="21"/>
+<wire x1="-11.47625" y1="8.65875" x2="-11.47625" y2="-8.65875" width="0.02" layer="21"/>
+<pad name="P$1" x="-9.36625" y="6.6675" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="P$2" x="-9.36625" y="4.1275" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="P$3" x="-9.36625" y="-4.1275" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="P$4" x="-9.36625" y="-6.6675" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="P$8" x="9.36625" y="-6.6675" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="P$7" x="9.36625" y="-4.1275" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="P$6" x="9.36625" y="4.1275" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="P$5" x="9.36625" y="6.6675" drill="0.8" diameter="1.651" shape="square"/>
+</package>
+<package name="NRF24L01">
+<wire x1="-20.5" y1="-7.5" x2="20.5" y2="-7.5" width="0.02" layer="21"/>
+<wire x1="20.5" y1="7.5" x2="-20.5" y2="7.5" width="0.02" layer="21"/>
+<wire x1="-20.5" y1="7.5" x2="-20.5" y2="-7.5" width="0.02" layer="21"/>
+<wire x1="20.5" y1="7.5" x2="20.5" y2="-7.5" width="0.02" layer="21"/>
+<pad name="P$6" x="19.05" y="1.27" drill="0.8" diameter="1.5748" shape="square"/>
+<pad name="P$2" x="16.51" y="1.27" drill="0.8" diameter="1.5748" shape="square"/>
+<pad name="P$5" x="19.05" y="3.81" drill="0.8" diameter="1.5748" shape="square"/>
+<pad name="P$1" x="16.51" y="3.81" drill="0.8" diameter="1.5748" shape="square"/>
+<pad name="P$3" x="16.51" y="-1.27" drill="0.8" diameter="1.5748" shape="square"/>
+<pad name="P$7" x="19.05" y="-1.27" drill="0.8" diameter="1.5748" shape="square"/>
+<pad name="P$8" x="19.05" y="-3.81" drill="0.8" diameter="1.5748" shape="square"/>
+<pad name="P$4" x="16.51" y="-3.81" drill="0.8" diameter="1.5748" shape="square"/>
+</package>
+</packages>
+<symbols>
+<symbol name="SDVR_TINY">
+<wire x1="-7.62" y1="7.62" x2="-7.62" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="-7.62" x2="7.62" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="7.62" y1="-7.62" x2="7.62" y2="7.62" width="0.254" layer="94"/>
+<wire x1="7.62" y1="7.62" x2="-7.62" y2="7.62" width="0.254" layer="94"/>
+<pin name="-IN" x="-10.16" y="5.08" visible="pin" length="short"/>
+<pin name="+IN" x="-10.16" y="-5.08" visible="pin" length="short"/>
+<pin name="-OUT" x="10.16" y="5.08" visible="pin" length="short" rot="R180"/>
+<pin name="+OUT" x="10.16" y="-5.08" visible="pin" length="short" rot="R180"/>
+<text x="-5.08" y="0" size="1.778" layer="94">&gt;NAME</text>
+<text x="-5.08" y="-2.54" size="1.778" layer="94">&gt;VALUE</text>
+</symbol>
+<symbol name="SDVR_SMALL">
+<wire x1="-12.7" y1="10.16" x2="-12.7" y2="-10.16" width="0.254" layer="94"/>
+<wire x1="-12.7" y1="-10.16" x2="12.7" y2="-10.16" width="0.254" layer="94"/>
+<wire x1="12.7" y1="-10.16" x2="12.7" y2="10.16" width="0.254" layer="94"/>
+<wire x1="12.7" y1="10.16" x2="-12.7" y2="10.16" width="0.254" layer="94"/>
+<pin name="-IN1" x="-15.24" y="7.62" visible="pin" length="short"/>
+<pin name="-IN2" x="-15.24" y="5.08" visible="pin" length="short"/>
+<pin name="+IN1" x="-15.24" y="-5.08" visible="pin" length="short"/>
+<pin name="+IN2" x="-15.24" y="-7.62" visible="pin" length="short"/>
+<pin name="-OUT1" x="15.24" y="7.62" visible="pin" length="short" rot="R180"/>
+<pin name="-OUT2" x="15.24" y="5.08" visible="pin" length="short" rot="R180"/>
+<pin name="+OUT1" x="15.24" y="-5.08" visible="pin" length="short" rot="R180"/>
+<pin name="+OUT2" x="15.24" y="-7.62" visible="pin" length="short" rot="R180"/>
+<text x="-5.08" y="0" size="1.27" layer="94">&gt;NAME</text>
+<text x="-5.08" y="-2.54" size="1.27" layer="94">&gt;VALUE</text>
+</symbol>
+<symbol name="NRF24L01">
+<wire x1="-7.62" y1="10.16" x2="-7.62" y2="-10.16" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="-10.16" x2="7.62" y2="-10.16" width="0.254" layer="94"/>
+<wire x1="7.62" y1="-10.16" x2="7.62" y2="10.16" width="0.254" layer="94"/>
+<wire x1="7.62" y1="10.16" x2="-7.62" y2="10.16" width="0.254" layer="94"/>
+<pin name="IRQ" x="-10.16" y="7.62" visible="pin" length="short"/>
+<pin name="MOSI" x="-10.16" y="2.54" visible="pin" length="short"/>
+<pin name="CSN" x="-10.16" y="-2.54" visible="pin" length="short"/>
+<pin name="3,3V" x="-10.16" y="-7.62" visible="pin" length="short"/>
+<pin name="MISO" x="10.16" y="7.62" visible="pin" length="short" rot="R180"/>
+<pin name="SCK" x="10.16" y="2.54" visible="pin" length="short" rot="R180"/>
+<pin name="CE" x="10.16" y="-2.54" visible="pin" length="short" rot="R180"/>
+<pin name="GND" x="10.16" y="-7.62" visible="pin" length="short" rot="R180"/>
+<text x="-5.08" y="12.7" size="1.27" layer="94" rot="MR180">&gt;NAME</text>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="SDVR_TINY" prefix="SDVR" uservalue="yes">
+<description>Input voltage: DC 4.75V-20V
+Output voltage: DC 1.0V-17V
+Output current: Rated current 1.8A</description>
+<gates>
+<gate name="G$1" symbol="SDVR_TINY" x="-5.08" y="20.32"/>
+</gates>
+<devices>
+<device name="" package="SDVR_TINY">
+<connects>
+<connect gate="G$1" pin="+IN" pad="P$2"/>
+<connect gate="G$1" pin="+OUT" pad="P$4"/>
+<connect gate="G$1" pin="-IN" pad="P$1"/>
+<connect gate="G$1" pin="-OUT" pad="P$3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="SDVR_SMALL" prefix="SDVR" uservalue="yes">
+<description>SDVR_SMALL
+Input voltage:4.5V-28V
+Output voltage:1.3V-17V
+Output current:Rated current is 2A,maximum 3A(Additional heatsink is required)</description>
+<gates>
+<gate name="G$1" symbol="SDVR_SMALL" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="SDVR_SMALL">
+<connects>
+<connect gate="G$1" pin="+IN1" pad="P$3"/>
+<connect gate="G$1" pin="+IN2" pad="P$4"/>
+<connect gate="G$1" pin="+OUT1" pad="P$7"/>
+<connect gate="G$1" pin="+OUT2" pad="P$8"/>
+<connect gate="G$1" pin="-IN1" pad="P$1"/>
+<connect gate="G$1" pin="-IN2" pad="P$2"/>
+<connect gate="G$1" pin="-OUT1" pad="P$5"/>
+<connect gate="G$1" pin="-OUT2" pad="P$6"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="NRF24L01" prefix="NRF24L01" uservalue="yes">
+<gates>
+<gate name="G$1" symbol="NRF24L01" x="0" y="27.94"/>
+</gates>
+<devices>
+<device name="" package="NRF24L01">
+<connects>
+<connect gate="G$1" pin="3,3V" pad="P$4"/>
+<connect gate="G$1" pin="CE" pad="P$7"/>
+<connect gate="G$1" pin="CSN" pad="P$3"/>
+<connect gate="G$1" pin="GND" pad="P$8"/>
+<connect gate="G$1" pin="IRQ" pad="P$1"/>
+<connect gate="G$1" pin="MISO" pad="P$5"/>
+<connect gate="G$1" pin="MOSI" pad="P$2"/>
+<connect gate="G$1" pin="SCK" pad="P$6"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
+</drawing>
+</eagle>
