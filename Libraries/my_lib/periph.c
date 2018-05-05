@@ -15,7 +15,8 @@
 /******************************************************************************/
 uint16_t led_pin	= GPIO_Pin_13; 		/* PC13 */
 uint16_t button_pin = GPIO_Pin_14; 		/* PB14 */
-uint16_t ledstrip_signal = GPIO_Pin_0; 	/* PB0  */
+uint16_t ledstrip_signal1 = GPIO_Pin_0; 	/* PB0  */
+uint16_t ledstrip_signal2 = GPIO_Pin_1; 	/* PB1  */
 uint16_t pwm_exti_pin 	= GPIO_Pin_1;	/* PA1  */
 uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
@@ -119,17 +120,33 @@ void InitGPIO_BTN(GPIO_InitTypeDef* GPIO_InitStructure){
 }
 
 /**
-  * @brief  This function initialize the led strip signal on PB0
+  * @brief  This function initialize the led strip signal 1 on PB0
   * @param  None
   * @retval None
   */
-void InitGPIO_LSS(GPIO_InitTypeDef* GPIO_InitStructure){
+void InitGPIO_LSS1(GPIO_InitTypeDef* GPIO_InitStructure){
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
 
 	GPIO_StructInit(GPIO_InitStructure);
 
 	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
-	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal;
+	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal1;
+	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_Init(GPIOB, GPIO_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the led strip signal 2 on PB1
+  * @param  None
+  * @retval None
+  */
+void InitGPIO_LSS2(GPIO_InitTypeDef* GPIO_InitStructure){
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+
+	GPIO_StructInit(GPIO_InitStructure);
+
+	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
+	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal2;
 	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOB, GPIO_InitStructure);
 }
@@ -151,7 +168,7 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef* GPIO_InitStructure){
 }
 
 /**
-  * @brief  This function initialize timer3 clock to a 800kHz frequency - 1.25us time constant
+  * @brief  This function initialize timer3 clock to a 400kHz frequency - 2.5us time constant
   * @param  None
   * @retval None
   */
@@ -172,7 +189,7 @@ void InitTIM3_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
   * @param  None
   * @retval None
   */
-void InitTIM3_CH3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
+void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
 	TIM_OCStructInit(TIM_OC_InitStructure);
 
 	TIM_OC_InitStructure->TIM_OCMode = TIM_OCMode_PWM1;
@@ -184,12 +201,15 @@ void InitTIM3_CH3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
 	TIM_OC3Init(TIM3, TIM_OC_InitStructure);
 	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
+	TIM_OC4Init(TIM3, TIM_OC_InitStructure);
+	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
 	/* Enable the TIM Counter */
 	TIM_Cmd(TIM3, ENABLE);
 }
 
 /**
-  * @brief  This function initialize timer2 clock to a 800kHz frequency - 1.25us time constant
+  * @brief  This function initialize timer2 clock to a 400kHz frequency - 2.5us time constant
   * @param  None
   * @retval None
   */

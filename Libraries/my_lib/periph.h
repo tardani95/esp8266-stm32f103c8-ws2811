@@ -55,11 +55,12 @@ void AnimFadeInFadeOut(uint16_t, uint16_t, uint16_t);
 
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);
-void InitGPIO_LSS(GPIO_InitTypeDef*);
+void InitGPIO_LSS1(GPIO_InitTypeDef*);
+void InitGPIO_LSS2(GPIO_InitTypeDef*);
 void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
 
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
-void InitTIM3_CH3_PWM(TIM_OCInitTypeDef*);
+void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef*);
 void InitTIM2_CLK(TIM_TimeBaseInitTypeDef*);
 void InitTIM2_CH2_PWM(TIM_OCInitTypeDef*);
 

@@ -252,9 +252,14 @@ int main(void)
 	USART_Init(USART1,&USART_InitStructure);
 
 
+	/*wait for esp8266 system startup*/
+	delayMicroSec(100000);
+
 	USART_Cmd(USART1, ENABLE);
-
-
+	/* USART_IT_TXE:  Transmit Data Register empty interrupt */
+	/* the transmit data register is empty at the beginning, so the an interrupt will be generated
+	 * and in the interrupt handler it sends our data out, after it sent out
+	 */
 	USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
 	USART_Cmd(USART1, ENABLE);
 
@@ -281,7 +286,8 @@ int main(void)
 	InitGPIO_BTN(&GPIO_InitStructure);
 
 	/* ledstrip signal pin init*/
-	InitGPIO_LSS(&GPIO_InitStructure);
+	InitGPIO_LSS1(&GPIO_InitStructure);
+	InitGPIO_LSS2(&GPIO_InitStructure);
 
 	/* pwm for external interrupt register init*/
 	InitGPIO_PWM_EXTI(&GPIO_InitStructure);
@@ -300,8 +306,7 @@ int main(void)
 	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
 
 	/* tim3 ch3 pwm init */
-	InitTIM3_CH3_PWM(&TIM_OC_InitStructure);
-
+	InitTIM3_CH3_CH4_PWM(&TIM_OC_InitStructure);
 
 	/**************************************************/
 	/* INTERRUPT INIT */
@@ -318,7 +323,7 @@ int main(void)
 	InitLookUpTable();
 
 	delayMicroSec(500);
-	TIM3->CCR3=look_up_table_2[0] ? 43 : 18;
+	TIM3->CCR3 = TIM3->CCR4 = look_up_table_2[0] ? 43 : 18;
 	while(1){
 		//AnimFadeInFadeOut(2000,1000,3000);
 		RefreshLookUpTable(rArray[7],rArray[8],rArray[9]);
