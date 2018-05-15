@@ -23,13 +23,23 @@ uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 /******************************************************************************/
 /*            			         Functions                                    */
 /******************************************************************************/
+
+/**
+  * @brief  This function freeze the cpu for x [us]
+  * @param  time in [us]
+  * @retval None
+  */
 void delayMicroSec(uint32_t us){
 	us *= 5.15;
 	for(uint32_t i = 0; i<us;i++){
 	}
 }
 
-
+/**
+  * @brief  This function initialize the lookup table - it is in BRG dimension
+  * @param  None
+  * @retval None
+  */
 void InitLookUpTable(void){
 	uint8_t look_up_table_1[4][3]={{0,200,0},{125,0,125},{0,0,255},{125,125,0}};
 	for(uint16_t i=0;i<4;++i){
@@ -41,6 +51,13 @@ void InitLookUpTable(void){
 	}
 }
 
+/**
+  * @brief  This function updates the lookup table - it is in BRG dimension
+  * @param  R: Red value in range 0-255
+  * @param  G: Green value in range 0-255
+  * @param  B: Blue value in range 0-255
+  * @retval None
+  */
 void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
 	uint8_t look_up_table_1[4][3]={{B,R,G},{B,R,G},{B,R,G},{B,R,G}};
 	for(uint16_t i=0;i<4;++i){
@@ -52,6 +69,13 @@ void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
 	}
 }
 
+/**
+  * @brief  This function modifies the lookup table so, that it makes a fade in fade out animation
+  * @param  fade_in_time: it will fade in in 255*fade_in_time [us]
+  * @param  hold_time: hold the color at the same value for hold_time [us]
+  * @param  fade_out_time:it will fade out in 255*fade_out_time [us]
+  * @retval None
+  */
 void AnimFadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade_out_time){
 	for(uint8_t i=0;i<7;++i){
 		for(uint16_t temp = 0; temp<256; temp+=1){
@@ -165,6 +189,15 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef* GPIO_InitStructure){
 	GPIO_InitStructure->GPIO_Pin   = pwm_exti_pin;
 	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOA, GPIO_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the gpio pin on PA1 for pwm function for the external interrupt
+  * @param  None
+  * @retval None
+  */
+void InitGPIO_UART1(GPIO_InitTypeDef* GPIO_InitStructure){
+
 }
 
 /**
