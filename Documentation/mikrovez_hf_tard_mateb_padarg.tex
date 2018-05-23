@@ -1,0 +1,92 @@
+\documentclass[12pt]{extarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[hungarian=nohyphenation]{hyphsubst}
+\usepackage[hungarian]{babel}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{url}
+\usepackage{siunitx}
+\usepackage{amsmath}
+\usepackage{pdfpages}
+
+\title{\huge Mikrovezérlők projekt feladat\\[10pt]
+	\Large LED-sor vezérlés}
+\date{\today}
+\author{Máté Bálint, Pádár Gergely, Tar Dániel }
+
+
+\begin{document}
+	
+	\begin{titlepage}
+		\lhead{\includegraphics[height=2cm]{logo_mogi.png}}
+		\rhead{\large{\textbf{Biomechatronika projekt}}\\
+			\large{BMEGEMIAMBP}}
+		
+		\maketitle
+		\pagenumbering{gobble}
+		\thispagestyle{fancy}
+		
+		\begin{figure}
+			\begin{center}
+				\includegraphics[height=2cm]{logo_bme_kicsi.eps}
+			\end{center}
+		\end{figure}
+		
+	\end{titlepage}
+	
+	
+	\newpage
+	\pagenumbering{gobble}
+	\tableofcontents
+	
+	
+	\newpage
+	\pagenumbering{arabic}
+	
+	
+	\section{Feladat ismertetése}
+	
+	LED-sor színének beállítása mikrokontrollerrel. Majd vezeték nélküli vezérlés megoldása wi-fi modul segítségével. Továbbá felhasználóbarát Android alkalmazással a LED-ek színének beállítása egy egyszerű GUI-n.
+	
+	\section{Megoldás részletezése}
+	
+	Az android alkalmazásnál beállítható a vezérelendő eszköz IP címe. Ezután UDP csomagokat küldünk a céleszközre RGBM felosztásban. A wi-fi modul a beérkező csomagokat fogadja, majd UART-on keresztül továbbküldi a bájtok számát, valamint a beérkezett értékeket a mikrokontrollernek. A mikrokontroller ezt lementi egy adott memória területre. Végül a fő ciklusban a LED-sor által értelmezhető formátumban küldi tovább. 
+	
+	\section{Felhasznált eszközök}
+	
+	A szükséges eszközöket eBay-ről szereztük be. A LED-sor kb. 3500 Ft, a mikrovezérlő kb. 650 Ft, a wifi modul kb. 600 Ft, a DC/DC konverter pedig kb. 400 forintba került. Tehát az egész projekthez szükséges elektronika 5500 Ft-ból beszerezhető.
+	
+	\subsection{LED-sor}
+	
+	A LED-sor egy szegmense 3 db RGB LED-ből, valamint egy  WS2811 típusú IC-ből áll. Az 5 méter hosszú soron 50 db ilyen szegmens helyezkedik el.  
+	
+	\subsection{Mikrovezérlő}
+	
+	A feladathoz az egyik legelterjedtebb, egy STM32F103C8 típusú mikrokontrollert használtunk. 
+	
+	\subsection{Wi-fi modul}
+	
+	Ide egy ESP8266 számú modult szeretünk be.
+	
+	\subsection{DC/DC konverter}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+\end{document}
