@@ -133,11 +133,6 @@ Waiting for the packages:
 
 /* Private macro */
 /* Private variables */
-//uint16_t led_pin = GPIO_Pin_13; /* on port C*/
-//uint16_t button_pin = GPIO_Pin_14; /* on port B*/
-//uint16_t pwm_pin = GPIO_Pin_0;
-//extern uint16_t repetition_counter = 0;
-
 uint8_t receivedData = 0;
 uint8_t rArray[20];
 char startUPDListening[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n\0";
@@ -253,7 +248,7 @@ int main(void)
 
 
 	/*wait for esp8266 system startup*/
-	delayMicroSec(100000);
+	delayMicroSec(1000000);
 
 	USART_Cmd(USART1, ENABLE);
 	/* USART_IT_TXE:  Transmit Data Register empty interrupt */
