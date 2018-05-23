@@ -52,7 +52,7 @@ void InitLookUpTable(void){
 }
 
 /**
-  * @brief  This function updates the lookup table - it is in BRG dimension
+  * @brief  This function updates the lookup table
   * @param  R: Red value in range 0-255
   * @param  G: Green value in range 0-255
   * @param  B: Blue value in range 0-255
