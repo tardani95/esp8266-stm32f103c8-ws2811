@@ -60,6 +60,7 @@ void InitGPIO_LSS2(GPIO_InitTypeDef*);
 void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
 
 void InitGPIO_UART1(GPIO_InitTypeDef*);
+void InitNVIC_UART1_RX(NVIC_InitTypeDef*);
 
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
 void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef*);

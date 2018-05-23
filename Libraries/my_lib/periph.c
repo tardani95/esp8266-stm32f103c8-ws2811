@@ -113,7 +113,7 @@ void AnimFadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade_
 
 /**
   * @brief  This function initialize the LED on PC13 pin
-  * @param  None
+  * @param  GPIO_InitTypeDef variable address
   * @retval None
   */
 void InitGPIO_LED(GPIO_InitTypeDef* GPIO_InitStructure){
@@ -129,7 +129,7 @@ void InitGPIO_LED(GPIO_InitTypeDef* GPIO_InitStructure){
 
 /**
   * @brief  This function initialize the button on PB14 pin
-  * @param  None
+  * @param  GPIO_InitTypeDef variable address
   * @retval None
   */
 void InitGPIO_BTN(GPIO_InitTypeDef* GPIO_InitStructure){
@@ -145,7 +145,7 @@ void InitGPIO_BTN(GPIO_InitTypeDef* GPIO_InitStructure){
 
 /**
   * @brief  This function initialize the led strip signal 1 on PB0
-  * @param  None
+  * @param  GPIO_InitTypeDef variable address
   * @retval None
   */
 void InitGPIO_LSS1(GPIO_InitTypeDef* GPIO_InitStructure){
@@ -161,7 +161,7 @@ void InitGPIO_LSS1(GPIO_InitTypeDef* GPIO_InitStructure){
 
 /**
   * @brief  This function initialize the led strip signal 2 on PB1
-  * @param  None
+  * @param  GPIO_InitTypeDef variable address
   * @retval None
   */
 void InitGPIO_LSS2(GPIO_InitTypeDef* GPIO_InitStructure){
@@ -177,7 +177,7 @@ void InitGPIO_LSS2(GPIO_InitTypeDef* GPIO_InitStructure){
 
 /**
   * @brief  This function initialize the gpio pin on PA1 for pwm function for the external interrupt
-  * @param  None
+  * @param  GPIO_InitTypeDef variable address
   * @retval None
   */
 void InitGPIO_PWM_EXTI(GPIO_InitTypeDef* GPIO_InitStructure){
@@ -192,17 +192,33 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef* GPIO_InitStructure){
 }
 
 /**
-  * @brief  This function initialize the gpio pin on PA1 for pwm function for the external interrupt
-  * @param  None
+  * @brief  This function initialize the gpio pins for the UART1 (PA9 - TX, PA10 - RX)
+  * @param  GPIO_InitTypeDef variable
   * @retval None
   */
 void InitGPIO_UART1(GPIO_InitTypeDef* GPIO_InitStructure){
+	/* TX on PA9 */
+	GPIO_StructInit(GPIO_InitStructure);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
 
+	GPIO_InitStructure->GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure->GPIO_Pin = GPIO_Pin_9;
+	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, GPIO_InitStructure);
+
+	/* RX on PA10 */
+	GPIO_StructInit(GPIO_InitStructure);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
+
+	GPIO_InitStructure->GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure->GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, GPIO_InitStructure);
 }
 
 /**
   * @brief  This function initialize timer3 clock to a 400kHz frequency - 2.5us time constant
-  * @param  None
+  * @param  TIM_TimeBaseInitTypeDef variable address
   * @retval None
   */
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
@@ -219,7 +235,7 @@ void InitTIM3_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
 
 /**
   * @brief  This function initialize timer3 output compare mode to pwm1 on ch3
-  * @param  None
+  * @param  TIM_OCInitTypeDef variable address
   * @retval None
   */
 void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
@@ -243,7 +259,7 @@ void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
 
 /**
   * @brief  This function initialize timer2 clock to a 400kHz frequency - 2.5us time constant
-  * @param  None
+  * @param  TIM_TimeBaseInitTypeDef variable address
   * @retval None
   */
 void InitTIM2_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
@@ -260,7 +276,7 @@ void InitTIM2_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
 
 /**
   * @brief  This function initialize timer2 output compare mode to pwm1 on ch2
-  * @param  None
+  * @param  TIM_OCInitTypeDef variable address
   * @retval None
   */
 void InitTIM2_CH2_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
