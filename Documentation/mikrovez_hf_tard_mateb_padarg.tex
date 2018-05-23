@@ -51,9 +51,85 @@
 	
 	LED-sor színének beállítása mikrokontrollerrel. Majd vezeték nélküli vezérlés megoldása wi-fi modul segítségével. Továbbá felhasználóbarát Android alkalmazással a LED-ek színének beállítása egy egyszerű GUI-n.
 	
+	\begin{figure}[h!]
+		\centering
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{sarga.jpg}
+			\caption{Narancssárga}
+		\end{subfigure}
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{zold.jpg}
+			\caption{Zöld}
+		\end{subfigure}
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{kek.jpg}
+			\caption{Kék}
+		\end{subfigure}
+		\caption{A világító LED-sor}
+		\label{}
+	\end{figure}
+
+	\begin{figure}[h!]
+		\centering
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{sarga2.png}
+			\caption{Narancssárga}
+		\end{subfigure}
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{zold2.png}
+			\caption{Zöld}
+		\end{subfigure}
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{kek2.png}
+			\caption{Kék}
+		\end{subfigure}
+		\caption{A szín beállítása csúszkával az Android alkalmazás felhasználói felületén}
+		\label{}
+	\end{figure}
+
+
+	
 	\section{Megoldás részletezése}
 	
-	Az android alkalmazásnál beállítható a vezérelendő eszköz IP címe. Ezután UDP csomagokat küldünk a céleszközre RGBM felosztásban. A wi-fi modul a beérkező csomagokat fogadja, majd UART-on keresztül továbbküldi a bájtok számát, valamint a beérkezett értékeket a mikrokontrollernek. A mikrokontroller ezt lementi egy adott memória területre. Végül a fő ciklusban a LED-sor által értelmezhető formátumban küldi tovább. 
+	\begin{itemize}
+		\item 	Az android alkalmazásnál beállítható a vezérelendő eszköz IP címe a \ref{ip}. ábrán látható módon 
+		
+		\begin{figure}[h!]
+			\centering
+			\begin{subfigure}[b]{0.4\linewidth}
+				\includegraphics[width=\linewidth]{ip.png}
+				\caption{}
+			\end{subfigure}
+			\begin{subfigure}[b]{0.4\linewidth}
+				\includegraphics[width=\linewidth]{ip2.png}
+				\caption{}
+			\end{subfigure}
+			\caption{Az Wifi modul IP címének beállítása az Android applikációban}
+			\label{ip}
+		\end{figure}
+	
+	
+		
+		\item Ezután UDP csomagokat küldünk a céleszközre RGBM felosztásban, ahol R,G,B a vörös, zöld és kék színek 8 bites erősségét, az M pedig a moduláció mértékét jelenti
+		
+		\item A wi-fi modul a beérkező csomagokat fogadja
+		
+		\item A beérkezett adatok a következő formátumban lesznek UART soros kommunikáción keresztül továbbküldve a mikrokontrollernek:
+		
+		\begin{equation*}
+			+IPD,<len>:<data>
+		\end{equation*}
+		
+		Ahol len az érkező adat hosszát jelenti bájtban, data pedig magát az adatot jelöli.
+		
+		\item A mikrokontroller a beérkező adatcsomagot lementi egy adott memória területre
+
+		\item Végül a fő ciklusban a LED-sor által értelmezhető formátumban küldi tovább.
+		
+	\end{itemize}
+	
+	
+		
 	
 	\section{Felhasznált eszközök}
 	
@@ -72,6 +148,8 @@
 	Ide egy ESP8266 számú modult szeretünk be.
 	
 	\subsection{DC/DC konverter}
+	
+	A DC/DC stepdown konvertert a mikrokontrollernek és wifi modulnak megfelelő 3.3V-os feszültség (5V lenne az ideális a WS2811 signal lábához, de így is működőképes) előállítására használjuk 
 	
 	
 	

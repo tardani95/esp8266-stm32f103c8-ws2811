@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.18)  23 MAY 2018 19:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.18)  23 MAY 2018 20:29
 entering extended mode
 **./mikrovez_hf_tard_mateb_padarg.tex
 (mikrovez_hf_tard_mateb_padarg.tex
@@ -904,7 +904,11 @@ File: pppdftex.def 2017/10/31 v0.5l Pdfpages driver for pdfTeX (AM)
 \AM@toc@title=\toks24
 \c@AM@survey=\count282
 \AM@templatesizebox=\box51
-) (mikrovez_hf_tard_mateb_padarg.aux)
+) (mikrovez_hf_tard_mateb_padarg.aux
+
+LaTeX Warning: Label `' multiply defined.
+
+)
 \openout1 = `mikrovez_hf_tard_mateb_padarg.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
@@ -1118,34 +1122,87 @@ Overfull \hbox (38.49648pt too wide) in paragraph at lines 52--53
 barat Android alkalmazassal
  []
 
-
-Overfull \hbox (15.58292pt too wide) in paragraph at lines 56--57
-\OT1/cmr/m/n/12 szamat, valamint a beerkezett ertekeket a mikrokontrollern
-ek. A mikrokontroller
- []
-
-
-Overfull \hbox (19.11252pt too wide) in paragraph at lines 68--69
+<sarga.jpg, id=16, 4175.6pt x 3131.7pt>
+File: sarga.jpg Graphic file (type jpg)
+<use sarga.jpg>
+Package pdftex.def Info: sarga.jpg  used on input line 57.
+(pdftex.def)             Requested size: 117.00119pt x 87.73479pt.
+<zold.jpg, id=17, 4175.6pt x 3131.7pt>
+File: zold.jpg Graphic file (type jpg)
+<use zold.jpg>
+Package pdftex.def Info: zold.jpg  used on input line 61.
+(pdftex.def)             Requested size: 117.00119pt x 87.73479pt.
+<kek.jpg, id=18, 4175.6pt x 3131.7pt>
+File: kek.jpg Graphic file (type jpg)
+<use kek.jpg>
+Package pdftex.def Info: kek.jpg  used on input line 65.
+(pdftex.def)             Requested size: 117.00119pt x 87.73479pt.
+<sarga2.png, id=19, 1084.05pt x 1927.2pt>
+File: sarga2.png Graphic file (type png)
+<use sarga2.png>
+Package pdftex.def Info: sarga2.png  used on input line 75.
+(pdftex.def)             Requested size: 117.00119pt x 207.99335pt.
+<zold2.png, id=20, 1084.05pt x 1927.2pt>
+File: zold2.png Graphic file (type png)
+<use zold2.png>
+Package pdftex.def Info: zold2.png  used on input line 79.
+(pdftex.def)             Requested size: 117.00119pt x 207.99335pt.
+<kek2.png, id=21, 1084.05pt x 1927.2pt>
+File: kek2.png Graphic file (type png)
+<use kek2.png>
+Package pdftex.def Info: kek2.png  used on input line 83.
+(pdftex.def)             Requested size: 117.00119pt x 207.99335pt.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 95.
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 95.
+<ip.png, id=22, 1084.05pt x 1927.2pt>
+File: ip.png Graphic file (type png)
+<use ip.png>
+Package pdftex.def Info: ip.png  used on input line 100.
+(pdftex.def)             Requested size: 155.99762pt x 277.30486pt.
+<ip2.png, id=23, 1084.05pt x 1927.2pt>
+File: ip2.png Graphic file (type png)
+<use ip2.png>
+Package pdftex.def Info: ip2.png  used on input line 104.
+(pdftex.def)             Requested size: 155.99762pt x 277.30486pt.
+ [1 <./sarga.jpg> <./zold.jpg> <./kek.jpg> <./sarga2.png> <./zold2.png> <./kek2
+.png>] [2 <./ip.png> <./ip2.png>]
+Overfull \hbox (19.11252pt too wide) in paragraph at lines 144--145
 \OT1/cmr/m/n/12 A feladathoz az egyik legelterjedtebb, egy STM32F103C8 tpusu
  mikrokontrollert
  []
 
-[1] [2] (mikrovez_hf_tard_mateb_padarg.aux) ) 
+
+Overfull \hbox (13.20573pt too wide) in paragraph at lines 152--153
+\OT1/cmr/m/n/12 A DC/DC stepdown konvertert a mikrokontrollernek es wifi modul
+nak megfelel}o
+ []
+
+[3] (mikrovez_hf_tard_mateb_padarg.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
 Here is how much of TeX's memory you used:
- 17841 strings out of 493305
- 343570 string characters out of 3138859
- 372991 words of memory out of 3000000
- 21236 multiletter control sequences out of 15000+200000
- 541759 words of font info for 59 fonts, out of 3000000 for 9000
+ 17910 strings out of 493305
+ 344502 string characters out of 3138859
+ 374046 words of memory out of 3000000
+ 21293 multiletter control sequences out of 15000+200000
+ 542059 words of font info for 60 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,15n,63p,501b,382s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX 2.9/fonts
-/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/p
-ublic/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/ams
-fonts/cm/cmr17.pfb>
-Output written on mikrovez_hf_tard_mateb_padarg.pdf (4 pages, 72976 bytes).
+ 42i,15n,63p,320b,605s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Pr
+ogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Fi
+les/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTe
+X 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fon
+ts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/
+public/amsfonts/cm/cmsy10.pfb>
+Output written on mikrovez_hf_tard_mateb_padarg.pdf (5 pages, 4655742 bytes).
 PDF statistics:
- 32 PDF objects out of 1000 (max. 8388607)
+ 55 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 51 words of extra memory for PDF output out of 10000 (max. 10000000)
 
