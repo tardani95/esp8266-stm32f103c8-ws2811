@@ -5,3 +5,4 @@
 \contentsline {subsection}{\numberline {3.2}Mikrovez\IeC {\'e}rl\IeC {\H o}}{3}
 \contentsline {subsection}{\numberline {3.3}Wi-fi modul}{3}
 \contentsline {subsection}{\numberline {3.4}DC/DC konverter}{3}
+\contentsline {section}{\numberline {4}Ny\IeC {\'a}kterv}{4}
