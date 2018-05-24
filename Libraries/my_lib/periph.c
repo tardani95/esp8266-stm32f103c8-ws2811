@@ -200,6 +200,49 @@ void InitGPIO_UART1(GPIO_InitTypeDef* GPIO_InitStructure){
 
 }
 
+
+/**
+  * @brief  This function initialize the nested vectored interrupt controller for the UART1 RX (PA10 - RX)
+  * @param  NVIC_InitTypeDef variable
+  * @retval None
+  */
+void InitNVIC_UART1_RX(NVIC_InitTypeDef* NVIC_InitStructure){
+	/* USART1 RX*/
+	NVIC_InitStructure->NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(NVIC_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the UART1 settings
+  * @param  USART_InitTypeDef variable
+  * @retval None
+  */
+void InitUART1(USART_InitTypeDef* USART_InitStructure){
+	/* USARTx configured as follow:
+		  - BaudRate = 115200 baud
+		  - Word Length = 8 Bits
+		  - One Stop Bit
+		  - No parity
+		  - Hardware flow control disabled (RTS and CTS signals)
+		  - Receive and transmit enabled
+	*/
+	/* deinitialize before use */
+	USART_DeInit(USART1);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+
+	USART_StructInit(USART_InitStructure);
+	USART_InitStructure->USART_BaudRate = 115200;
+	USART_InitStructure->USART_WordLength = USART_WordLength_8b;
+	USART_InitStructure->USART_StopBits = USART_StopBits_1;
+	USART_InitStructure->USART_Parity = USART_Parity_No;
+	USART_InitStructure->USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	USART_InitStructure->USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	USART_Init(USART1,USART_InitStructure);
+}
+
 /**
   * @brief  This function initialize timer3 clock to a 400kHz frequency - 2.5us time constant
   * @param  None

@@ -193,58 +193,17 @@ int main(void)
 	GPIO_InitTypeDef GPIO_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure; /* external interrupt init */
 	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
-	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; // timer init
-	TIM_OCInitTypeDef TIM_OC_InitStructure; // output compare init
-
-	USART_InitTypeDef USART_InitStructure;
-
-	/* init uart gpio pins */
-	/* tx */
-	GPIO_StructInit(&GPIO_InitStructure);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	/* rx */
-	GPIO_StructInit(&GPIO_InitStructure);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; /* timer init */
+	TIM_OCInitTypeDef TIM_OC_InitStructure; /* output compare init */
+	USART_InitTypeDef USART_InitStructure;  /* uart init */
 
 
-	/* USART1 RX*/
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-	/* USARTx configured as follow:
-		  - BaudRate = 115200 baud
-		  - Word Length = 8 Bits
-		  - One Stop Bit
-		  - No parity
-		  - Hardware flow control disabled (RTS and CTS signals)
-		  - Receive and transmit enabled
-	*/
-	/* deinitialize before use */
-	USART_DeInit(USART1);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-
-	USART_StructInit(&USART_InitStructure);
-	USART_InitStructure.USART_BaudRate = 115200;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	USART_Init(USART1,&USART_InitStructure);
+	/**************************************************/
+	/* UART INIT                                      */
+	/**************************************************/
+	InitGPIO_UART1(&GPIO_InitStructure);
+	InitNVIC_UART1_RX(&NVIC_InitStructure);
+	InitUART1(&USART_InitStructure);
 
 
 	/*wait for esp8266 system startup*/

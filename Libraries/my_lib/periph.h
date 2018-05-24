@@ -20,6 +20,8 @@
 #include "stm32f10x_exti.h" /* external interrupt*/
 #include "stm32f1xx_it.h" 	/* interrupt handler */
 
+#include "stm32f10x_usart.h"
+
 /* High level functions for NVIC and SysTick (add-on to CMSIS functions)
  * NVIC - Nested Vector Interrupt Controller
  */
@@ -60,6 +62,8 @@ void InitGPIO_LSS2(GPIO_InitTypeDef*);
 void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
 
 void InitGPIO_UART1(GPIO_InitTypeDef*);
+void InitNVIC_UART1_RX(NVIC_InitTypeDef*);
+void InitUART1(USART_InitTypeDef*);
 
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
 void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef*);
