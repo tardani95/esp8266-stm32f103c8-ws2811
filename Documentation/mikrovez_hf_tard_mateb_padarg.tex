@@ -120,14 +120,17 @@
 			+IPD,<len>:<data>
 		\end{equation*}
 		
-		Ahol len az érkező adat hosszát jelenti bájtban, data pedig magát az adatot jelöli.
+		Ahol len az érkező adat hosszát jelenti bájtban, data pedig magát az adatot jelöli
 		
 		\item A mikrokontroller a beérkező adatcsomagot lementi egy adott memória területre
 
-		\item Végül a fő ciklusban a LED-sor által értelmezhető formátumban küldi tovább.
+		\item Végül a fő ciklusban a LED-sor által értelmezhető formátumban küldi tovább. Ez 400 kHz-es PWM jelet takar
+	
 		
 	\end{itemize}
 	
+	
+	A pontos működés a kikommentelt kódfájlokban látható.
 	
 		
 	
@@ -151,7 +154,14 @@
 	
 	A DC/DC stepdown konvertert a mikrokontrollernek és wifi modulnak megfelelő 3.3V-os feszültség (5V lenne az ideális a WS2811 signal lábához, de így is működőképes) előállítására használjuk 
 	
+	\section{Nyákterv}
 	
+	
+	
+	
+	
+	
+	\includepdf[pages=1]{vemalaphf1.pdf}
 	
 	
 	
