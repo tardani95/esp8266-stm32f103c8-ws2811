@@ -110,22 +110,13 @@ Waiting for the packages:
 #include <stddef.h>
 #include <stdio.h>
 #include "stm32f10x.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_rcc.h"  /* reset and clock control */
 
-#include "stm32f10x_tim.h"  /* timer header */
+#include "periph.h" /* my lib */
 
-#include "stm32f10x_exti.h" /* external interrupt*/
-#include "stm32f1xx_it.h" 	/* interrupt handler */
 
-/* High level functions for NVIC and SysTick (add-on to CMSIS functions)
- * NVIC - Nested Vector Interrupt Controller
- */
-#include "misc.h"
 
-#include "periph.h"
 
-#include "stm32f10x_usart.h"
+
 
 /* Private typedef */
 /* Private define  */
@@ -190,13 +181,16 @@ int main(void)
 
 	SystemInit();
 
+	/**************************************************/
+	/* INIT STUCTURES                                 */
+	/**************************************************/
 	GPIO_InitTypeDef GPIO_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure; /* external interrupt init */
 	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
 	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; /* timer init */
 	TIM_OCInitTypeDef TIM_OC_InitStructure; /* output compare init */
 	USART_InitTypeDef USART_InitStructure;  /* uart init */
-
+	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
 
 	/**************************************************/
 	/* UART INIT                                      */
@@ -204,6 +198,14 @@ int main(void)
 	InitGPIO_UART1(&GPIO_InitStructure);
 	InitNVIC_UART1_RX(&NVIC_InitStructure);
 	InitUART1(&USART_InitStructure);
+
+	uint8_t uart_receive_array[20];
+	uint8_t receive_array_length = 13;
+	for(uint8_t i = 0; i<20; ++i){
+		uart_receive_array[i] = 0xAA;
+	}
+	uint8_t usart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
+	uint8_t transmit_array_length = 32;
 
 
 	/*wait for esp8266 system startup*/
