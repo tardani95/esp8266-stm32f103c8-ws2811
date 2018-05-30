@@ -56,6 +56,17 @@ void EXTI0_IRQHandler(void);
 void EXTI1_IRQHandler(void);
 void EXTI15_10_IRQHandler(void);
 
+/* DMA request handler for TIM3_CH3 */
+void DMA1_Channel2_IRQHandler(void);
+/* DMA request handler for TIM3_CH4 */
+void DMA1_Channel3_IRQHandler(void);
+
+/* DMA request handler for USART1_TX */
+void DMA1_Channel4_IRQHandler(void);
+/* DMA request handler for USART1_RX */
+void DMA1_Channel5_IRQHandler(void);
+
+
 #ifdef __cplusplus
 }
 #endif
