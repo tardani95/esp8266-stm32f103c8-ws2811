@@ -245,6 +245,52 @@ void InitNVIC_UART1_RX(NVIC_InitTypeDef* NVIC_InitStructure){
 }
 
 /**
+  * @brief  This function initialize the DMA controller for the UART1 TX (PA9 - TX)
+  * @param  DMA_InitTypeDef variable
+  * @param  uint8_t array what to send
+  * @retval None
+  */
+void InitDMA_CH4_UART1_TX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_transmit_array){
+	/* DMA 1, Channel 4 for USART1 TX */
+	DMA_DeInit(DMA1_Channel4);
+	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) usart_transmit_array;
+	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
+	DMA_InitStructure->DMA_BufferSize = 0;
+	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure->DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStructure->DMA_Priority = DMA_Priority_Medium;
+	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel4, DMA_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the DMA controller for the UART1 RX (PA10 - RX)
+  * @param  DMA_InitTypeDef variable
+  * @param  uint8_t array where to receive
+  * @retval None
+  */
+void InitDMA_CH5_UART1_RX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_receive_array){
+	/* DMA 1, Channel 5 for USART1 RX */
+	DMA_DeInit(DMA1_Channel5);
+	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) usart_receive_array;
+	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralSRC;
+	DMA_InitStructure->DMA_BufferSize = 0;
+	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure->DMA_Mode = DMA_Mode_Circular;
+	DMA_InitStructure->DMA_Priority = DMA_Priority_Medium;
+	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel5, DMA_InitStructure);
+}
+
+/**
   * @brief  This function initialize the UART1 settings
   * @param  USART_InitTypeDef variable
   * @retval None

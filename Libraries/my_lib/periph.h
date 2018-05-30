@@ -65,8 +65,10 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
 void InitGPIO_UART1(GPIO_InitTypeDef*);
 void InitNVIC_UART1_TX(NVIC_InitTypeDef*);
 void InitNVIC_UART1_RX(NVIC_InitTypeDef*);
-
+void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
+void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
 void InitUART1(USART_InitTypeDef*);
+
 
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
 void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef*);

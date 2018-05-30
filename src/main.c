@@ -207,6 +207,9 @@ int main(void)
 	uint8_t usart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
 	uint8_t transmit_array_length = 32;
 
+	InitDMA_CH4_UART1_TX(&DMA_InitStructure, &usart_transmit_array);
+	InitDMA_CH5_UART1_RX(&DMA_InitStructure, &uart_receive_array);
+
 
 	/*wait for esp8266 system startup*/
 	delayMicroSec(1000000);
