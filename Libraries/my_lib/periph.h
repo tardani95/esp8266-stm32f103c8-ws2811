@@ -12,15 +12,16 @@
 /*                             INCLUDES									  */
 /*========================================================================*/
 #include "stm32f10x.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_rcc.h"  /* reset and clock control */
+#include "stm32f10x_gpio.h"  /* general purpose input output */
+#include "stm32f10x_rcc.h"   /* reset and clock control */
 
-#include "stm32f10x_tim.h"  /* timer header */
+#include "stm32f10x_tim.h"   /* timer header */
 
-#include "stm32f10x_exti.h" /* external interrupt*/
-#include "stm32f1xx_it.h" 	/* interrupt handler */
+#include "stm32f10x_exti.h"  /* external interrupt */
+#include "stm32f1xx_it.h" 	 /* interrupt handler  */
+#include "stm32f10x_usart.h" /* universal synchronous asynchronous receiver transmitter */
 
-#include "stm32f10x_usart.h"
+#include "stm32f10x_dma.h"   /* direct memory access */
 
 /* High level functions for NVIC and SysTick (add-on to CMSIS functions)
  * NVIC - Nested Vector Interrupt Controller
@@ -62,7 +63,9 @@ void InitGPIO_LSS2(GPIO_InitTypeDef*);
 void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
 
 void InitGPIO_UART1(GPIO_InitTypeDef*);
+void InitNVIC_UART1_TX(NVIC_InitTypeDef*);
 void InitNVIC_UART1_RX(NVIC_InitTypeDef*);
+
 void InitUART1(USART_InitTypeDef*);
 
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
