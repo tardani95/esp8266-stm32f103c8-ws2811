@@ -233,4 +233,44 @@ void EXTI15_10_IRQHandler(void){
   }
 }
 
+/**
+  * @brief  This function handles the PWM generation with DMA for TIM3_CH3
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel2_IRQHandler(void){
+  /* all data received */
+  DMA_ClearFlag(DMA1_FLAG_TC2);
+}
+
+/**
+  * @brief  This function handles the PWM generation with DMA for TIM3_CH4
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel3_IRQHandler(void){
+  /* all data received */
+  DMA_ClearFlag(DMA1_FLAG_TC3);
+}
+
+/**
+  * @brief  This function handles the UART1_TX
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel4_IRQHandler(void){
+  /* all data received */
+  DMA_ClearFlag(DMA1_FLAG_TC4);
+}
+
+/**
+  * @brief  This function handles the UART1_RX
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel5_IRQHandler(void){
+  /* all data received */
+  DMA_ClearFlag(DMA1_FLAG_TC5);
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
