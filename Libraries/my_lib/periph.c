@@ -36,6 +36,17 @@ void delayMicroSec(uint32_t us){
 }
 
 /**
+  * @brief  This function freeze the cpu for x [sec]
+  * @param  time in [sec]
+  * @retval None
+  */
+void delaySec(uint32_t sec){
+	sec *= 5.15*1000000;
+	for(uint32_t i = 0; i<sec;i++){
+	}
+}
+
+/**
   * @brief  This function initialize the lookup table - it is in BRG dimension
   * @param  None
   * @retval None
@@ -252,6 +263,7 @@ void InitNVIC_UART1_RX(NVIC_InitTypeDef* NVIC_InitStructure){
   */
 void InitDMA_CH4_UART1_TX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_transmit_array){
 	/* DMA 1, Channel 4 for USART1 TX */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 	DMA_DeInit(DMA1_Channel4);
 	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
 	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) usart_transmit_array;
@@ -275,11 +287,13 @@ void InitDMA_CH4_UART1_TX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_tra
   */
 void InitDMA_CH5_UART1_RX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_receive_array){
 	/* DMA 1, Channel 5 for USART1 RX */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 	DMA_DeInit(DMA1_Channel5);
+	DMA_StructInit(DMA_InitStructure);
 	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
-	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) usart_receive_array;
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t)usart_receive_array;
 	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure->DMA_BufferSize = 0;
+	DMA_InitStructure->DMA_BufferSize = 12;
 	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;

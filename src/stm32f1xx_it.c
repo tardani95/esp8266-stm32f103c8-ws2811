@@ -42,6 +42,7 @@
 uint16_t counter3 = 0;
 uint16_t counter2 = 0;
 uint8_t  tmp;
+uint8_t tmp2 = 0xB;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -259,8 +260,11 @@ void DMA1_Channel3_IRQHandler(void){
   * @retval None
   */
 void DMA1_Channel4_IRQHandler(void){
-  /* all data received */
+  /* all data sent */
+  DMA_ClearITPendingBit(DMA1_IT_TC4);
   DMA_ClearFlag(DMA1_FLAG_TC4);
+  DMA_Cmd(DMA1_Channel4, DISABLE);
+  tmp2 = 0xC;
 }
 
 /**
@@ -271,6 +275,10 @@ void DMA1_Channel4_IRQHandler(void){
 void DMA1_Channel5_IRQHandler(void){
   /* all data received */
   DMA_ClearFlag(DMA1_FLAG_TC5);
+  //DMA_ClearITPendingBit(DMA1_IT_TC5);
+  //USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+  //USART_ClearITPendingBit(USART1, USART_IT_TC);
+  //DMA_Cmd(DMA1_Channel5, ENABLE);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

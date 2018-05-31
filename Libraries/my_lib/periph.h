@@ -51,6 +51,8 @@ extern uint16_t pwm_exti_pin;		/* PA1  */
 extern uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
 void delayMicroSec(uint32_t);
+void delaySec(uint32_t);
+
 void InitLookUpTable(void);
 void RefreshLookUpTable(uint8_t, uint8_t, uint8_t);
 
