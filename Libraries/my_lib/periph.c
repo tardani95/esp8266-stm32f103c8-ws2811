@@ -210,7 +210,7 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef* GPIO_InitStructure){
 void InitGPIO_UART1(GPIO_InitTypeDef* GPIO_InitStructure){
 	/* TX on PA9 */
 	GPIO_StructInit(GPIO_InitStructure);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 
 	GPIO_InitStructure->GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure->GPIO_Pin = GPIO_Pin_9;
@@ -219,7 +219,7 @@ void InitGPIO_UART1(GPIO_InitTypeDef* GPIO_InitStructure){
 
 	/* RX on PA10 */
 	GPIO_StructInit(GPIO_InitStructure);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 
 	GPIO_InitStructure->GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStructure->GPIO_Pin = GPIO_Pin_10;
@@ -293,7 +293,7 @@ void InitDMA_CH5_UART1_RX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_rec
 	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
 	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t)usart_receive_array;
 	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure->DMA_BufferSize = 12;
+	DMA_InitStructure->DMA_BufferSize = 0;
 	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
