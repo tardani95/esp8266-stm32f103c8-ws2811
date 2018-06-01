@@ -228,6 +228,34 @@ void InitGPIO_UART1(GPIO_InitTypeDef* GPIO_InitStructure){
 }
 
 /**
+  * @brief  This function initialize the nested vectored interrupt controller for the DMA CH2 - TIM3_CH3
+  * @param  NVIC_InitTypeDef variable
+  * @retval None
+  */
+void InitNVIC_LSS1(NVIC_InitTypeDef* NVIC_InitStructure){
+	/* LSS1 PB0 - TIM3 CH3 - DMA1 CH2*/
+	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel2_IRQn;
+	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(NVIC_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the nested vectored interrupt controller for the DMA CH3 - TIM3_CH4
+  * @param  NVIC_InitTypeDef variable
+  * @retval None
+  */
+void InitNVIC_LSS2(NVIC_InitTypeDef* NVIC_InitStructure){
+	/* LSS1 PB1 - TIM3 CH4 - DMA1 CH3*/
+	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel3_IRQn;
+	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(NVIC_InitStructure);
+}
+
+/**
   * @brief  This function initialize the nested vectored interrupt controller for the UART1 TX (PA9 - TX)
   * @param  NVIC_InitTypeDef variable
   * @retval None
@@ -253,6 +281,54 @@ void InitNVIC_UART1_RX(NVIC_InitTypeDef* NVIC_InitStructure){
 	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(NVIC_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the DMA controller for the TIM3_CH3 CCR3 (PB0)
+  * @param  DMA_InitTypeDef variable
+  * @param  uint8_t array what to send
+  * @retval None
+  */
+void InitDMA_CH2_TIM3_CH3(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_transmit_array){
+	/* DMA 1, Channel 2 for TIM3 CH3 */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+	DMA_DeInit(DMA1_Channel2);
+	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->CCR3);
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_array;
+	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
+	DMA_InitStructure->DMA_BufferSize = 0;
+	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure->DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStructure->DMA_Priority = DMA_Priority_Medium;
+	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel2, DMA_InitStructure);
+}
+
+/**
+  * @brief  This function initialize the DMA controller for the TIM3_CH4 CCR4 (PB0)
+  * @param  DMA_InitTypeDef variable
+  * @param  uint8_t array what to send
+  * @retval None
+  */
+void InitDMA_CH3_TIM3_CH4(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_transmit_array){
+	/* DMA 1, Channel 3 for TIM3 CH4 */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+	DMA_DeInit(DMA1_Channel3);
+	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->CCR4);
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_array;
+	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
+	DMA_InitStructure->DMA_BufferSize = 0;
+	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure->DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStructure->DMA_Priority = DMA_Priority_Medium;
+	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel3, DMA_InitStructure);
 }
 
 /**

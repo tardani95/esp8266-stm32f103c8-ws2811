@@ -35,32 +35,6 @@ uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
 
 /* Private function prototypes */
 /* Private functions */
-/*void USART1_IRQHandler(void){
-	if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET){
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-
-		receivedData = USART_ReceiveData(USART1);
-		if(receivedData == '+'){
-			uart_counter=0;
-		}
-		rArray[uart_counter] = receivedData;
-		uart_counter++;
-	}
-
-	if(USART_GetITStatus(USART1,USART_IT_TXE) == SET){
-		sendData = startUPDListening[uart_counter];
-		if(sendData == '\0'){
-			uart_counter=0;
-			USART_ClearITPendingBit(USART1, USART_IT_TXE);
-			USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
-			return;
-		}
-		USART_SendData(USART1, startUPDListening[uart_counter]);
-		uart_counter++;
-	}
-}*/
-
-
 
 /**
 **===========================================================================
@@ -82,8 +56,6 @@ int main(void)
 
 	SystemInit();
 
-
-
 	/**************************************************/
 	/* INIT STUCTURES                                 */
 	/**************************************************/
@@ -104,7 +76,7 @@ int main(void)
 	InitUART1(&USART_InitStructure);
 
 	/*wait for esp8266 system startup*/
-	delaySec(10);
+	delaySec(1); //10
 
 	/* USART_IT_TXE:  Transmit Data Register empty interrupt */
 	/* the transmit data register is empty at the beginning, so the an interrupt will be generated
@@ -135,7 +107,7 @@ int main(void)
 	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
 	USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
 
-	// clear rx buffer
+	// clear rx dma buffer
 	DMA_Cmd(DMA1_Channel5, DISABLE);
 	DMA_SetCurrDataCounter(DMA1_Channel5, 1);
 	DMA_ClearFlag(DMA1_FLAG_TC5);
@@ -150,7 +122,7 @@ int main(void)
 	/* end transmission */
 
 	/* wait for esp8266 sets up the upd connection */
-	delaySec(2);
+	delaySec(1); //2
 
 
 	/* start circular receiving */
@@ -161,10 +133,9 @@ int main(void)
 	DMA_Cmd(DMA1_Channel5, ENABLE);
 	/* end receiving */
 
-	for(uint8_t i=0;i<20;i++){
-			rArray[i]=0;
-	}
 
+
+	InitLookUpTable();
 
 
 	/**************************************************/
@@ -209,14 +180,17 @@ int main(void)
 	InitEXTI_BTN(&EXTI_InitStructure, &NVIC_InitStructure);
 
 	/* pwm interrupt capture */
-	InitEXTI_TIM3_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
-	InitEXTI_TIM2_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
+	//InitEXTI_TIM3_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
+	//InitEXTI_TIM2_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
+	InitNVIC_LSS1(&NVIC_InitStructure);
+	InitNVIC_LSS2(&NVIC_InitStructure);
+
+	InitDMA_CH2_TIM3_CH3(&DMA_InitStructure, look_up_table_2);
+	InitDMA_CH3_TIM3_CH4(&DMA_InitStructure, look_up_table_2);
 
 
-	InitLookUpTable();
 
-	delayMicroSec(500);
-	TIM3->CCR3 = TIM3->CCR4 = look_up_table_2[0] ? 43 : 18;
+
 	while(1){
 		//AnimFadeInFadeOut(4000,2000,4000);
 		//RefreshLookUpTable(rArray[7],rArray[8],rArray[9]);
@@ -251,6 +225,15 @@ void DMA1_Channel5_IRQHandler(void){
 	}*/
 }
 
+/**
+  * @brief  This function handles the PWM generation with DMA for TIM3_CH3
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel2_IRQHandler(void){
+  /* data shifted out */
+  DMA_ClearFlag(DMA1_FLAG_TC2);
+}
 
 
 

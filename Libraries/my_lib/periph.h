@@ -65,9 +65,13 @@ void InitGPIO_LSS2(GPIO_InitTypeDef*);
 void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
 void InitGPIO_UART1(GPIO_InitTypeDef*);
 
+void InitNVIC_LSS1(NVIC_InitTypeDef*);
+void InitNVIC_LSS2(NVIC_InitTypeDef*);
 void InitNVIC_UART1_TX(NVIC_InitTypeDef*);
 void InitNVIC_UART1_RX(NVIC_InitTypeDef*);
 
+void InitDMA_CH2_TIM3_CH3(DMA_InitTypeDef*,uint8_t*);
+void InitDMA_CH3_TIM3_CH4(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
 
