@@ -28,6 +28,7 @@ uint8_t rArray[20];
 //char startUPDListening[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n\0";
 uint8_t sendData = 0;
 uint8_t uart_counter=0;
+uint8_t led4_counter = 0;
 
 uint8_t uart_receive_array[20];
 uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
@@ -122,7 +123,7 @@ int main(void)
 	/* end transmission */
 
 	/* wait for esp8266 sets up the upd connection */
-	delaySec(1); //2
+	delaySec(2); //2
 
 
 	/* start circular receiving */
@@ -161,10 +162,10 @@ int main(void)
 	/* TIMER INIT */
 	/**************************************************/
 	/* tim2 clock init */
-	InitTIM2_CLK(&TIM_TimeBase_InitStructure);
+	//InitTIM2_CLK(&TIM_TimeBase_InitStructure);
 
 	/* tim2 ch2 pwm inti */
-	InitTIM2_CH2_PWM(&TIM_OC_InitStructure);
+	//InitTIM2_CH2_PWM(&TIM_OC_InitStructure);
 
 	/* tim3 clock init */
 	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
@@ -183,12 +184,32 @@ int main(void)
 	//InitEXTI_TIM3_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
 	//InitEXTI_TIM2_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
 	InitNVIC_LSS1(&NVIC_InitStructure);
-	InitNVIC_LSS2(&NVIC_InitStructure);
+	//InitNVIC_LSS2(&NVIC_InitStructure);
 
-	InitDMA_CH2_TIM3_CH3(&DMA_InitStructure, look_up_table_2);
-	InitDMA_CH3_TIM3_CH4(&DMA_InitStructure, look_up_table_2);
+	InitDMA_CH2_TIM3_CH3(&DMA_InitStructure, look_up_table_1);
+	//InitDMA_CH3_TIM3_CH4(&DMA_InitStructure, look_up_table_2);
 
+	DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, ENABLE);
+	//DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
 
+	//TIM_DMAConfig(TIM3, TIM_DMABase_CCR3, TIM_DMABurstLength_1Transfer);
+
+	TIM_DMACmd(TIM3, TIM_DMA_CC3, ENABLE);
+
+	/* Enable the TIM Counter */
+	TIM_Cmd(TIM3, ENABLE);
+
+	/* send out initial array */
+//	DMA_Cmd(DMA1_Channel2, DISABLE);
+//	DMA_SetCurrDataCounter(DMA1_Channel2, LOOK_UP_TABLE_SIZE);
+//
+//	DMA_ClearFlag(DMA1_FLAG_TC2);
+//	DMA_Cmd(DMA1_Channel2, ENABLE);
+//
+//	TIM3->CCR3 = look_up_table_1[0];
+//	delaySec(1);
+//	TIM3->CCR3 = 0;
+//	delayMicroSec(55);
 
 
 	while(1){
@@ -219,10 +240,19 @@ void DMA1_Channel4_IRQHandler(void){
 void DMA1_Channel5_IRQHandler(void){
 	/* all data received */
 	RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
+	RefreshLookUpTable1();
 	DMA_ClearFlag(DMA1_FLAG_TC5);
 	/*if(DMA_GetFlagStatus(DMA1_FLAG_TC5)){
 		DMA_ClearFlag(DMA1_FLAG_TC5);
 	}*/
+
+	/* send out ledstip signal */
+	DMA_Cmd(DMA1_Channel2, DISABLE);
+	DMA_SetCurrDataCounter(DMA1_Channel2, LOOK_UP_TABLE_SIZE);
+
+	DMA_ClearFlag(DMA1_FLAG_TC2);
+	DMA_Cmd(DMA1_Channel2, ENABLE);
+	TIM3->CCR3 = look_up_table_1[0];
 }
 
 /**
@@ -233,6 +263,12 @@ void DMA1_Channel5_IRQHandler(void){
 void DMA1_Channel2_IRQHandler(void){
   /* data shifted out */
   DMA_ClearFlag(DMA1_FLAG_TC2);
+  TIM3->CCR3 = 0;
+  /*if(led4_counter > 38){
+	  led4_counter = 0;
+	  TIM3->CCR3 = 0;
+  }
+  led4_counter++;*/
 }
 
 

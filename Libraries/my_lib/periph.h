@@ -41,19 +41,21 @@
 #define LIGHT_UP_FROM_LED 0 /* 18 */
 #define LIGHT_UP_TO_LED 100   /* 36 */
 #define LED_NUMBER 100
-#define LOOK_UP_TABLE_SIZE 24*4
+#define LOOK_UP_TABLE_SIZE 24*100
 
 
 extern uint16_t led_pin; 			/* PC13 */
 extern uint16_t button_pin; 		/* PB14 */
 extern uint16_t ledstrip_signal; 	/* PB0  */
 extern uint16_t pwm_exti_pin;		/* PA1  */
+extern uint8_t  look_up_table_1[LOOK_UP_TABLE_SIZE];
 extern uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
 void delayMicroSec(uint32_t);
 void delaySec(uint32_t);
 
 void InitLookUpTable(void);
+void RefreshLookUpTable1();
 void RefreshLookUpTable(uint8_t, uint8_t, uint8_t);
 
 void AnimFadeInFadeOut(uint16_t, uint16_t, uint16_t);

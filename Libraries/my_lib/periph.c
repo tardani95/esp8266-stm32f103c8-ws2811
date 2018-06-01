@@ -18,6 +18,7 @@ uint16_t button_pin = GPIO_Pin_14; 		/* PB14 */
 uint16_t ledstrip_signal1 = GPIO_Pin_0; 	/* PB0  */
 uint16_t ledstrip_signal2 = GPIO_Pin_1; 	/* PB1  */
 uint16_t pwm_exti_pin 	= GPIO_Pin_1;	/* PA1  */
+uint8_t  look_up_table_1[LOOK_UP_TABLE_SIZE];
 uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
 /******************************************************************************/
@@ -69,12 +70,25 @@ void InitLookUpTable(void){
   * @param  B: Blue value in range 0-255
   * @retval None
   */
+void RefreshLookUpTable1(){
+	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE;++i){
+		look_up_table_1[i] = look_up_table_2[i] ? 43 : 18;
+	}
+}
+
+/**
+  * @brief  This function updates the lookup table
+  * @param  R: Red value in range 0-255
+  * @param  G: Green value in range 0-255
+  * @param  B: Blue value in range 0-255
+  * @retval None
+  */
 void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
-	uint8_t look_up_table_1[4][3]={{B,R,G},{B,R,G},{B,R,G},{B,R,G}};
-	for(uint16_t i=0;i<4;++i){
+	uint8_t look_up_table_3[4][3]={{B,R,G},{B,R,G},{B,R,G},{B,R,G}};
+	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE/24;++i){
 		for(uint16_t j=0;j<3;++j){
 			for(uint16_t k = 0; k<8; ++k){
-				look_up_table_2[i*24 + j*8 + k] = look_up_table_1[i][j] & (0x80 >> k);
+				look_up_table_2[i*24 + j*8 + k] = look_up_table_3[i%4][j] & (0x80 >> k);
 			}
 		}
 	}
@@ -284,13 +298,13 @@ void InitNVIC_UART1_RX(NVIC_InitTypeDef* NVIC_InitStructure){
 }
 
 /**
-  * @brief  This function initialize the DMA controller for the TIM3_CH3 CCR3 (PB0)
+  * @brief  This function initialize the DMA controller for the TIM3 CH3(CCR3) and CH4(CCR4) (PB0,PB1);
   * @param  DMA_InitTypeDef variable
   * @param  uint8_t array what to send
   * @retval None
   */
 void InitDMA_CH2_TIM3_CH3(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_transmit_array){
-	/* DMA 1, Channel 2 for TIM3 CH3 */
+	/* DMA 1, Channel 2 for TIM3 CH3 and CH4 */
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 	DMA_DeInit(DMA1_Channel2);
 	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->CCR3);
@@ -444,9 +458,6 @@ void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
 
 	TIM_OC4Init(TIM3, TIM_OC_InitStructure);
 	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-	/* Enable the TIM Counter */
-	TIM_Cmd(TIM3, ENABLE);
 }
 
 /**
