@@ -70,7 +70,7 @@ void InitLookUpTable(void){
   */
 void RefreshLookUpTable1(){
 	uint8_t val = 0;
-	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE;++i){
+	for(uint16_t i=0;i<24;++i){
 		val = look_up_table_2[i] ? 43 : 18;
 		look_up_table_1[i*3] = val;
 		look_up_table_1[i*3+1] = val;
@@ -87,7 +87,7 @@ void RefreshLookUpTable1(){
   */
 void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
 	uint8_t look_up_table_3[4][3]={{B,R,G},{B,R,G},{B,R,G},{B,R,G}};
-	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE/24;++i){
+	for(uint16_t i=0;i<24;++i){
 		for(uint16_t j=0;j<3;++j){
 			for(uint16_t k = 0; k<8; ++k){
 				look_up_table_2[i*24 + j*8 + k] = look_up_table_3[i%4][j] & (0x80 >> k);
@@ -343,13 +343,13 @@ void InitDMA_CH3_TIM3_CH2_to_CH4(DMA_InitTypeDef* DMA_InitStructure, uint8_t* le
 	 * 50 LEDs are on a strip
 	 * 3  there are 3 strips (ch2,ch3,ch4)
 	 */
-	DMA_InitStructure->DMA_BufferSize = 24*50*3;
+	DMA_InitStructure->DMA_BufferSize = 24*1*3;
 	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
 	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
 	DMA_InitStructure->DMA_Mode = DMA_Mode_Circular;
-	DMA_InitStructure->DMA_Priority = DMA_Priority_Medium;
+	DMA_InitStructure->DMA_Priority = DMA_Priority_High;
 	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
 	DMA_Init(DMA1_Channel3, DMA_InitStructure);
 }

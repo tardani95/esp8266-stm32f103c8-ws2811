@@ -262,11 +262,7 @@ void DMA1_Channel5_IRQHandler(void){
 			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
 			RefreshLookUpTable1();
 
-			DMA_Cmd(DMA1_Channel3, DISABLE);
-			DMA_SetCurrDataCounter(DMA1_Channel3, 6*24*3);
 
-			DMA_ClearFlag(DMA1_FLAG_TC3);
-			DMA_Cmd(DMA1_Channel3, ENABLE);
 		}break;
 
 		default:break;
@@ -294,16 +290,23 @@ void DMA1_Channel2_IRQHandler(void){
 void DMA1_Channel3_IRQHandler(void){
 	/* one led data shifted out */
 	led_counter++;
-	if(led_counter>4-1){
+	if(led_counter>LED_NUMBER){
 		DMA_Cmd(DMA1_Channel3, DISABLE);
 		TIM3->CCR2 = 0;
 		TIM3->CCR3 = 0;
 		TIM3->CCR4 = 0;
 		led_counter = 0;
-		delayMicroSec(50);
+//		delayMicroSec(50);
+		DMA_Cmd(DMA1_Channel3, DISABLE);
+		DMA_SetCurrDataCounter(DMA1_Channel3, 1*24*3);
 
+		delayMicroSec(55);
+		DMA_ClearFlag(DMA1_FLAG_TC3);
+		DMA_Cmd(DMA1_Channel3, ENABLE);
+	}else{
+		DMA_ClearFlag(DMA1_FLAG_TC3);
 	}
-	DMA_ClearFlag(DMA1_FLAG_TC3);
+
 }
 
 
