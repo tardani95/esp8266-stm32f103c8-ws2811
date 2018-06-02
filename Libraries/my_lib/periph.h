@@ -40,16 +40,17 @@
 /* indexing starts with 0 */
 #define LIGHT_UP_FROM_LED 0 /* 18 */
 #define LIGHT_UP_TO_LED 100   /* 36 */
-#define LED_NUMBER 100
-#define LOOK_UP_TABLE_SIZE 24*100
+#define LED_NUMBER 50
+#define LOOK_UP_TABLE_SIZE 24*LED_NUMBER
 
 
 extern uint16_t led_pin; 			/* PC13 */
 extern uint16_t button_pin; 		/* PB14 */
 extern uint16_t ledstrip_signal; 	/* PB0  */
 extern uint16_t pwm_exti_pin;		/* PA1  */
-extern uint8_t  look_up_table_1[LOOK_UP_TABLE_SIZE];
+extern uint8_t  look_up_table_1[LOOK_UP_TABLE_SIZE*3];
 extern uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
+
 
 void delayMicroSec(uint32_t);
 void delaySec(uint32_t);
@@ -68,19 +69,19 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
 void InitGPIO_UART1(GPIO_InitTypeDef*);
 
 void InitNVIC_LSS1(NVIC_InitTypeDef*);
-void InitNVIC_LSS2(NVIC_InitTypeDef*);
+void InitNVIC_LSS123(NVIC_InitTypeDef*);
 void InitNVIC_UART1_TX(NVIC_InitTypeDef*);
 void InitNVIC_UART1_RX(NVIC_InitTypeDef*);
 
 void InitDMA_CH2_TIM3_CH3(DMA_InitTypeDef*,uint8_t*);
-void InitDMA_CH3_TIM3_CH4(DMA_InitTypeDef*,uint8_t*);
+void InitDMA_CH3_TIM3_CH2_to_CH4(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
 
 void InitUART1(USART_InitTypeDef*);
 
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
-void InitTIM3_CH3_CH4_PWM(TIM_OCInitTypeDef*);
+void InitTIM3_CH2_CH3_CH4_PWM(TIM_OCInitTypeDef*);
 void InitTIM2_CLK(TIM_TimeBaseInitTypeDef*);
 void InitTIM2_CH2_PWM(TIM_OCInitTypeDef*);
 
