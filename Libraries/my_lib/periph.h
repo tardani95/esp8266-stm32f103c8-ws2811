@@ -12,15 +12,16 @@
 /*                             INCLUDES									  */
 /*========================================================================*/
 #include "stm32f10x.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_rcc.h"  /* reset and clock control */
+#include "stm32f10x_gpio.h"  /* general purpose input output */
+#include "stm32f10x_rcc.h"   /* reset and clock control */
 
-#include "stm32f10x_tim.h"  /* timer header */
+#include "stm32f10x_tim.h"   /* timer header */
 
-#include "stm32f10x_exti.h" /* external interrupt*/
-#include "stm32f1xx_it.h" 	/* interrupt handler */
+#include "stm32f10x_exti.h"  /* external interrupt */
+#include "stm32f1xx_it.h" 	 /* interrupt handler  */
+#include "stm32f10x_usart.h" /* universal synchronous asynchronous receiver transmitter */
 
-#include "stm32f10x_usart.h"
+#include "stm32f10x_dma.h"   /* direct memory access */
 
 /* High level functions for NVIC and SysTick (add-on to CMSIS functions)
  * NVIC - Nested Vector Interrupt Controller
@@ -40,17 +41,21 @@
 #define LIGHT_UP_FROM_LED 0 /* 18 */
 #define LIGHT_UP_TO_LED 100   /* 36 */
 #define LED_NUMBER 100
-#define LOOK_UP_TABLE_SIZE 24*4
+#define LOOK_UP_TABLE_SIZE 24*100
 
 
 extern uint16_t led_pin; 			/* PC13 */
 extern uint16_t button_pin; 		/* PB14 */
 extern uint16_t ledstrip_signal; 	/* PB0  */
 extern uint16_t pwm_exti_pin;		/* PA1  */
+extern uint8_t  look_up_table_1[LOOK_UP_TABLE_SIZE];
 extern uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
 void delayMicroSec(uint32_t);
+void delaySec(uint32_t);
+
 void InitLookUpTable(void);
+void RefreshLookUpTable1();
 void RefreshLookUpTable(uint8_t, uint8_t, uint8_t);
 
 void AnimFadeInFadeOut(uint16_t, uint16_t, uint16_t);
@@ -60,9 +65,18 @@ void InitGPIO_BTN(GPIO_InitTypeDef*);
 void InitGPIO_LSS1(GPIO_InitTypeDef*);
 void InitGPIO_LSS2(GPIO_InitTypeDef*);
 void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
-
 void InitGPIO_UART1(GPIO_InitTypeDef*);
+
+void InitNVIC_LSS1(NVIC_InitTypeDef*);
+void InitNVIC_LSS2(NVIC_InitTypeDef*);
+void InitNVIC_UART1_TX(NVIC_InitTypeDef*);
 void InitNVIC_UART1_RX(NVIC_InitTypeDef*);
+
+void InitDMA_CH2_TIM3_CH3(DMA_InitTypeDef*,uint8_t*);
+void InitDMA_CH3_TIM3_CH4(DMA_InitTypeDef*,uint8_t*);
+void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
+void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
+
 void InitUART1(USART_InitTypeDef*);
 
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
