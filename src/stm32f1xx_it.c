@@ -233,20 +233,4 @@ void EXTI15_10_IRQHandler(void){
   }
 }
 
-
-
-/**
-  * @brief  This function handles the PWM generation with DMA for TIM3_CH4
-  * @param  None
-  * @retval None
-  */
-void DMA1_Channel3_IRQHandler(void){
-  /* all data received */
-  DMA_ClearFlag(DMA1_FLAG_TC3);
-}
-
-
-
-
-
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
