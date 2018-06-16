@@ -26,6 +26,8 @@ Info        : 31.05.2018
  * NVIC - Nested Vector Interrupt Controller
  */
 #include "misc.h"
+
+#include <stdio.h>
 /*========================================================================*/
 
 void InitGPIO_UART1(GPIO_InitTypeDef*);

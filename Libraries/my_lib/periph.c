@@ -247,34 +247,6 @@ void InitNVIC_LSS123(NVIC_InitTypeDef* NVIC_InitStructure){
 }
 
 /**
-  * @brief  This function initialize the nested vectored interrupt controller for the UART1 TX (PA9 - TX)
-  * @param  NVIC_InitTypeDef variable
-  * @retval None
-  */
-void InitNVIC_UART1_TX(NVIC_InitTypeDef* NVIC_InitStructure){
-	/* USART1 RX*/
-	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel4_IRQn;
-	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(NVIC_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the nested vectored interrupt controller for the UART1 RX (PA10 - RX)
-  * @param  NVIC_InitTypeDef variable
-  * @retval None
-  */
-void InitNVIC_UART1_RX(NVIC_InitTypeDef* NVIC_InitStructure){
-	/* USART1 RX*/
-	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel5_IRQn;
-	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(NVIC_InitStructure);
-}
-
-/**
   * @brief  This function initialize the DMA controller for the TIM3 CH3(CCR3) and CH4(CCR4) (PB0,PB1);
   * @param  DMA_InitTypeDef variable
   * @param  uint8_t array what to send
