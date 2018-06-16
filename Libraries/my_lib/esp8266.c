@@ -119,6 +119,14 @@ Waiting for the packages:
 /******************************************************************************/
 #include "esp8266.h"
 
+/******************************************************************************/
+/*                          Private variables                                 */
+/******************************************************************************/
+__IO uint8_t *uart_receive_array;
+
+/******************************************************************************/
+/*                          Function definitions                              */
+/******************************************************************************/
 
 /**
   * @brief  This function initialize the gpio pins for the UART1 (PA9 - TX, PA10 - RX)
@@ -241,6 +249,8 @@ void InitUART1(USART_InitTypeDef* USART_InitStructure){
 	USART_InitStructure->USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure->USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 	USART_Init(USART1,USART_InitStructure);
+
+	USART_Cmd(USART1, ENABLE);
 }
 
 /**
@@ -248,8 +258,64 @@ void InitUART1(USART_InitTypeDef* USART_InitStructure){
   * @param  None
   * @retval None
   */
-void InitESP8266(){
+void InitESP8266(uint8_t* uart_reception_array){
 
+	/*Establishing UDP Transmission*/
+	uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
+	uint8_t transmit_array_length = 32; /* uart_transmit_array length: 32 */
+	uart_receive_array = uart_reception_array;
+
+	/**************************************************/
+	/* INIT STUCTURES                                 */
+	/**************************************************/
+	GPIO_InitTypeDef GPIO_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
+	USART_InitTypeDef USART_InitStructure;  /* uart init */
+	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
+
+	/**************************************************/
+	/* UART INIT                                      */
+	/**************************************************/
+	InitGPIO_UART1(&GPIO_InitStructure);
+	InitNVIC_UART1(&NVIC_InitStructure);
+	InitUART1(&USART_InitStructure);
+
+	/**************************************************/
+	/* DMA for UART INIT                              */
+	/**************************************************/
+	InitDMA_CH4_UART1_TX(&DMA_InitStructure, uart_transmit_array);
+	InitDMA_CH5_UART1_RX(&DMA_InitStructure, uart_receive_array);
+
+	DMA_ITConfig(DMA1_Channel4, DMA_IT_TC, ENABLE);
+	DMA_ITConfig(DMA1_Channel5, DMA_IT_TC, ENABLE);
+
+	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
+	USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
+
+	/*wait for esp8266 system startup and clear the rx buffer*/
+	ClearRX_DMA_Buffer();
+	delaySec(1); //10
+
+	SendDataToESP8266(transmit_array_length);
+
+	/* wait for esp8266 sets up the upd connection */
+	delaySec(2); //2
+
+	/*ESP MODULE READY*/
+}
+
+void ClearRX_DMA_Buffer(){
+	// clear rx dma buffer
+	StartUDPReceiving(1);
+}
+
+void SendDataToESP8266(uint8_t transmit_array_length){
+	/* start transmission */
+	DMA_Cmd(DMA1_Channel4, DISABLE);
+	DMA_SetCurrDataCounter(DMA1_Channel4, transmit_array_length);
+
+	DMA_ClearFlag(DMA1_FLAG_TC4);
+	DMA_Cmd(DMA1_Channel4, ENABLE);
 }
 
 /**
@@ -257,8 +323,52 @@ void InitESP8266(){
   * @param  None
   * @retval None
   */
-void StartUDPReceiving(uint8_t*){
+void StartUDPReceiving(uint8_t receive_array_length){
+	/* start circular receiving */
+	DMA_Cmd(DMA1_Channel5, DISABLE);
+	DMA_SetCurrDataCounter(DMA1_Channel5, receive_array_length);
 
+	DMA_ClearFlag(DMA1_FLAG_TC5);
+	DMA_Cmd(DMA1_Channel5, ENABLE);
+}
+
+
+/**
+  * @brief  This function handles the UART1_TX DMA
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel4_IRQHandler(void){
+	/* all uart data sent out*/
+
+	/*if(DMA_GetFlagStatus(DMA1_FLAG_TC4)){
+		DMA_ClearFlag(DMA1_FLAG_TC4);
+	}*/
+
+	DMA_ClearFlag(DMA1_FLAG_TC4);
+	DMA_Cmd(DMA1_Channel4, DISABLE);
+}
+
+/**
+  * @brief  This function handles the UART1_RX DMA
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel5_IRQHandler(void){
+	/* all data received */
+	switch(uart_receive_array[12]){
+		case 0 :{
+			/*
+			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
+			RefreshLookUpTable1();
+			*/
+			printf("uart data received - with mode 0");
+		}break;
+
+		default:break;
+	}
+	DMA_ClearFlag(DMA1_FLAG_TC5);
+	//isNewDataArrived = 1;
 }
 
 

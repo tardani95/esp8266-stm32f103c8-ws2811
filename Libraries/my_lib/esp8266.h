@@ -34,7 +34,14 @@ void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
 void InitUART1(USART_InitTypeDef*);
 
-void InitESP8266();
-void StartUDPReceiving(uint8_t*);
+void InitESP8266(uint8_t*);
+void ClearRX_DMA_Buffer(void);
+void SendDataToESP8266(uint8_t);
+void StartUDPReceiving(uint8_t);
+
+/* DMA request handler for USART1_TX */
+void DMA1_Channel4_IRQHandler(void);
+/* DMA request handler for USART1_RX */
+void DMA1_Channel5_IRQHandler(void);
 
 #endif /* LIBRARIES_MY_LIB_ESP8266_H_ */
