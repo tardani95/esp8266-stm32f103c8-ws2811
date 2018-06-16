@@ -32,7 +32,7 @@ uint8_t uart_counter=0;
 uint8_t led_counter = 0;
 uint8_t isNewDataArrived = 0;
 
-
+uint8_t uart_receive_array[20];
 
 
 /* Private function prototypes */
@@ -71,7 +71,7 @@ int main(void)
 	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
 
 
-	uint8_t uart_receive_array[20];
+
 //	uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
 	/* init receive array with dummy data to see if the dma is working */
 	for(uint8_t i = 0; i<20; ++i){
@@ -82,8 +82,8 @@ int main(void)
 //	uint8_t transmit_array_length = 32; //32
 
 	InitESP8266(uart_receive_array);
-	StartUDPReceiving(receive_array_length);
-//	StartUDPReceivingWithCallback(receive_array_length,OnUART_DataReceived);
+//	StartUDPReceiving(receive_array_length);
+	StartUDPReceivingWithCallback(receive_array_length, &OnUART_DataReceived );
 
 
 	/**************************************************/
@@ -227,7 +227,15 @@ void DMA1_Channel3_IRQHandler(void){
 }
 
 void OnUART_DataReceived(void){
-	printf("inside OnUART_DataReceived\n");
+	switch(uart_receive_array[12]){
+		case 0 :{
+			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
+			RefreshLookUpTable1();
+//			printf("uart data received - with mode 0");
+		}break;
+
+		default:break;
+	}
 }
 
 

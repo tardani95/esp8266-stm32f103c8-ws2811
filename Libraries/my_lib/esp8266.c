@@ -123,6 +123,7 @@ Waiting for the packages:
 /*                          Private variables                                 */
 /******************************************************************************/
 uint8_t *uart_receive_array;
+uint8_t isCallbackSet = 0;
 
 /*callback functions */
 callback ptr_CallbackOnUART_DataReceived;
@@ -347,6 +348,7 @@ void StartUDPReceiving(uint8_t receive_array_length){
 void StartUDPReceivingWithCallback(uint8_t receive_array_length, callback ptr_CallBackFunction){
 
 	ptr_CallbackOnUART_DataReceived = ptr_CallBackFunction;
+	isCallbackSet = 1;
 
 	StartUDPReceiving(receive_array_length);
 }
@@ -376,19 +378,9 @@ void DMA1_Channel4_IRQHandler(void){
   */
 void DMA1_Channel5_IRQHandler(void){
 	/* all data received */
-//	switch(uart_receive_array[12]){
-//		case 0 :{
-//			/*
-//			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-//			RefreshLookUpTable1();
-//			*/
-//			printf("uart data received - with mode 0");
-//		}break;
-//
-//		default:break;
-//	}
-
-//	(*ptr_CallbackOnUART_DataReceived)();
+	if(isCallbackSet){
+		(*ptr_CallbackOnUART_DataReceived)();
+	}
 	DMA_ClearFlag(DMA1_FLAG_TC5);
 	//isNewDataArrived = 1;
 }
