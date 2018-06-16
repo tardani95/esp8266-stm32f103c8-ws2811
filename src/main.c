@@ -82,8 +82,7 @@ int main(void)
 //	uint8_t transmit_array_length = 32; //32
 
 	InitESP8266(uart_receive_array);
-//	StartUDPReceiving(receive_array_length);
-	StartUDPReceivingWithCallback(receive_array_length, &OnUART_DataReceived );
+	StartUDPReceivingWithCallback(receive_array_length, OnUART_DataReceived );
 
 
 	/**************************************************/
@@ -231,7 +230,6 @@ void OnUART_DataReceived(void){
 		case 0 :{
 			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
 			RefreshLookUpTable1();
-//			printf("uart data received - with mode 0");
 		}break;
 
 		default:break;

@@ -125,7 +125,9 @@ Waiting for the packages:
 uint8_t *uart_receive_array;
 uint8_t isCallbackSet = 0;
 
-/*callback functions */
+/******************************************************************************/
+/*                    Callback function declaration                           */
+/******************************************************************************/
 callback ptr_CallbackOnUART_DataReceived;
 callback ptr_CallbackOnUART_DataSent;
 
@@ -341,7 +343,7 @@ void StartUDPReceiving(uint8_t receive_array_length){
 }
 
 /**
-  * @brief  This function starts the listening to the UPD packages for a specified size
+  * @brief  This function starts the listening to the UPD packages for a specified size and sets the callback function
   * @param  None
   * @retval None
   */

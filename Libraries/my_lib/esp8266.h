@@ -18,7 +18,7 @@ Info        : 31.05.2018
 #include "stm32f10x.h"
 #include "stm32f10x_gpio.h"  /* general purpose input output */
 #include "stm32f10x_rcc.h"   /* reset and clock control */
-#include "stm32f1xx_it.h" 	 /* interrupt handler  */
+//#include "stm32f1xx_it.h" 	 /* interrupt handler  */
 #include "stm32f10x_usart.h" /* universal synchronous asynchronous receiver transmitter */
 #include "stm32f10x_dma.h"   /* direct memory access */
 
@@ -30,14 +30,14 @@ Info        : 31.05.2018
 #include <stdio.h>
 /*========================================================================*/
 
+typedef void (*callback)(void);
+
+
 void InitGPIO_UART1(GPIO_InitTypeDef*);
 void InitNVIC_UART1(NVIC_InitTypeDef*);
 void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
 void InitUART1(USART_InitTypeDef*);
-
-typedef void (*callback)(void);
-//void register_callback(callback ptr_reg_callback);
 
 void InitESP8266(uint8_t*);
 void ClearRX_DMA_Buffer(void);
