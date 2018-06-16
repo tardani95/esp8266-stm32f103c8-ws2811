@@ -34,6 +34,7 @@ void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
 void InitUART1(USART_InitTypeDef*);
 
-void InitESP8266(GPIO_InitTypeDef*,NVIC_InitTypeDef*,DMA_InitTypeDef*,uint8_t*,DMA_InitTypeDef*,uint8_t*,USART_InitTypeDef*);
+void InitESP8266();
+void StartUDPReceiving(uint8_t*);
 
 #endif /* LIBRARIES_MY_LIB_ESP8266_H_ */
