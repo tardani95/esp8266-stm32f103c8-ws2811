@@ -236,40 +236,7 @@ int main(void)
 	}
 }
 
-/**
-  * @brief  This function handles the UART1_TX DMA
-  * @param  None
-  * @retval None
-  */
-void DMA1_Channel4_IRQHandler(void){
-	/* all uart data sent out*/
-	DMA_ClearFlag(DMA1_FLAG_TC4);
-	/*if(DMA_GetFlagStatus(DMA1_FLAG_TC4)){
-		DMA_ClearFlag(DMA1_FLAG_TC4);
-	}*/
-	DMA_Cmd(DMA1_Channel4, DISABLE);
-}
 
-/**
-  * @brief  This function handles the UART1_RX DMA
-  * @param  None
-  * @retval None
-  */
-void DMA1_Channel5_IRQHandler(void){
-	/* all data received */
-	switch(uart_receive_array[12]){
-		case 0 :{
-			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-			RefreshLookUpTable1();
-
-
-		}break;
-
-		default:break;
-	}
-	DMA_ClearFlag(DMA1_FLAG_TC5);
-	//isNewDataArrived = 1;
-}
 
 /**
   * @brief  This function handles the PWM generation with DMA for TIM3_CH3
