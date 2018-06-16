@@ -36,10 +36,15 @@ void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);
 void InitDMA_CH5_UART1_RX(DMA_InitTypeDef*,uint8_t*);
 void InitUART1(USART_InitTypeDef*);
 
+typedef void (*callback)(void);
+//void register_callback(callback ptr_reg_callback);
+
 void InitESP8266(uint8_t*);
 void ClearRX_DMA_Buffer(void);
-void SendDataToESP8266(uint8_t);
+void SendDataToESP8266(uint8_t /*, callback*/);
 void StartUDPReceiving(uint8_t);
+void StartUDPReceivingWithCallback(uint8_t, callback);
+
 
 /* DMA request handler for USART1_TX */
 void DMA1_Channel4_IRQHandler(void);

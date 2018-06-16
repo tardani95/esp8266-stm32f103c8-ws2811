@@ -124,6 +124,10 @@ Waiting for the packages:
 /******************************************************************************/
 uint8_t *uart_receive_array;
 
+/*callback functions */
+callback ptr_CallbackOnUART_DataReceived;
+callback ptr_CallbackOnUART_DataSent;
+
 /******************************************************************************/
 /*                          Function definitions                              */
 /******************************************************************************/
@@ -309,7 +313,10 @@ void ClearRX_DMA_Buffer(){
 	StartUDPReceiving(1);
 }
 
-void SendDataToESP8266(uint8_t transmit_array_length){
+void SendDataToESP8266(uint8_t transmit_array_length /*, callback ptr_CallBackFunction*/){
+
+	/*ptr_CallbackOnUART_DataSent = ptr_CallBackFunction;*/
+
 	/* start transmission */
 	DMA_Cmd(DMA1_Channel4, DISABLE);
 	DMA_SetCurrDataCounter(DMA1_Channel4, transmit_array_length);
@@ -332,6 +339,17 @@ void StartUDPReceiving(uint8_t receive_array_length){
 	DMA_Cmd(DMA1_Channel5, ENABLE);
 }
 
+/**
+  * @brief  This function starts the listening to the UPD packages for a specified size
+  * @param  None
+  * @retval None
+  */
+void StartUDPReceivingWithCallback(uint8_t receive_array_length, callback ptr_CallBackFunction){
+
+	ptr_CallbackOnUART_DataReceived = ptr_CallBackFunction;
+
+	StartUDPReceiving(receive_array_length);
+}
 
 /**
   * @brief  This function handles the UART1_TX DMA
@@ -345,6 +363,8 @@ void DMA1_Channel4_IRQHandler(void){
 		DMA_ClearFlag(DMA1_FLAG_TC4);
 	}*/
 
+
+	/*(*ptr_CallbackOnUART_DataSent)();*/
 	DMA_ClearFlag(DMA1_FLAG_TC4);
 	DMA_Cmd(DMA1_Channel4, DISABLE);
 }
@@ -356,17 +376,19 @@ void DMA1_Channel4_IRQHandler(void){
   */
 void DMA1_Channel5_IRQHandler(void){
 	/* all data received */
-	switch(uart_receive_array[12]){
-		case 0 :{
-			/*
-			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-			RefreshLookUpTable1();
-			*/
-			printf("uart data received - with mode 0");
-		}break;
+//	switch(uart_receive_array[12]){
+//		case 0 :{
+//			/*
+//			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
+//			RefreshLookUpTable1();
+//			*/
+//			printf("uart data received - with mode 0");
+//		}break;
+//
+//		default:break;
+//	}
 
-		default:break;
-	}
+//	(*ptr_CallbackOnUART_DataReceived)();
 	DMA_ClearFlag(DMA1_FLAG_TC5);
 	//isNewDataArrived = 1;
 }
