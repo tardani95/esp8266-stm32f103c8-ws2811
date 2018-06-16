@@ -219,31 +219,6 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef* GPIO_InitStructure){
 }
 
 /**
-  * @brief  This function initialize the gpio pins for the UART1 (PA9 - TX, PA10 - RX)
-  * @param  GPIO_InitTypeDef variable
-  * @retval None
-  */
-void InitGPIO_UART1(GPIO_InitTypeDef* GPIO_InitStructure){
-	/* TX on PA9 */
-	GPIO_StructInit(GPIO_InitStructure);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-
-	GPIO_InitStructure->GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_InitStructure->GPIO_Pin = GPIO_Pin_9;
-	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, GPIO_InitStructure);
-
-	/* RX on PA10 */
-	GPIO_StructInit(GPIO_InitStructure);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-
-	GPIO_InitStructure->GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_InitStructure->GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, GPIO_InitStructure);
-}
-
-/**
   * @brief  This function initialize the nested vectored interrupt controller for the DMA CH2 - TIM3_CH3
   * @param  NVIC_InitTypeDef variable
   * @retval None
@@ -266,34 +241,6 @@ void InitNVIC_LSS123(NVIC_InitTypeDef* NVIC_InitStructure){
 	/* LSS1 PB1 - TIM3 CH4 - DMA1 CH3*/
 	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel3_IRQn;
 	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(NVIC_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the nested vectored interrupt controller for the UART1 TX (PA9 - TX)
-  * @param  NVIC_InitTypeDef variable
-  * @retval None
-  */
-void InitNVIC_UART1_TX(NVIC_InitTypeDef* NVIC_InitStructure){
-	/* USART1 RX*/
-	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel4_IRQn;
-	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(NVIC_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the nested vectored interrupt controller for the UART1 RX (PA10 - RX)
-  * @param  NVIC_InitTypeDef variable
-  * @retval None
-  */
-void InitNVIC_UART1_RX(NVIC_InitTypeDef* NVIC_InitStructure){
-	/* USART1 RX*/
-	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel5_IRQn;
-	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 2;
 	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(NVIC_InitStructure);
@@ -352,83 +299,6 @@ void InitDMA_CH3_TIM3_CH2_to_CH4(DMA_InitTypeDef* DMA_InitStructure, uint8_t* le
 	DMA_InitStructure->DMA_Priority = DMA_Priority_High;
 	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
 	DMA_Init(DMA1_Channel3, DMA_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the DMA controller for the UART1 TX (PA9 - TX)
-  * @param  DMA_InitTypeDef variable
-  * @param  uint8_t array what to send
-  * @retval None
-  */
-void InitDMA_CH4_UART1_TX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_transmit_array){
-	/* DMA 1, Channel 4 for USART1 TX */
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-	DMA_DeInit(DMA1_Channel4);
-	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
-	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) usart_transmit_array;
-	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
-	DMA_InitStructure->DMA_BufferSize = 0;
-	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure->DMA_Mode = DMA_Mode_Normal;
-	DMA_InitStructure->DMA_Priority = DMA_Priority_Medium;
-	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(DMA1_Channel4, DMA_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the DMA controller for the UART1 RX (PA10 - RX)
-  * @param  DMA_InitTypeDef variable
-  * @param  uint8_t array where to receive
-  * @retval None
-  */
-void InitDMA_CH5_UART1_RX(DMA_InitTypeDef* DMA_InitStructure, uint8_t* usart_receive_array){
-	/* DMA 1, Channel 5 for USART1 RX */
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-	DMA_DeInit(DMA1_Channel5);
-	DMA_StructInit(DMA_InitStructure);
-	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);
-	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t)usart_receive_array;
-	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure->DMA_BufferSize = 0;
-	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure->DMA_Mode = DMA_Mode_Circular;
-	DMA_InitStructure->DMA_Priority = DMA_Priority_Medium;
-	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(DMA1_Channel5, DMA_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the UART1 settings
-  * @param  USART_InitTypeDef variable
-  * @retval None
-  */
-void InitUART1(USART_InitTypeDef* USART_InitStructure){
-	/* USARTx configured as follow:
-		  - BaudRate = 115200 baud
-		  - Word Length = 8 Bits
-		  - One Stop Bit
-		  - No parity
-		  - Hardware flow control disabled (RTS and CTS signals)
-		  - Receive and transmit enabled
-	*/
-	/* deinitialize before use */
-	USART_DeInit(USART1);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-
-	USART_StructInit(USART_InitStructure);
-	USART_InitStructure->USART_BaudRate = 115200;
-	USART_InitStructure->USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure->USART_StopBits = USART_StopBits_1;
-	USART_InitStructure->USART_Parity = USART_Parity_No;
-	USART_InitStructure->USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure->USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	USART_Init(USART1,USART_InitStructure);
 }
 
 /**

@@ -15,6 +15,7 @@ Info        : 2018-04-09
 #include "stm32f10x.h"
 
 #include "periph.h" /* my lib */
+#include "esp8266.h" /* my lib */
 
 
 /* Private typedef */
@@ -32,10 +33,11 @@ uint8_t led_counter = 0;
 uint8_t isNewDataArrived = 0;
 
 uint8_t uart_receive_array[20];
-uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
 
 
 /* Private function prototypes */
+void OnUART_DataReceived(void);
+
 /* Private functions */
 
 /**
@@ -66,74 +68,21 @@ int main(void)
 	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
 	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; /* timer init */
 	TIM_OCInitTypeDef TIM_OC_InitStructure; /* output compare init */
-	USART_InitTypeDef USART_InitStructure;  /* uart init */
 	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
 
-	/**************************************************/
-	/* UART INIT                                      */
-	/**************************************************/
-	InitGPIO_UART1(&GPIO_InitStructure);
-	InitNVIC_UART1_TX(&NVIC_InitStructure);
-	InitNVIC_UART1_RX(&NVIC_InitStructure);
-	InitUART1(&USART_InitStructure);
 
-	/*wait for esp8266 system startup*/
-	delaySec(1); //10
 
-	/* USART_IT_TXE:  Transmit Data Register empty interrupt */
-	/* the transmit data register is empty at the beginning, so the an interrupt will be generated
-	 * and in the interrupt handler it sends our data out, after it sent out
-	 */
-	/* USART_IT_TC:   Transmission complete interrupt */
-	/* USART_IT_RXNE: Receive Data register not empty interrupt */
-	USART_Cmd(USART1, ENABLE);
-
+//	uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
 	/* init receive array with dummy data to see if the dma is working */
 	for(uint8_t i = 0; i<20; ++i){
 		uart_receive_array[i] = 0xAA;
 	}
 
 	uint8_t receive_array_length = 13; //13
-	uint8_t transmit_array_length = 32; //32
+//	uint8_t transmit_array_length = 32; //32
 
-
-	/**************************************************/
-	/* DMA for UART INIT                              */
-	/**************************************************/
-	InitDMA_CH4_UART1_TX(&DMA_InitStructure, uart_transmit_array);
-	InitDMA_CH5_UART1_RX(&DMA_InitStructure, uart_receive_array);
-
-	DMA_ITConfig(DMA1_Channel4, DMA_IT_TC, ENABLE);
-	DMA_ITConfig(DMA1_Channel5, DMA_IT_TC, ENABLE);
-
-	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
-	USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
-
-	// clear rx dma buffer
-	DMA_Cmd(DMA1_Channel5, DISABLE);
-	DMA_SetCurrDataCounter(DMA1_Channel5, 1);
-	DMA_ClearFlag(DMA1_FLAG_TC5);
-	DMA_Cmd(DMA1_Channel5, ENABLE);
-
-	/* start transmission */
-	DMA_Cmd(DMA1_Channel4, DISABLE);
-	DMA_SetCurrDataCounter(DMA1_Channel4, transmit_array_length);
-
-	DMA_ClearFlag(DMA1_FLAG_TC4);
-	DMA_Cmd(DMA1_Channel4, ENABLE);
-	/* end transmission */
-
-	/* wait for esp8266 sets up the upd connection */
-	delaySec(2); //2
-
-
-	/* start circular receiving */
-	DMA_Cmd(DMA1_Channel5, DISABLE);
-	DMA_SetCurrDataCounter(DMA1_Channel5, receive_array_length);
-
-	DMA_ClearFlag(DMA1_FLAG_TC5);
-	DMA_Cmd(DMA1_Channel5, ENABLE);
-	/* end receiving */
+	InitESP8266(uart_receive_array);
+	StartUDPReceivingWithCallback(receive_array_length, OnUART_DataReceived );
 
 
 	/**************************************************/
@@ -236,40 +185,7 @@ int main(void)
 	}
 }
 
-/**
-  * @brief  This function handles the UART1_TX DMA
-  * @param  None
-  * @retval None
-  */
-void DMA1_Channel4_IRQHandler(void){
-	/* all uart data sent out*/
-	DMA_ClearFlag(DMA1_FLAG_TC4);
-	/*if(DMA_GetFlagStatus(DMA1_FLAG_TC4)){
-		DMA_ClearFlag(DMA1_FLAG_TC4);
-	}*/
-	DMA_Cmd(DMA1_Channel4, DISABLE);
-}
 
-/**
-  * @brief  This function handles the UART1_RX DMA
-  * @param  None
-  * @retval None
-  */
-void DMA1_Channel5_IRQHandler(void){
-	/* all data received */
-	switch(uart_receive_array[12]){
-		case 0 :{
-			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-			RefreshLookUpTable1();
-
-
-		}break;
-
-		default:break;
-	}
-	DMA_ClearFlag(DMA1_FLAG_TC5);
-	//isNewDataArrived = 1;
-}
 
 /**
   * @brief  This function handles the PWM generation with DMA for TIM3_CH3
@@ -307,6 +223,17 @@ void DMA1_Channel3_IRQHandler(void){
 		DMA_ClearFlag(DMA1_FLAG_TC3);
 	}
 
+}
+
+void OnUART_DataReceived(void){
+	switch(uart_receive_array[12]){
+		case 0 :{
+			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
+			RefreshLookUpTable1();
+		}break;
+
+		default:break;
+	}
 }
 
 
