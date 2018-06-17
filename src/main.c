@@ -14,8 +14,8 @@ Info        : 2018-04-09
 #include <stdio.h>
 #include "stm32f10x.h"
 
-#include "periph.h" /* my lib */
 #include "esp8266.h" /* my lib */
+#include "periph.h" /* my lib */
 
 
 /* Private typedef */
@@ -32,8 +32,11 @@ uint8_t uart_counter=0;
 uint8_t led_counter = 0;
 uint8_t isNewDataArrived = 0;
 
-uint8_t uart_receive_array[20];
 
+
+
+/* Private variables */
+uint8_t uart_receive_array[20];
 
 /* Private function prototypes */
 void OnUART_DataReceived(void);
