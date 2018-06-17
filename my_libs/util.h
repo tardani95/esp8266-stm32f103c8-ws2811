@@ -16,8 +16,9 @@ Info        : 17.06.2018
 #include "stm32f10x.h"
 #include "stm32f10x_rcc.h" /* Reset & Clock Control */
 
-
 #define SYS_TICK_FREQ (1000000) /* frequency of sys_tick event in Hz - used by InitSystick() function */
+
+typedef void (*callback)(void); /* callback function definition */
 
 void SysTick_Handler(void);
 void InitSysTick(void);

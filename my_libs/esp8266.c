@@ -262,7 +262,7 @@ void InitUART1(USART_InitTypeDef* USART_InitStructure){
 
 /**
   * @brief  This function initialize the ESP8266 (ESP-01)
-  * @param  None
+  * @param  array where the uart dma is going to put the data
   * @retval None
   */
 void InitESP8266(uint8_t* uart_reception_array){
