@@ -64,7 +64,7 @@ Info        : 16.06.2018
 
 #define LED_BITS               24
 
-#define DMA_BUF_LEN            ( PARALELL_STRIPS * LED_BITS )
+#define DMA_BUFFER_SIZE            ( PARALELL_STRIPS * LED_BITS )
 #define LED_STRIP_SIZE  (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3)
 /*========================================================================*/
 

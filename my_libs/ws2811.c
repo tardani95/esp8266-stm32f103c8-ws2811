@@ -39,7 +39,7 @@ const uint8_t gammaCorrectionTable[] = {
       215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
 
-__IO uint8_t TIMx_OC_DMA_Buffer[DMA_BUF_LEN]; /* DMA buffer for TIMx OutputCompare (OC) values */
+__IO uint8_t TIMx_OC_DMA_Buffer[DMA_BUFFER_SIZE]; /* DMA buffer for TIMx OutputCompare (OC) values */
 
 __IO uint32_t pixel_colorRGB[PARALELL_STRIPS][LED_STRIP_SIZE];  /* array to store all the pixel colors */
 
@@ -61,7 +61,7 @@ __IO uint16_t pixel_id = 0; /* current processed led 3s */
   * @param  GPIO_InitTypeDef variable address
   * @retval None
   */
-void InitGPIO_LSSs(GPIO_InitTypeDef*){
+void InitGPIO_LSSs(GPIO_InitTypeDef* GPIO_InitStructure){
 
 	uint16_t ledstrip_signal1 = GPIO_Pin_7; 	/* PA7  */
 	uint16_t ledstrip_signal2 = GPIO_Pin_0; 	/* PB0  */
@@ -82,18 +82,73 @@ void InitGPIO_LSSs(GPIO_InitTypeDef*){
 	GPIO_Init(GPIOB, GPIO_InitStructure); /* !GPIOB! */
 
 }
-void InitNVIC_LSS(NVIC_InitTypeDef*){
 
+/**
+  * @brief  This function initialize the nested vectored interrupt controller for the DMA CH3 - TIM3
+  * @param  NVIC_InitTypeDef variable
+  * @retval None
+  */
+void InitNVIC_LSS(NVIC_InitTypeDef* NVIC_InitStructure){
+	/* DMA1 CH3 - TIM3 OC*/
+	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel3_IRQn;
+	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(NVIC_InitStructure);
 }
-void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef*,uint8_t*){
 
-}
+
+
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*){
 
 }
+
 void InitTIM3_PWM(TIM_OCInitTypeDef*){
 
 }
+
+
+/**
+  * @brief  This function initialize the DMA controller for the TIM3 OC values
+  * 		from CH2 to CH4 (PA7 PB0 PB1)
+  * 		Initialize TIMx (TIM3) first
+  * @param  DMA_InitTypeDef variable
+  * @param  ledstrip_transmit_dma_buffer - uint8_t[] buffer to send
+  * @retval None
+  */
+void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure,uint8_t* ledstrip_transmit_dma_buffer){
+	/* DMA 1, Channel 2 for TIM3 CH4 */
+
+	/* using TIM DMA burst feature page 421 in Reference Manual 02-06-2018 */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+	/* DMA ch3 receives the TIM3 Update event - page 281 in RM 02-06-2018 */
+	DMA_DeInit(DMA1_Channel3);
+	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->DMAR);
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_array;
+	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
+	/*
+	 * 24 bits need to determine the color of one led
+	 * 3  there are 3 strips (ch2,ch3,ch4)
+	 */
+	DMA_InitStructure->DMA_BufferSize = DMA_BUFFER_SIZE;
+	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure->DMA_Mode = DMA_Mode_Circular;
+	DMA_InitStructure->DMA_Priority = DMA_Priority_High;
+	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel3, DMA_InitStructure);
+
+	TIM_DMAConfig(TIM3, TIM_DMABase_CCR2, TIM_DMABurstLength_3Transfers);
+	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
+	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
+
+}
+
+
+
+
 
 /* interval: [ fromCH ; toCh ) */
 void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size){
