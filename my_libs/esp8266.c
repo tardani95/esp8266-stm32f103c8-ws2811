@@ -301,12 +301,12 @@ void InitESP8266(uint8_t* uart_reception_array){
 
 	/*wait for esp8266 system startup and clear the rx buffer*/
 	ClearRX_DMA_Buffer();
-	delaySec(1); //10
+	DelaySec(1); //10
 
 	SendDataToESP8266(transmit_array_length);
 
 	/* wait for esp8266 sets up the upd connection */
-	delaySec(2); //2
+	DelaySec(2); //2
 
 	/*ESP MODULE READY*/
 }
@@ -356,7 +356,7 @@ void StartUDPReceivingWithCallback(uint8_t receive_array_length, callback ptr_Ca
 }
 
 /**
-  * @brief  This function handles the UART1_TX DMA
+  * @brief  This function handles the UART1_TX DMA, if all data sent out then stops the DMA
   * @param  None
   * @retval None
   */
