@@ -60,8 +60,12 @@ Info        : 16.06.2018
 
 #define PARALELL_STRIPS 3 /* 1-4 */
 #define SERIES_STRIPS 1   /* 1-.. depends on power supply */
-#define PIXEL_ARRAY_SIZE ( PARALELL_STRIPS * (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3))
+#define PIXEL_ARRAY_SIZE       (PARALELL_STRIPS * (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3))
 
+#define LED_BITS               24
+
+#define DMA_BUF_LEN            ( PARALELL_STRIPS * LED_BITS )
+#define LED_STRIP_SIZE  (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3)
 /*========================================================================*/
 
 void InitGPIO_LSSs(GPIO_InitTypeDef*);
