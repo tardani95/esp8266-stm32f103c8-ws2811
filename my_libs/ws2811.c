@@ -97,14 +97,49 @@ void InitNVIC_LSS(NVIC_InitTypeDef* NVIC_InitStructure){
 	NVIC_Init(NVIC_InitStructure);
 }
 
+/**
+  * @brief  This function initialize TIM3 clock to a 800/400kHz frequency - 1.25/2.5us time constant
+  *         depends on the prescaler value
+  * @param  TIM_TimeBaseInitTypeDef variable address
+  * @retval None
+  */
+void InitTIM3_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
+	TIM_TimeBaseStructInit(TIM_TimeBase_InitStructure);
 
-void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*){
-
+	TIM_TimeBase_InitStructure->TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBase_InitStructure->TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBase_InitStructure->TIM_Period = TIM_PERIOD-1;
+	TIM_TimeBase_InitStructure->TIM_Prescaler = TIM_PRESCALER; // divider = prescaler + 1
+	TIM_TimeBaseInit(TIM3, TIM_TimeBase_InitStructure);
 }
 
-void InitTIM3_PWM(TIM_OCInitTypeDef*){
+/**
+  * @brief  This function initialize TIM3 output compare mode to pwm1 on ch2, ch3, ch4
+  * @param  TIM_OCInitTypeDef variable address
+  * @retval None
+  */
+void InitTIM3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
+	TIM_OCStructInit(TIM_OC_InitStructure);
 
+	TIM_OC_InitStructure->TIM_OCMode = TIM_OCMode_PWM1;
+	TIM_OC_InitStructure->TIM_OCIdleState = TIM_OCIdleState_Reset;
+	TIM_OC_InitStructure->TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OC_InitStructure->TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OC_InitStructure->TIM_Pulse = 0x0000;
+
+	TIM_OC2Init(TIM3, TIM_OC_InitStructure);
+	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+	TIM_OC3Init(TIM3, TIM_OC_InitStructure);
+	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+	TIM_OC4Init(TIM3, TIM_OC_InitStructure);
+	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+	/* Enable the TIM Counter */
+	TIM_Cmd(TIM3, ENABLE);
 }
 
 
