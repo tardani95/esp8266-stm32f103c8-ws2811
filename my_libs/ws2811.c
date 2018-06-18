@@ -159,7 +159,7 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure,uint8_t* ledstrip_t
 	/* DMA ch3 receives the TIM3 Update event - page 281 in RM 02-06-2018 */
 	DMA_DeInit(DMA1_Channel3);
 	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->DMAR);
-	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_array;
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_dma_buffer;
 	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
 	/*
 	 * 24 bits need to determine the color of one led
@@ -177,12 +177,9 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure,uint8_t* ledstrip_t
 
 	TIM_DMAConfig(TIM3, TIM_DMABase_CCR2, TIM_DMABurstLength_3Transfers);
 	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
-	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
-
+	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE); /* transmission complete */
+	DMA_ITConfig(DMA1_Channel3, DMA_IT_HT, ENABLE); /* half transfer complete */
 }
-
-
-
 
 
 /* interval: [ fromCH ; toCh ) */
@@ -191,13 +188,33 @@ void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size){
 }
 
 uint8_t gammaCorrection(uint8_t color){
-
+	return gammaCorrectionTable[color];
 }
-void refreshLedStrip(void){
 
+void refreshLedStrip(void){
+	/* reset and enable dma*/
+	/* send out initial array */
+	DMA_Cmd(DMA1_Channel3, DISABLE);
+	DMA_SetCurrDataCounter(DMA1_Channel3, 50*24*3);
+
+	DMA_ClearFlag(DMA1_FLAG_HT3);
+	DMA_ClearFlag(DMA1_FLAG_TC3);
+	DMA_Cmd(DMA1_Channel3, ENABLE);
 }
 
 /* dma buffer handling*/
 void DMA1_Channel3_IRQHandler(void){
+
+	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) != RESET){
+		DMA_Cmd(DMA1_Channel3, DISABLE);
+		TIM3->CCR2 = 0;
+		TIM3->CCR3 = 0;
+		TIM3->CCR4 = 0;
+		DMA_ClearFlag(DMA1_FLAG_TC3);
+	}
+
+	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
+		DMA_ClearFlag(DMA1_FLAG_HT3);
+	}
 
 }
