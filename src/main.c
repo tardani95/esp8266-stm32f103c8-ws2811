@@ -15,8 +15,9 @@ Info        : 2018-04-09
 #include "stm32f10x.h"
 
 #include "esp8266.h" /* my lib */
-#include "periph.h" /* my lib */
-
+#include "ws2811.h"  /* my lib */
+#include "periph.h"  /* my lib */
+#include "util.h"    /* my lib */
 
 /* Private typedef */
 /* Private define  */
@@ -117,13 +118,8 @@ int main(void)
 	/* button init */
 	InitGPIO_BTN(&GPIO_InitStructure);
 
-	/* ledstrip signal pin init*/
-	InitGPIO_LSS1(&GPIO_InitStructure);
-	InitGPIO_LSS2(&GPIO_InitStructure);
-
 	/* pwm for external interrupt register init*/
-	InitGPIO_PWM_EXTI(&GPIO_InitStructure);
-
+//	InitGPIO_PWM_EXTI(&GPIO_InitStructure);
 
 	/**************************************************/
 	/* TIMER INIT */
@@ -134,12 +130,6 @@ int main(void)
 	/* tim2 ch2 pwm inti */
 	//InitTIM2_CH2_PWM(&TIM_OC_InitStructure);
 
-	/* tim3 clock init */
-	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
-
-	/* tim3 ch3 pwm init */
-	InitTIM3_CH2_CH3_CH4_PWM(&TIM_OC_InitStructure);
-
 	/**************************************************/
 	/* INTERRUPT INIT */
 	/* the interrupt handlers found in stm32f1xx_it.c */
@@ -147,31 +137,35 @@ int main(void)
 	/* button interrupt init */
 	InitEXTI_BTN(&EXTI_InitStructure, &NVIC_InitStructure);
 
-	/* pwm interrupt capture */
-	//InitEXTI_TIM3_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
-	//InitEXTI_TIM2_PWM(&EXTI_InitStructure, &NVIC_InitStructure);
-	//InitNVIC_LSS1(&NVIC_InitStructure);
-	InitNVIC_LSS123(&NVIC_InitStructure);
 
-	//InitDMA_CH2_TIM3_CH3(&DMA_InitStructure, look_up_table_1);
-	InitDMA_CH3_TIM3_CH2_to_CH4(&DMA_InitStructure, look_up_table_1);
 
-	TIM_DMAConfig(TIM3, TIM_DMABase_CCR2, TIM_DMABurstLength_3Transfers);
+	/* ledstrip signal pin init*/
+	InitGPIO_LSSs(&GPIO_InitStructure);
+	InitNVIC_LSS(&NVIC_InitStructure);
 
-	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
+	/* tim3 clock init */
+	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
+	InitTIM3_PWM(&TIM_OC_InitStructure);
+	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, look_up_table_1);
 
-	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
 
-	/* Enable the TIM Counter */
-	TIM_Cmd(TIM3, ENABLE);
+//	TIM_DMAConfig(TIM3, TIM_DMABase_CCR2, TIM_DMABurstLength_3Transfers);
+//
+//	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
+//
+//	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
+//
+//	/* Enable the TIM Counter */
+//	TIM_Cmd(TIM3, ENABLE);
+
 
 	InitLookUpTable();
-	RefreshLookUpTable1();
+	RefreshLookUpTable1(50);
 
 	/* reset and enable dma*/
 	/* send out initial array */
 	DMA_Cmd(DMA1_Channel3, DISABLE);
-	DMA_SetCurrDataCounter(DMA1_Channel3, 6*24*3);
+	DMA_SetCurrDataCounter(DMA1_Channel3, 50*24*3);
 
 	DMA_ClearFlag(DMA1_FLAG_TC3);
 	DMA_Cmd(DMA1_Channel3, ENABLE);
@@ -224,8 +218,9 @@ void DMA1_Channel2_IRQHandler(void){
   led4_counter++;*/
 }
 
+/*
 void DMA1_Channel3_IRQHandler(void){
-	/* one led data shifted out */
+	// one led data shifted out
 	led_counter++;
 	if(led_counter>LED_NUMBER){
 		DMA_Cmd(DMA1_Channel3, DISABLE);
@@ -245,12 +240,14 @@ void DMA1_Channel3_IRQHandler(void){
 	}
 
 }
+*/
 
 void OnUART_DataReceived(void){
 	switch(uart_receive_array[12]){
 		case 0 :{
 			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-			RefreshLookUpTable1();
+			RefreshLookUpTable1(50);
+			refreshLedStrip();
 		}break;
 
 		default:break;
