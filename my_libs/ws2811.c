@@ -151,7 +151,7 @@ void InitTIM3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
   * @param  ledstrip_transmit_dma_buffer - uint8_t[] buffer to send
   * @retval None
   */
-void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure,uint8_t* ledstrip_transmit_dma_buffer){
+void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_transmit_dma_buffer){
 	/* DMA 1, Channel 2 for TIM3 CH4 */
 
 	/* using TIM DMA burst feature page 421 in Reference Manual 02-06-2018 */
@@ -182,8 +182,23 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure,uint8_t* ledstrip_t
 }
 
 
-/* interval: [ fromCH ; toCh ) */
-void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size){
+
+void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
+
+	GPIO_InitTypeDef GPIO_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
+	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; /* timer init */
+	TIM_OCInitTypeDef TIM_OC_InitStructure; /* output compare init */
+	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
+
+	/* ledstrip signal pin init*/
+	InitGPIO_LSSs(&GPIO_InitStructure);
+	InitNVIC_LSS(&NVIC_InitStructure);
+
+	/* tim3 clock init */
+	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
+	InitTIM3_PWM(&TIM_OC_InitStructure);
+	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, (uint8_t*)look_up_table_1);
 
 }
 
@@ -194,22 +209,49 @@ uint8_t gammaCorrection(uint8_t color){
 void refreshLedStrip(void){
 	/* reset and enable dma*/
 	/* send out initial array */
+	TIM_Cmd(TIM3, DISABLE);
+	TIM3->CCR2 = 0;
+	TIM3->CCR3 = 0;
+	TIM3->CCR4 = 0;
+
 	DMA_Cmd(DMA1_Channel3, DISABLE);
 	DMA_SetCurrDataCounter(DMA1_Channel3, 50*24*3);
 
 	DMA_ClearFlag(DMA1_FLAG_HT3);
 	DMA_ClearFlag(DMA1_FLAG_TC3);
 	DMA_Cmd(DMA1_Channel3, ENABLE);
+	TIM_Cmd(TIM3, ENABLE);
+
 }
 
-/* dma buffer handling*/
+/* DMA circular buffer handling*/
 void DMA1_Channel3_IRQHandler(void){
+	/*
+	// one led data shifted out
+		led_counter++;
+		if(led_counter>LED_NUMBER){
+			DMA_Cmd(DMA1_Channel3, DISABLE);
+			TIM3->CCR2 = 0;
+			TIM3->CCR3 = 0;
+			TIM3->CCR4 = 0;
+			led_counter = 0;
+	//		delayMicroSec(50);
+			DMA_Cmd(DMA1_Channel3, DISABLE);
+			DMA_SetCurrDataCounter(DMA1_Channel3, 1*24*3);
+
+			delayMicroSec(55);
+			DMA_ClearFlag(DMA1_FLAG_TC3);
+			DMA_Cmd(DMA1_Channel3, ENABLE);
+		}else{
+			DMA_ClearFlag(DMA1_FLAG_TC3);
+		}*/
 
 	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) != RESET){
 		DMA_Cmd(DMA1_Channel3, DISABLE);
 		TIM3->CCR2 = 0;
 		TIM3->CCR3 = 0;
 		TIM3->CCR4 = 0;
+//		TIM_Cmd(TIM3, DISABLE);
 		DMA_ClearFlag(DMA1_FLAG_TC3);
 	}
 
