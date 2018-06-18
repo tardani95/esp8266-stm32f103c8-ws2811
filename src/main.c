@@ -128,6 +128,13 @@ int main(void)
 
 
 	while(1){
+		/*if(isNewDataArrived){
+			isNewDataArrived = 0;
+			animOff = 0;
+			while(!animOff){
+				showAnim[uart_receive_array[12]](&animOff);
+			}
+		}*/
 	}
 }
 
