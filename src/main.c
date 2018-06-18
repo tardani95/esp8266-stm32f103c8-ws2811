@@ -21,23 +21,11 @@ Info        : 2018-04-09
 
 /* Private typedef */
 /* Private define  */
-
-
 /* Private macro */
-/* Private variables */
-uint8_t receivedData = 0;
-uint8_t rArray[20];
-//char startUPDListening[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n\0";
-uint8_t sendData = 0;
-uint8_t uart_counter=0;
-uint8_t led_counter = 0;
-uint8_t isNewDataArrived = 0;
-
-
-
 
 /* Private variables */
-uint8_t uart_receive_array[20];
+
+__IO uint8_t uart_receive_array[UART_BUFFER_SIZE]; /* UART_BUFFER_SIZE in esp8266.h */
 
 /* Private function prototypes */
 void OnUART_DataReceived(void);
@@ -88,24 +76,6 @@ int main(void)
 	GPIO_InitTypeDef GPIO_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure; /* external interrupt init */
 	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
-	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; /* timer init */
-	TIM_OCInitTypeDef TIM_OC_InitStructure; /* output compare init */
-	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
-
-
-
-//	uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
-	/* init receive array with dummy data to see if the dma is working */
-	for(uint8_t i = 0; i<20; ++i){
-		uart_receive_array[i] = 0xAA;
-	}
-
-	uint8_t receive_array_length = 13; //13
-//	uint8_t transmit_array_length = 32; //32
-
-	InitESP8266(uart_receive_array);
-	StartUDPReceivingWithCallback(receive_array_length, OnUART_DataReceived );
-
 
 	/**************************************************/
 	/* GPIO INIT */
@@ -138,109 +108,28 @@ int main(void)
 	InitEXTI_BTN(&EXTI_InitStructure, &NVIC_InitStructure);
 
 
+	/**************************************************/
+	/* ESP-01 INIT									  */
+	/**************************************************/
+	/* init receive array with dummy data to see if the dma is working */
+	uint8_t receive_array_length = 13; //13
+	InitESP8266((uint8_t*)uart_receive_array/*, receive_array_length*/);
+	StartUDPReceivingWithCallback(receive_array_length, OnUART_DataReceived );
 
-	/* ledstrip signal pin init*/
-	InitGPIO_LSSs(&GPIO_InitStructure);
-	InitNVIC_LSS(&NVIC_InitStructure);
+	/**************************************************/
+	/* WS2811 INIT									  */
+	/**************************************************/
+	Init_WS2811(uart_receive_array,receive_array_length);
 
-	/* tim3 clock init */
-	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
-	InitTIM3_PWM(&TIM_OC_InitStructure);
-	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, look_up_table_1);
-
-
-//	TIM_DMAConfig(TIM3, TIM_DMABase_CCR2, TIM_DMABurstLength_3Transfers);
-//
-//	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
-//
-//	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
-//
-//	/* Enable the TIM Counter */
-//	TIM_Cmd(TIM3, ENABLE);
-
-
+	/* send out initial array */
 	InitLookUpTable();
 	RefreshLookUpTable1(50);
-
-	/* reset and enable dma*/
-	/* send out initial array */
-	DMA_Cmd(DMA1_Channel3, DISABLE);
-	DMA_SetCurrDataCounter(DMA1_Channel3, 50*24*3);
-
-	DMA_ClearFlag(DMA1_FLAG_TC3);
-	DMA_Cmd(DMA1_Channel3, ENABLE);
-
-
-	/* send out initial array */
-//	DMA_Cmd(DMA1_Channel2, DISABLE);
-//	DMA_SetCurrDataCounter(DMA1_Channel2, LOOK_UP_TABLE_SIZE);
-//
-//	DMA_ClearFlag(DMA1_FLAG_TC2);
-//	DMA_Cmd(DMA1_Channel2, ENABLE);
-//
-//	TIM3->CCR3 = look_up_table_1[0];
-//	delaySec(1);
-//	TIM3->CCR3 = 0;
-//	delayMicroSec(55);
+	refreshLedStrip();
 
 
 	while(1){
-		//AnimFadeInFadeOut(4000,2000,4000);
-		//RefreshLookUpTable(rArray[7],rArray[8],rArray[9]);
-		/*delayMicroSec(55);
-		if(isNewDataArrived){
-			// send out ledstip signal
-			DMA_Cmd(DMA1_Channel3, DISABLE);
-			DMA_SetCurrDataCounter(DMA1_Channel3, LOOK_UP_TABLE_SIZE*3);
-			DMA_ClearFlag(DMA1_FLAG_TC3);
-			DMA_Cmd(DMA1_Channel3, ENABLE);
-			delayMicroSec(6000);
-			isNewDataArrived = 0;
-		}*/
 	}
 }
-
-
-
-/**
-  * @brief  This function handles the PWM generation with DMA for TIM3_CH3
-  * @param  None
-  * @retval None
-  */
-void DMA1_Channel2_IRQHandler(void){
-  /* data shifted out */
-  DMA_ClearFlag(DMA1_FLAG_TC2);
-  TIM3->CCR3 = 0;
-  /*if(led4_counter > 38){
-	  led4_counter = 0;
-	  TIM3->CCR3 = 0;
-  }
-  led4_counter++;*/
-}
-
-/*
-void DMA1_Channel3_IRQHandler(void){
-	// one led data shifted out
-	led_counter++;
-	if(led_counter>LED_NUMBER){
-		DMA_Cmd(DMA1_Channel3, DISABLE);
-		TIM3->CCR2 = 0;
-		TIM3->CCR3 = 0;
-		TIM3->CCR4 = 0;
-		led_counter = 0;
-//		delayMicroSec(50);
-		DMA_Cmd(DMA1_Channel3, DISABLE);
-		DMA_SetCurrDataCounter(DMA1_Channel3, 1*24*3);
-
-		delayMicroSec(55);
-		DMA_ClearFlag(DMA1_FLAG_TC3);
-		DMA_Cmd(DMA1_Channel3, ENABLE);
-	}else{
-		DMA_ClearFlag(DMA1_FLAG_TC3);
-	}
-
-}
-*/
 
 void OnUART_DataReceived(void){
 	switch(uart_receive_array[12]){
