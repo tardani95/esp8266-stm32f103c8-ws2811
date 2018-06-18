@@ -122,7 +122,6 @@ Waiting for the packages:
 /******************************************************************************/
 /*                          Private variables                                 */
 /******************************************************************************/
-uint8_t *uart_receive_array;
 uint8_t isCallbackSet = 0;
 
 /******************************************************************************/
@@ -265,12 +264,16 @@ void InitUART1(USART_InitTypeDef* USART_InitStructure){
   * @param  array where the uart dma is going to put the data
   * @retval None
   */
-void InitESP8266(uint8_t* uart_reception_array){
+void InitESP8266(uint8_t* uart_receive_array){
 
 	/*Establishing UDP Transmission*/
 	uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
 	uint8_t transmit_array_length = 32; /* uart_transmit_array length: 32 */
-	uart_receive_array = uart_reception_array;
+
+	for(uint8_t i = 0; i < UART_BUFFER_SIZE ; ++i){
+		uart_receive_array[i] = 0xAA;
+	}
+
 
 	/**************************************************/
 	/* INIT STUCTURES                                 */
