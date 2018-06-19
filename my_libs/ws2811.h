@@ -67,10 +67,10 @@ Info        : 16.06.2018
 #define LED_BITS           		( COLOR_NUM * COLOR_BITS ) /* = 24 */
 #define BITS_PER_COLOR			( PARALELL_STRIPS * COLOR_BITS )
 
-#define PIXEL_PER_BUFFER		2 /* only even */
+#define PIXEL_PER_BUFFER		4 /* only even */
 #define DMA_PIXEL_SIZE			( PARALELL_STRIPS * LED_BITS )			 /* 3*24 = 72 */
 #define DMA_BUFFER_SIZE   		( PIXEL_PER_BUFFER * DMA_PIXEL_SIZE )
-#define LED_STRIP_SIZE    		( SERIES_STRIPS * DIFFERENT_LEDGROUPS)
+#define LED_STRIP_SIZE    		( SERIES_STRIPS * DIFFERENT_LEDGROUPS)+PIXEL_PER_BUFFER
 
 #define R						1
 #define G						2
