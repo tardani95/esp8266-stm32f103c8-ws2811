@@ -76,6 +76,8 @@ Info        : 16.06.2018
 #define G						2
 #define B						0
 /*========================================================================*/
+extern __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE];
+extern __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];
 
 void InitGPIO_LSSs(GPIO_InitTypeDef*);
 void InitNVIC_LSS(NVIC_InitTypeDef*);

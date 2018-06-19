@@ -145,7 +145,7 @@ void OnUART_DataReceived(void){
 	switch(uart_receive_array[12]){
 		case 0 :{
 			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-			RefreshLookUpTable1(50);
+//			RefreshLookUpTable1(50);
 			refreshLedStrip();
 		}break;
 
