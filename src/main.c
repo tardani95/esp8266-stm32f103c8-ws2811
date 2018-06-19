@@ -20,8 +20,7 @@ Info        : 2018-04-09
 
 /* Private typedef */
 /* Private define  */
-
-
+// #define DEBUG
 /* Private macro */
 /* Private variables */
 uint8_t receivedData = 0;
