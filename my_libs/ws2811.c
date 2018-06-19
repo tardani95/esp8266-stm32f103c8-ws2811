@@ -302,7 +302,7 @@ void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
 	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
 		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
 			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
-				TIMx_OC_DMA_Buffer_BRG[colorID*COLOR_BITS + colorBit*PARALELL_STRIPS + parallelStripID] =
+				TIMx_OC_DMA_Buffer_BRG[(pixel_idx%2)*DMA_PIXEL_SIZE + colorID*PARALELL_STRIPS*COLOR_BITS + colorBit*PARALELL_STRIPS + parallelStripID] =
 						(pixel_mapBRG[parallelStripID][pixel_idx][colorID] & (0x80 >> colorBit)) ? T1H : T0H;
 			}
 		}
@@ -317,6 +317,7 @@ void Init_DMA_Buffer(void){
 	/* buffer for the first pixel -> [0] */
 //	FillUp_DMA_Buffer(0, DMA_BUFFER_SIZE, 0);
 	FillUp_DMA_HalfBuffer_BGR_map(0);
+	FillUp_DMA_HalfBuffer_BGR_map(1);
 }
 
 void refreshLedStrip(void){
