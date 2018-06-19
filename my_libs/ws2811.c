@@ -258,7 +258,7 @@ void Clear_SH_DMA_Buffer(void){
 	Clear_DMA_Buffer(DMA_BUFFER_SIZE/2 , DMA_BUFFER_SIZE/2);
 }
 
-void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
+/*void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
 
 #ifdef DEBUG_DMA_BUFFER_FILL_UP
 	GPIOC->ODR &= (~GPIO_Pin_13);
@@ -267,7 +267,7 @@ void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_i
 	uint16_t i_percent_PS;
 	uint16_t i_per_PS;
 
-	for(uint16_t i = offset; i < (offset + fillUp_length) ; ++i ){ /* fillUp_length / 3 - because there are 3 components-RGB*/
+	for(uint16_t i = offset; i < (offset + fillUp_length) ; ++i ){
 		i_percent_PS = i % PARALELL_STRIPS;
 		i_per_PS = i / PARALELL_STRIPS;
 		switch(i / (PARALELL_STRIPS*8)){
@@ -281,6 +281,42 @@ void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_i
 			}
 			case 2 : {
 				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+			default:{ // the same as case 0
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+		}
+	}
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR |= (GPIO_Pin_13);
+#endif
+}*/
+
+void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_id1){
+
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR &= (~GPIO_Pin_13);
+#endif
+
+	uint16_t i_percent_PS;
+	uint16_t i_per_PS;
+
+	for(uint16_t i = offset; i < (offset + fillUp_length) ; ++i ){ /* fillUp_length / 3 - because there are 3 components-RGB*/
+		i_percent_PS = i % PARALELL_STRIPS;
+		i_per_PS = i / PARALELL_STRIPS;
+		switch( (i/(PARALELL_STRIPS*8)) % 3 ){
+			case 0 : {
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_id1 + i/DMA_PIXEL_SIZE].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+			case 1 : {
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_id1 + i/DMA_PIXEL_SIZE].r & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+			case 2 : {
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_id1 + i/DMA_PIXEL_SIZE].g & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
 				break;
 			}
 			/*default:{ // the same as case 0
@@ -350,9 +386,8 @@ void DMA1_Channel3_IRQHandler(void){
 #endif
 
 
-	 /* HT or TC event completed, increment half transfer number */
 
-	uint16_t offset=0;
+	 /* HT or TC event completed, increment half transfer number */
 
 	/* Half transfer */
 	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
@@ -361,8 +396,7 @@ void DMA1_Channel3_IRQHandler(void){
 #endif
 		DMA_ClearFlag(DMA1_FLAG_HT3);
 
-		++pixel_id;
-		offset = 0;
+		pixel_id += PIXEL_PER_BUFFER;
 
 		if(pixel_id > LED_STRIP_SIZE-1){ // preparing for end transfer - setting TIMx OC values to 0
 			//Clear_FH_DMA_Buffer();
@@ -374,7 +408,9 @@ void DMA1_Channel3_IRQHandler(void){
 			Clear_SH_DMA_Buffer();
 			return;
 		}
+//		FillUp_DMA_Buffer(0, DMA_BUFFER_SIZE/2, pixel_id+1);
 		FillUpNext_FH_DMA_Buffer();
+
 #ifdef DEBUG_DMA_BUFFER_HT
 	GPIOC->ODR &= (~GPIO_Pin_14);
 #endif
@@ -402,9 +438,8 @@ void DMA1_Channel3_IRQHandler(void){
 			Clear_SH_DMA_Buffer();
 			return;
 		}
-
+//		FillUp_DMA_Buffer(DMA_BUFFER_SIZE/2 , DMA_BUFFER_SIZE/2, pixel_id+1);
 		FillUpNext_SH_DMA_Buffer();
-		offset = DMA_BUFFER_SIZE/2;
 
 #ifdef DEBUG_DMA_BUFFER_TC
 	GPIOC->ODR &= (~GPIO_Pin_15);
