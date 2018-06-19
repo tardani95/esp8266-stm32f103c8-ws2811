@@ -359,8 +359,7 @@ void DMA1_Channel3_IRQHandler(void){
 #ifdef DEBUG_DMA_BUFFER_HT
 	GPIOC->ODR |= (GPIO_Pin_14); // half transfer flag set
 #endif
-
-//		DMA_ClearFlag(DMA1_FLAG_HT3);
+		DMA_ClearFlag(DMA1_FLAG_HT3);
 
 		++pixel_id;
 		offset = 0;
@@ -376,6 +375,9 @@ void DMA1_Channel3_IRQHandler(void){
 			return;
 		}
 		FillUpNext_FH_DMA_Buffer();
+#ifdef DEBUG_DMA_BUFFER_HT
+	GPIOC->ODR &= (~GPIO_Pin_14);
+#endif
 	} /* endif - Half transfer */
 
 	/* Transfer Complete */
@@ -384,7 +386,7 @@ void DMA1_Channel3_IRQHandler(void){
 	GPIOC->ODR |= (GPIO_Pin_15); // transfer complete flag set
 #endif
 
-//		DMA_ClearFlag(DMA1_FLAG_TC3);
+		DMA_ClearFlag(DMA1_FLAG_TC3);
 
 		/*if(pixel_id > LED_STRIP_SIZE){   // end transfer
 			DMA_Cmd(DMA1_Channel3, DISABLE);
@@ -404,7 +406,9 @@ void DMA1_Channel3_IRQHandler(void){
 		FillUpNext_SH_DMA_Buffer();
 		offset = DMA_BUFFER_SIZE/2;
 
-
+#ifdef DEBUG_DMA_BUFFER_TC
+	GPIOC->ODR &= (~GPIO_Pin_15);
+#endif
 	} /* endif - Transfer complete */
 
 	/*if( pixel_id >= LED_STRIP_SIZE -1){
@@ -422,12 +426,12 @@ void DMA1_Channel3_IRQHandler(void){
 	GPIOC->ODR |= (GPIO_Pin_13);
 #endif
 
-#ifdef DEBUG_DMA_BUFFER_HT
-	GPIOC->ODR &= (~GPIO_Pin_14);
-#endif
+//#ifdef DEBUG_DMA_BUFFER_HT
+//	GPIOC->ODR &= (~GPIO_Pin_14);
+//#endif
 
-#ifdef DEBUG_DMA_BUFFER_TC
-	GPIOC->ODR &= (~GPIO_Pin_15);
-#endif
+//#ifdef DEBUG_DMA_BUFFER_TC
+//	GPIOC->ODR &= (~GPIO_Pin_15);
+//#endif
 
 }
