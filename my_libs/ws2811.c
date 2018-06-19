@@ -14,7 +14,11 @@ Info        : 16.06.2018
 /******************************************************************************/
 #include "ws2811.h"
 
-#define RGB(color)
+#define DEBUG_PINS_ON
+#define DEBUG_DMA_BUFFER_FILL_UP
+//#define DEBUG_DMA_BUFFER_IRQ
+#define DEBUG_DMA_BUFFER_HT
+#define DEBUG_DMA_BUFFER_TC
 
 /******************************************************************************/
 /*                          Private typedef                                   */
@@ -52,7 +56,9 @@ __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; /* DMA buffer for TIMx Out
 
 __IO RGB_Pixel pixel_map[PARALELL_STRIPS][LED_STRIP_SIZE];  /* array to store all the pixel colors */
 
-__IO uint16_t pixel_id = 0; /* current processed led 3s */
+__IO uint16_t HT_counter = 0; /* current processed half buffer */
+__IO uint16_t pixel_id = 0; /* current processed half buffer */
+
 
 
 /******************************************************************************/
@@ -89,6 +95,18 @@ void InitGPIO_LSSs(GPIO_InitTypeDef* GPIO_InitStructure){
 	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
 	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_Init(GPIOB, GPIO_InitStructure); /* !GPIOB! */
+
+#ifdef DEBUG_PINS_ON
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	/* PC14 & PC15  */
+	GPIO_InitStructure->GPIO_Pin   = GPIO_Pin_14 | GPIO_Pin_15;
+	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
+	GPIO_Init(GPIOC, GPIO_InitStructure); /* !GPIOC! */
+
+	GPIO_ResetBits(GPIOC,GPIO_Pin_14 | GPIO_Pin_15);
+#endif
 
 }
 
@@ -148,7 +166,7 @@ void InitTIM3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
 	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
 	/* Enable the TIM Counter */
-	TIM_Cmd(TIM3, ENABLE);
+	/* TIM_Cmd(TIM3, ENABLE); */
 }
 
 
@@ -241,8 +259,14 @@ void Clear_SH_DMA_Buffer(void){
 }
 
 void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
+
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR &= (~GPIO_Pin_13);
+#endif
+
 	uint16_t i_percent_PS;
 	uint16_t i_per_PS;
+
 	for(uint16_t i = offset; i < (offset + fillUp_length) ; ++i ){ /* fillUp_length / 3 - because there are 3 components-RGB*/
 		i_percent_PS = i % PARALELL_STRIPS;
 		i_per_PS = i / PARALELL_STRIPS;
@@ -259,12 +283,15 @@ void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_i
 				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
 				break;
 			}
-			default:{ /* the same as case 0 */
+			/*default:{ // the same as case 0
 				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
 				break;
-			}
+			}*/
 		}
 	}
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR |= (GPIO_Pin_13);
+#endif
 	/*
 	for(uint16_t i = offset ; i < (offset + cleared_buff_size) ; ++i){
 		for(uint8_t l = 0; l<3; ++l){
@@ -280,12 +307,18 @@ void Init_DMA_Buffer(void){
 }
 
 void FillUpNext_FH_DMA_Buffer(void){
+//	DMA_ClearFlag(DMA1_FLAG_HT3);
+//	DMA_ClearITPendingBit(DMA1_IT_HT3);
 	FillUp_DMA_Buffer(0, DMA_BUFFER_SIZE/2, pixel_id+1);
+
 }
 
 void FillUpNext_SH_DMA_Buffer(void){
+//	DMA_ClearFlag(DMA1_FLAG_TC3);
+//	DMA_ClearITPendingBit(DMA1_IT_TC3);
 	FillUp_DMA_Buffer(DMA_BUFFER_SIZE/2 , DMA_BUFFER_SIZE/2, pixel_id+1);
 }
+
 
 void refreshLedStrip(void){
 
@@ -299,6 +332,7 @@ void refreshLedStrip(void){
 
 	/* buffer initialization*/
 	pixel_id = 0;
+//	HT_counter = 0;
 	Init_DMA_Buffer();
 
 	DMA_ClearFlag(DMA1_FLAG_HT3);
@@ -311,38 +345,89 @@ void refreshLedStrip(void){
 /* DMA circular buffer handling*/
 void DMA1_Channel3_IRQHandler(void){
 
-	/* @Half transfer */
+#ifdef DEBUG_DMA_BUFFER_IRQ
+	GPIOC->ODR &= (~GPIO_Pin_13);
+#endif
+
+
+	 /* HT or TC event completed, increment half transfer number */
+
+	uint16_t offset=0;
+
+	/* Half transfer */
 	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
+#ifdef DEBUG_DMA_BUFFER_HT
+	GPIOC->ODR |= (GPIO_Pin_14); // half transfer flag set
+#endif
 
-		DMA_ClearFlag(DMA1_FLAG_HT3);
+//		DMA_ClearFlag(DMA1_FLAG_HT3);
 
-		if(pixel_id > LED_STRIP_SIZE-1){ /* preparing for end transfer - setting TIMx OC values to 0 */
+		++pixel_id;
+		offset = 0;
+
+		if(pixel_id > LED_STRIP_SIZE-1){ // preparing for end transfer - setting TIMx OC values to 0
+			//Clear_FH_DMA_Buffer();
+			DMA_Cmd(DMA1_Channel3, DISABLE);
+			TIM_Cmd(TIM3, DISABLE);
+			DMA_ClearFlag(DMA1_FLAG_HT3);
+			DMA_ClearFlag(DMA1_FLAG_TC3);
+			//pixel_id = 0;
 			Clear_SH_DMA_Buffer();
 			return;
 		}
 		FillUpNext_FH_DMA_Buffer();
+	} /* endif - Half transfer */
 
-	}
-
-	/* @Transfer Complete */
+	/* Transfer Complete */
 	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) != RESET){
+#ifdef DEBUG_DMA_BUFFER_TC
+	GPIOC->ODR |= (GPIO_Pin_15); // transfer complete flag set
+#endif
 
-		DMA_ClearFlag(DMA1_FLAG_TC3);
+//		DMA_ClearFlag(DMA1_FLAG_TC3);
 
-		if(pixel_id > LED_STRIP_SIZE){   /*end transfer*/
+		/*if(pixel_id > LED_STRIP_SIZE){   // end transfer
 			DMA_Cmd(DMA1_Channel3, DISABLE);
 			pixel_id = 0;
 			return;
-		}
-		if(pixel_id > LED_STRIP_SIZE-1){ /* preparing for end transfer - setting TIMx OC values to 0 */
+		}*/
+		if(pixel_id > LED_STRIP_SIZE-1){ // preparing for end transfer - setting TIMx OC values to 0
+			DMA_Cmd(DMA1_Channel3, DISABLE);
+			TIM_Cmd(TIM3, DISABLE);
+			DMA_ClearFlag(DMA1_FLAG_HT3);
+			DMA_ClearFlag(DMA1_FLAG_TC3);
+			//pixel_id = 0;
 			Clear_SH_DMA_Buffer();
-			pixel_id++;
 			return;
 		}
 
 		FillUpNext_SH_DMA_Buffer();
-		pixel_id++;
+		offset = DMA_BUFFER_SIZE/2;
 
-	}
+
+	} /* endif - Transfer complete */
+
+	/*if( pixel_id >= LED_STRIP_SIZE -1){
+		DMA_Cmd(DMA1_Channel3, DISABLE);
+		TIM_Cmd(TIM3, DISABLE);
+		Clear_DMA_Buffer(offset, DMA_BUFFER_SIZE/2);
+
+		pixel_id = 0;
+	}else{
+		FillUp_DMA_Buffer( offset, DMA_BUFFER_SIZE/2 , pixel_id );
+		DMA_ClearFlag(DMA1_FLAG_TC3);
+		DMA_ClearFlag(DMA1_FLAG_HT3);
+	}*/
+#ifdef DEBUG_DMA_BUFFER_IRQ
+	GPIOC->ODR |= (GPIO_Pin_13);
+#endif
+
+#ifdef DEBUG_DMA_BUFFER_HT
+	GPIOC->ODR &= (~GPIO_Pin_14);
+#endif
+
+#ifdef DEBUG_DMA_BUFFER_TC
+	GPIOC->ODR &= (~GPIO_Pin_15);
+#endif
 
 }

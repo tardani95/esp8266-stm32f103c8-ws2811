@@ -63,8 +63,9 @@ Info        : 16.06.2018
 #define PIXEL_ARRAY_SIZE   		( PARALELL_STRIPS * (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3))
 
 #define LED_BITS           		24
+#define PIXEL_PER_BUFFER		1 /* 1-.. */
 
-#define DMA_BUFFER_SIZE   		2* ( PARALELL_STRIPS * LED_BITS ) /* 3*24 = 72 - !must be divisible by 2! */
+#define DMA_BUFFER_SIZE   		( PIXEL_PER_BUFFER * PARALELL_STRIPS * LED_BITS ) /* 3*24 = 72 */
 #define LED_STRIP_SIZE    		( SERIES_STRIPS * DIFFERENT_LEDGROUPS)
 /*========================================================================*/
 

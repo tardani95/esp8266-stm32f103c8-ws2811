@@ -21,6 +21,7 @@ Info        : 2018-04-09
 
 /* Private typedef */
 /* Private define  */
+// #define DEBUG
 /* Private macro */
 
 /* Private variables */
