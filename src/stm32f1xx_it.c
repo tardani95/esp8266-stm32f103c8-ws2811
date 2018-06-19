@@ -143,9 +143,12 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
+/* built inside my util library */
+/*
 void SysTick_Handler(void)
 {
 }
+*/
 
 /******************************************************************************/
 /*                 STM32F1xx Peripherals Interrupt Handlers                   */

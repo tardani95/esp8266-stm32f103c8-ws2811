@@ -117,12 +117,11 @@ Waiting for the packages:
 /******************************************************************************/
 /*                               Includes									  */
 /******************************************************************************/
-#include "../my_libs/esp8266.h"
+#include "esp8266.h"
 
 /******************************************************************************/
 /*                          Private variables                                 */
 /******************************************************************************/
-uint8_t *uart_receive_array;
 uint8_t isCallbackSet = 0;
 
 /******************************************************************************/
@@ -262,15 +261,19 @@ void InitUART1(USART_InitTypeDef* USART_InitStructure){
 
 /**
   * @brief  This function initialize the ESP8266 (ESP-01)
-  * @param  None
+  * @param  array where the uart dma is going to put the data
   * @retval None
   */
-void InitESP8266(uint8_t* uart_reception_array){
+void InitESP8266(uint8_t* uart_receive_array){
 
 	/*Establishing UDP Transmission*/
 	uint8_t uart_transmit_array[] = "AT+CIPSTART=\"UDP\",\"0\",0,1302,2\r\n";
 	uint8_t transmit_array_length = 32; /* uart_transmit_array length: 32 */
-	uart_receive_array = uart_reception_array;
+
+	for(uint8_t i = 0; i < UART_BUFFER_SIZE ; ++i){
+		uart_receive_array[i] = 0xAA;
+	}
+
 
 	/**************************************************/
 	/* INIT STUCTURES                                 */
@@ -301,12 +304,12 @@ void InitESP8266(uint8_t* uart_reception_array){
 
 	/*wait for esp8266 system startup and clear the rx buffer*/
 	ClearRX_DMA_Buffer();
-	delaySec(1); //10
+	DelaySec(1); //10
 
 	SendDataToESP8266(transmit_array_length);
 
 	/* wait for esp8266 sets up the upd connection */
-	delaySec(2); //2
+	DelaySec(2); //2
 
 	/*ESP MODULE READY*/
 }
@@ -356,7 +359,7 @@ void StartUDPReceivingWithCallback(uint8_t receive_array_length, callback ptr_Ca
 }
 
 /**
-  * @brief  This function handles the UART1_TX DMA
+  * @brief  This function handles the UART1_TX DMA, if all data sent out then stops the DMA
   * @param  None
   * @retval None
   */

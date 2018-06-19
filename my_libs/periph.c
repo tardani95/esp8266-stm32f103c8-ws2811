@@ -8,7 +8,7 @@
 /******************************************************************************/
 /*                               Includes									  */
 /******************************************************************************/
-#include "../my_libs/periph.h"
+#include "periph.h"
 
 /******************************************************************************/
 /*                               Variables									  */
@@ -18,8 +18,8 @@ uint16_t button_pin = GPIO_Pin_14; 		/* PB14 */
 uint16_t ledstrip_signal1 = GPIO_Pin_0; 	/* PB0  */
 uint16_t ledstrip_signal2 = GPIO_Pin_1; 	/* PB1  */
 uint16_t pwm_exti_pin 	= GPIO_Pin_1;	/* PA1  */
-uint8_t  look_up_table_1[LOOK_UP_TABLE_SIZE*3];
-uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
+__IO uint8_t  look_up_table_1[LOOK_UP_TABLE_SIZE*3];
+__IO uint8_t  look_up_table_2[LOOK_UP_TABLE_SIZE];
 
 /******************************************************************************/
 /*            			         Functions                                    */
@@ -53,7 +53,7 @@ void delaySec(uint32_t sec){
   * @retval None
   */
 void InitLookUpTable(void){
-	uint8_t look_up_table_3[4][3]={{0,200,0},{125,0,125},{0,0,255},{125,125,0}};
+	uint8_t look_up_table_3[4][3]={{0,150,0},{125,0,125},{0,0,255},{125,125,0}};
 	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE/24;++i){
 		for(uint16_t j=0;j<3;++j){
 			for(uint16_t k = 0; k<8; ++k){
@@ -68,9 +68,9 @@ void InitLookUpTable(void){
   * @param  None
   * @retval None
   */
-void RefreshLookUpTable1(){
+void RefreshLookUpTable1(uint8_t first_x_byte){
 	uint8_t val = 0;
-	for(uint16_t i=0;i<24;++i){
+	for( uint16_t i=0 ; i < 24 * first_x_byte ; ++i){
 		val = look_up_table_2[i] ? 43 : 18;
 		look_up_table_1[i*3] = val;
 		look_up_table_1[i*3+1] = val;
@@ -87,7 +87,7 @@ void RefreshLookUpTable1(){
   */
 void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
 	uint8_t look_up_table_3[4][3]={{B,R,G},{B,R,G},{B,R,G},{B,R,G}};
-	for(uint16_t i=0;i<24;++i){
+	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE/24;++i){
 		for(uint16_t j=0;j<3;++j){
 			for(uint16_t k = 0; k<8; ++k){
 				look_up_table_2[i*24 + j*8 + k] = look_up_table_3[i%4][j] & (0x80 >> k);
@@ -171,38 +171,6 @@ void InitGPIO_BTN(GPIO_InitTypeDef* GPIO_InitStructure){
 }
 
 /**
-  * @brief  This function initialize the led strip signal 1 on PB0
-  * @param  GPIO_InitTypeDef variable address
-  * @retval None
-  */
-void InitGPIO_LSS1(GPIO_InitTypeDef* GPIO_InitStructure){
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
-
-	GPIO_StructInit(GPIO_InitStructure);
-
-	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
-	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal1;
-	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_Init(GPIOB, GPIO_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the led strip signal 2 on PB1
-  * @param  GPIO_InitTypeDef variable address
-  * @retval None
-  */
-void InitGPIO_LSS2(GPIO_InitTypeDef* GPIO_InitStructure){
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
-
-	GPIO_StructInit(GPIO_InitStructure);
-
-	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
-	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal2;
-	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_Init(GPIOB, GPIO_InitStructure);
-}
-
-/**
   * @brief  This function initialize the gpio pin on PA1 for pwm function for the external interrupt
   * @param  GPIO_InitTypeDef variable address
   * @retval None
@@ -226,20 +194,6 @@ void InitGPIO_PWM_EXTI(GPIO_InitTypeDef* GPIO_InitStructure){
 void InitNVIC_LSS1(NVIC_InitTypeDef* NVIC_InitStructure){
 	/* LSS1 PB0 - TIM3 CH3 - DMA1 CH2*/
 	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel2_IRQn;
-	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(NVIC_InitStructure);
-}
-
-/**
-  * @brief  This function initialize the nested vectored interrupt controller for the DMA CH3 - TIM3_CH4
-  * @param  NVIC_InitTypeDef variable
-  * @retval None
-  */
-void InitNVIC_LSS123(NVIC_InitTypeDef* NVIC_InitStructure){
-	/* LSS1 PB1 - TIM3 CH4 - DMA1 CH3*/
-	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel3_IRQn;
 	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
@@ -271,78 +225,6 @@ void InitDMA_CH2_TIM3_CH3(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_
 }
 
 /**
-  * @brief  This function initialize the DMA controller for the TIM3 CH2 to CH4 (PA7 PB0 PB1)
-  * @param  DMA_InitTypeDef variable
-  * @param  uint8_t array what to send
-  * @retval None
-  */
-void InitDMA_CH3_TIM3_CH2_to_CH4(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_transmit_array){
-	/* DMA 1, Channel 2 for TIM3 CH4 */
-	/* using TIM DMA burst feature page 421 in Reference Manual 02-06-2018 */
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-	/* DMA ch3 receives the TIM3 Update event - page 281 in RM 02-06-2018 */
-	DMA_DeInit(DMA1_Channel3);
-	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->DMAR);
-	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_array;
-	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
-	/*
-	 * 24 bits need to determine the color of one led
-	 * 50 LEDs are on a strip
-	 * 3  there are 3 strips (ch2,ch3,ch4)
-	 */
-	DMA_InitStructure->DMA_BufferSize = 24*1*3;
-	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure->DMA_Mode = DMA_Mode_Circular;
-	DMA_InitStructure->DMA_Priority = DMA_Priority_High;
-	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(DMA1_Channel3, DMA_InitStructure);
-}
-
-/**
-  * @brief  This function initialize timer3 clock to a 400kHz frequency - 2.5us time constant
-  * @param  TIM_TimeBaseInitTypeDef variable address
-  * @retval None
-  */
-void InitTIM3_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-
-	TIM_TimeBaseStructInit(TIM_TimeBase_InitStructure);
-
-	TIM_TimeBase_InitStructure->TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBase_InitStructure->TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBase_InitStructure->TIM_Period = TIM_PERIOD; 	// period = period + 1
-	TIM_TimeBase_InitStructure->TIM_Prescaler = TIM_PRESCALER; 	// divider = prescaler + 1
-	TIM_TimeBaseInit(TIM3, TIM_TimeBase_InitStructure);
-}
-
-/**
-  * @brief  This function initialize timer3 output compare mode to pwm1 on ch3
-  * @param  TIM_OCInitTypeDef variable address
-  * @retval None
-  */
-void InitTIM3_CH2_CH3_CH4_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
-	TIM_OCStructInit(TIM_OC_InitStructure);
-
-	TIM_OC_InitStructure->TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OC_InitStructure->TIM_OCIdleState = TIM_OCIdleState_Reset;
-	TIM_OC_InitStructure->TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC_InitStructure->TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC_InitStructure->TIM_Pulse = 0x0000;
-
-	TIM_OC2Init(TIM3, TIM_OC_InitStructure);
-	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-	TIM_OC3Init(TIM3, TIM_OC_InitStructure);
-	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-	TIM_OC4Init(TIM3, TIM_OC_InitStructure);
-	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
-}
-
-/**
   * @brief  This function initialize timer2 clock to a 400kHz frequency - 2.5us time constant
   * @param  TIM_TimeBaseInitTypeDef variable address
   * @retval None
@@ -354,8 +236,8 @@ void InitTIM2_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
 
 	TIM_TimeBase_InitStructure->TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBase_InitStructure->TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBase_InitStructure->TIM_Period = TIM_PERIOD; 	// period = period + 1
-	TIM_TimeBase_InitStructure->TIM_Prescaler = TIM_PRESCALER; 	// divider = prescaler + 1
+	TIM_TimeBase_InitStructure->TIM_Period = 89; 	// period = period + 1
+	TIM_TimeBase_InitStructure->TIM_Prescaler = 1; 	// divider = prescaler + 1
 	TIM_TimeBaseInit(TIM2, TIM_TimeBase_InitStructure);
 }
 
