@@ -226,10 +226,11 @@ void Clear_SH_DMA_Buffer(void){
 }
 
 void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
-
+	uint16_t i_percent_PS;
+	uint16_t i_per_PS;
 	for(uint16_t i = offset; i < (offset + fillUp_length/3) ; ++i ){ /* fillUp_length / 3 - because there are 3 components-RGB*/
-		i_percent_PS = i%PARALELL_STRIPS;
-		i_per_PS = i/PARALELL_STRIPS;
+		i_percent_PS = i % PARALELL_STRIPS;
+		i_per_PS = i / PARALELL_STRIPS;
 		TIMx_OC_DMA_Buffer_BRG[i]                     = pixel_colorRGB[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8));
 		TIMx_OC_DMA_Buffer_BRG[i+1*PARALELL_STRIPS*8] = pixel_colorRGB[i_percent_PS][pixel_idx].r & (0x80 >> (i_per_PS%8));
 		TIMx_OC_DMA_Buffer_BRG[i+2*PARALELL_STRIPS*8] = pixel_colorRGB[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8));
@@ -286,7 +287,7 @@ void DMA1_Channel3_IRQHandler(void){
 		DMA_ClearFlag(DMA1_FLAG_HT3);
 
 		if(pixel_id > LED_STRIP_SIZE-1){ /* preparing for end transfer - setting TIMx OC values to 0 */
-			Clear_LH_DMA_Buffer();
+			Clear_SH_DMA_Buffer();
 			return;
 		}
 		FillUpNext_FH_DMA_Buffer();
@@ -304,7 +305,7 @@ void DMA1_Channel3_IRQHandler(void){
 			return;
 		}
 		if(pixel_id > LED_STRIP_SIZE-1){ /* preparing for end transfer - setting TIMx OC values to 0 */
-			Clear_LH_DMA_Buffer();
+			Clear_SH_DMA_Buffer();
 			pixel_id++;
 			return;
 		}

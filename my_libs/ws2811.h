@@ -78,6 +78,7 @@ void InitTIM3_PWM(TIM_OCInitTypeDef*);
 void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size);
 
 uint8_t gammaCorrection(uint8_t color);
+
 void refreshLedStrip(void);
 
 /* dma buffer handling*/
