@@ -298,11 +298,15 @@ void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
 #ifdef DEBUG_DMA_BUFFER_FILL_UP
 	GPIOC->ODR &= (~GPIO_Pin_13);
 #endif
-
+	uint16_t id0 = (pixel_idx%2)*DMA_PIXEL_SIZE;
+	uint16_t id1;
+	uint16_t id2;
 	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
+		id1 = colorID*BITS_PER_COLOR;
 		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
+			id2 = colorBit*PARALELL_STRIPS;
 			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
-				TIMx_OC_DMA_Buffer_BRG[(pixel_idx%2)*DMA_PIXEL_SIZE + colorID*PARALELL_STRIPS*COLOR_BITS + colorBit*PARALELL_STRIPS + parallelStripID] =
+				TIMx_OC_DMA_Buffer_BRG[ id0 + id1 + id2 + parallelStripID] =
 						(pixel_mapBRG[parallelStripID][pixel_idx][colorID] & (0x80 >> colorBit)) ? T1H : T0H;
 			}
 		}
