@@ -96,9 +96,9 @@ void RefreshLookUpTable(uint8_t r_t, uint8_t g_t, uint8_t b_t){
 //	}
 	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
 		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
-			pixel_mapBRG[j][i][R] = r_t; // gammaCorrection(r_t);
-			pixel_mapBRG[j][i][G] = g_t; // gammaCorrection(g_t);
-			pixel_mapBRG[j][i][B] = b_t; // gammaCorrection(b_t);
+			pixel_mapBRG[j][i][R] = /*r_t;*/ gammaCorrection(r_t);
+			pixel_mapBRG[j][i][G] = /*g_t;*/ gammaCorrection(g_t);
+			pixel_mapBRG[j][i][B] = /*b_t;*/ gammaCorrection(b_t);
 		}
 	}
 }
