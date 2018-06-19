@@ -14,7 +14,14 @@ Info        : 16.06.2018
 /******************************************************************************/
 #include "ws2811.h"
 
-
+/******************************************************************************/
+/*                          Private typedef                                   */
+/******************************************************************************/
+typedef struct RGB{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+}RGB_Pixel;
 /******************************************************************************/
 /*                          Private variables                                 */
 /******************************************************************************/
@@ -39,9 +46,9 @@ const uint8_t gammaCorrectionTable[] = {
       215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
 
-__IO uint8_t TIMx_OC_DMA_Buffer[DMA_BUFFER_SIZE]; /* DMA buffer for TIMx OutputCompare (OC) values */
+__IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; /* DMA buffer for TIMx OutputCompare (OC) values */
 
-__IO uint32_t pixel_colorRGB[PARALELL_STRIPS][LED_STRIP_SIZE];  /* array to store all the pixel colors */
+__IO RGB_Pixel pixel_colorRGB[PARALELL_STRIPS][LED_STRIP_SIZE];  /* array to store all the pixel colors */
 
 __IO uint16_t pixel_id = 0; /* current processed led 3s */
 
@@ -181,8 +188,6 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_
 	DMA_ITConfig(DMA1_Channel3, DMA_IT_HT, ENABLE); /* half transfer complete */
 }
 
-
-
 void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
 
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -206,16 +211,64 @@ uint8_t gammaCorrection(uint8_t color){
 	return gammaCorrectionTable[color];
 }
 
+void Clear_DMA_Buffer(uint16_t offset, uint16_t cleared_buff_size){
+	for(uint16_t i = offset ; i < (offset + cleared_buff_size) ; ++i ){
+		TIMx_OC_DMA_Buffer_BRG[i] = 0;
+	}
+}
+
+void Clear_FH_DMA_Buffer(void){
+	Clear_DMA_Buffer(0 , DMA_BUFFER_SIZE/2);
+}
+
+void Clear_SH_DMA_Buffer(void){
+	Clear_DMA_Buffer(DMA_BUFFER_SIZE/2 , DMA_BUFFER_SIZE/2);
+}
+
+void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
+
+	for(uint16_t i = offset; i < (offset + fillUp_length/3) ; ++i ){ /* fillUp_length / 3 - because there are 3 components-RGB*/
+		i_percent_PS = i%PARALELL_STRIPS;
+		i_per_PS = i/PARALELL_STRIPS;
+		TIMx_OC_DMA_Buffer_BRG[i]                     = pixel_colorRGB[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8));
+		TIMx_OC_DMA_Buffer_BRG[i+1*PARALELL_STRIPS*8] = pixel_colorRGB[i_percent_PS][pixel_idx].r & (0x80 >> (i_per_PS%8));
+		TIMx_OC_DMA_Buffer_BRG[i+2*PARALELL_STRIPS*8] = pixel_colorRGB[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8));
+	}
+	/*
+	for(uint16_t i = offset ; i < (offset + cleared_buff_size) ; ++i){
+		for(uint8_t l = 0; l<3; ++l){
+			TIMx_OC_DMA_Buffer_BRG[i] = pixel_colorRGB[l][pixel_idx][k] & (0x80 >> i%8);
+		}
+	}
+	*/
+}
+
+void Init_DMA_Buffer(void){
+	/* buffer for the first pixel -> [0] */
+	FillUp_DMA_Buffer(0, DMA_BUFFER_SIZE, 0);
+}
+
+void FillUpNext_FH_DMA_Buffer(void){
+	FillUp_DMA_Buffer(0, DMA_BUFFER_SIZE/2, pixel_id+1);
+}
+
+void FillUpNext_SH_DMA_Buffer(void){
+	FillUp_DMA_Buffer(DMA_BUFFER_SIZE/2 , DMA_BUFFER_SIZE/2, pixel_id+1);
+}
+
 void refreshLedStrip(void){
-	/* reset and enable dma*/
-	/* send out initial array */
+
 	TIM_Cmd(TIM3, DISABLE);
 	TIM3->CCR2 = 0;
 	TIM3->CCR3 = 0;
 	TIM3->CCR4 = 0;
 
 	DMA_Cmd(DMA1_Channel3, DISABLE);
-	DMA_SetCurrDataCounter(DMA1_Channel3, 50*24*3);
+	DMA_SetCurrDataCounter(DMA1_Channel3, DMA_BUFFER_SIZE);
+
+	/* buffer initialization*/
+	pixel_id = 0;
+	Init_DMA_Buffer();
 
 	DMA_ClearFlag(DMA1_FLAG_HT3);
 	DMA_ClearFlag(DMA1_FLAG_TC3);
@@ -226,37 +279,39 @@ void refreshLedStrip(void){
 
 /* DMA circular buffer handling*/
 void DMA1_Channel3_IRQHandler(void){
-	/*
-	// one led data shifted out
-		led_counter++;
-		if(led_counter>LED_NUMBER){
-			DMA_Cmd(DMA1_Channel3, DISABLE);
-			TIM3->CCR2 = 0;
-			TIM3->CCR3 = 0;
-			TIM3->CCR4 = 0;
-			led_counter = 0;
-	//		delayMicroSec(50);
-			DMA_Cmd(DMA1_Channel3, DISABLE);
-			DMA_SetCurrDataCounter(DMA1_Channel3, 1*24*3);
 
-			delayMicroSec(55);
-			DMA_ClearFlag(DMA1_FLAG_TC3);
-			DMA_Cmd(DMA1_Channel3, ENABLE);
-		}else{
-			DMA_ClearFlag(DMA1_FLAG_TC3);
-		}*/
+	/* @Half transfer */
+	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
 
-	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) != RESET){
-		DMA_Cmd(DMA1_Channel3, DISABLE);
-		TIM3->CCR2 = 0;
-		TIM3->CCR3 = 0;
-		TIM3->CCR4 = 0;
-//		TIM_Cmd(TIM3, DISABLE);
-		DMA_ClearFlag(DMA1_FLAG_TC3);
+		DMA_ClearFlag(DMA1_FLAG_HT3);
+
+		if(pixel_id > LED_STRIP_SIZE-1){ /* preparing for end transfer - setting TIMx OC values to 0 */
+			Clear_LH_DMA_Buffer();
+			return;
+		}
+		FillUpNext_FH_DMA_Buffer();
+
 	}
 
-	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
-		DMA_ClearFlag(DMA1_FLAG_HT3);
+	/* @Transfer Complete */
+	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) != RESET){
+
+		DMA_ClearFlag(DMA1_FLAG_TC3);
+
+		if(pixel_id > LED_STRIP_SIZE){   /*end transfer*/
+			DMA_Cmd(DMA1_Channel3, DISABLE);
+			pixel_id = 0;
+			return;
+		}
+		if(pixel_id > LED_STRIP_SIZE-1){ /* preparing for end transfer - setting TIMx OC values to 0 */
+			Clear_LH_DMA_Buffer();
+			pixel_id++;
+			return;
+		}
+
+		FillUpNext_SH_DMA_Buffer();
+		pixel_id++;
+
 	}
 
 }

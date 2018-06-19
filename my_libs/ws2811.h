@@ -56,16 +56,16 @@ Info        : 16.06.2018
 
 #define LED_NUMBER_ON_ONE_STRIP 150
 #define LED_PER_IC              3
-#define DIFFERENT_LEDGROUPS (LED_NUMBER_ON_ONE_STRIP / LED_PER_IC)
+#define DIFFERENT_LEDGROUPS     (LED_NUMBER_ON_ONE_STRIP / LED_PER_IC)
 
-#define PARALELL_STRIPS 3 /* 1-4 */
-#define SERIES_STRIPS 1   /* 1-.. depends on power supply */
-#define PIXEL_ARRAY_SIZE       (PARALELL_STRIPS * (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3))
+#define PARALELL_STRIPS    		3 /* 1-4 */
+#define SERIES_STRIPS      		1   /* 1-.. depends on power supply */
+#define PIXEL_ARRAY_SIZE   		( PARALELL_STRIPS * (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3))
 
-#define LED_BITS               24
+#define LED_BITS           		24
 
-#define DMA_BUFFER_SIZE            ( PARALELL_STRIPS * LED_BITS )
-#define LED_STRIP_SIZE  (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3)
+#define DMA_BUFFER_SIZE   		( PARALELL_STRIPS * LED_BITS ) /* 3*24 = 72 - !must be divisible by 2! */
+#define LED_STRIP_SIZE    		( SERIES_STRIPS * DIFFERENT_LEDGROUPS)
 /*========================================================================*/
 
 void InitGPIO_LSSs(GPIO_InitTypeDef*);
