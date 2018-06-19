@@ -122,8 +122,10 @@ int main(void)
 	Init_WS2811(uart_receive_array,receive_array_length);
 
 	/* send out initial array */
-	InitLookUpTable();
-	RefreshLookUpTable1(50);
+//	InitLookUpTable();
+//	RefreshLookUpTable1(50);
+
+	Init_PixelMap();
 	refreshLedStrip();
 
 

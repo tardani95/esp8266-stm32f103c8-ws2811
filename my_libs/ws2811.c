@@ -14,6 +14,8 @@ Info        : 16.06.2018
 /******************************************************************************/
 #include "ws2811.h"
 
+#define RGB(color)
+
 /******************************************************************************/
 /*                          Private typedef                                   */
 /******************************************************************************/
@@ -48,7 +50,7 @@ const uint8_t gammaCorrectionTable[] = {
 
 __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; /* DMA buffer for TIMx OutputCompare (OC) values */
 
-__IO RGB_Pixel pixel_colorRGB[PARALELL_STRIPS][LED_STRIP_SIZE];  /* array to store all the pixel colors */
+__IO RGB_Pixel pixel_map[PARALELL_STRIPS][LED_STRIP_SIZE];  /* array to store all the pixel colors */
 
 __IO uint16_t pixel_id = 0; /* current processed led 3s */
 
@@ -203,12 +205,25 @@ void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
 	/* tim3 clock init */
 	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
 	InitTIM3_PWM(&TIM_OC_InitStructure);
-	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, (uint8_t*)look_up_table_1);
+	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, (uint8_t*) TIMx_OC_DMA_Buffer_BRG ); /* look_up_table_1 */
 
 }
 
 uint8_t gammaCorrection(uint8_t color){
 	return gammaCorrectionTable[color];
+}
+
+void Init_PixelMap(void){
+	/* @TODO brg  - change to rgb */
+//	uint8_t init_color[4][3]={{0,255,0},{125,0,125},{0,0,255},{125,125,0}};
+	uint8_t init_color[4][3]={{255,0,0},{0,255,0},{0,0,255},{125,0,125}};
+	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
+		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
+			pixel_map[j][i].r = init_color[i%4][0]; // gammaCorrection(init_color[i%4][0]);
+			pixel_map[j][i].g = init_color[i%4][1]; // gammaCorrection(init_color[i%4][1]);
+			pixel_map[j][i].b = init_color[i%4][2]; // gammaCorrection(init_color[i%4][2]);
+		}
+	}
 }
 
 void Clear_DMA_Buffer(uint16_t offset, uint16_t cleared_buff_size){
@@ -228,12 +243,27 @@ void Clear_SH_DMA_Buffer(void){
 void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
 	uint16_t i_percent_PS;
 	uint16_t i_per_PS;
-	for(uint16_t i = offset; i < (offset + fillUp_length/3) ; ++i ){ /* fillUp_length / 3 - because there are 3 components-RGB*/
+	for(uint16_t i = offset; i < (offset + fillUp_length) ; ++i ){ /* fillUp_length / 3 - because there are 3 components-RGB*/
 		i_percent_PS = i % PARALELL_STRIPS;
 		i_per_PS = i / PARALELL_STRIPS;
-		TIMx_OC_DMA_Buffer_BRG[i]                     = pixel_colorRGB[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8));
-		TIMx_OC_DMA_Buffer_BRG[i+1*PARALELL_STRIPS*8] = pixel_colorRGB[i_percent_PS][pixel_idx].r & (0x80 >> (i_per_PS%8));
-		TIMx_OC_DMA_Buffer_BRG[i+2*PARALELL_STRIPS*8] = pixel_colorRGB[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8));
+		switch(i / (PARALELL_STRIPS*8)){
+			case 0 : {
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+			case 1 : {
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].r & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+			case 2 : {
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+			default:{ /* the same as case 0 */
+				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
+				break;
+			}
+		}
 	}
 	/*
 	for(uint16_t i = offset ; i < (offset + cleared_buff_size) ; ++i){

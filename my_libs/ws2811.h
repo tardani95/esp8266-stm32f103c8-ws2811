@@ -49,9 +49,9 @@ Info        : 16.06.2018
 #endif /*MODE_800kHz*/
 
 /* according to ws2811 datasheet */
-#define TIM_PERIOD 90
-#define T1H 43
-#define T0H 18
+#define TIM_PERIOD 90	/* 90 */
+#define T1H        43	/* 43 */
+#define T0H        18	/* 18 */
 /*========================================================================*/
 
 #define LED_NUMBER_ON_ONE_STRIP 150
@@ -64,7 +64,7 @@ Info        : 16.06.2018
 
 #define LED_BITS           		24
 
-#define DMA_BUFFER_SIZE   		( PARALELL_STRIPS * LED_BITS ) /* 3*24 = 72 - !must be divisible by 2! */
+#define DMA_BUFFER_SIZE   		2* ( PARALELL_STRIPS * LED_BITS ) /* 3*24 = 72 - !must be divisible by 2! */
 #define LED_STRIP_SIZE    		( SERIES_STRIPS * DIFFERENT_LEDGROUPS)
 /*========================================================================*/
 
@@ -78,6 +78,8 @@ void InitTIM3_PWM(TIM_OCInitTypeDef*);
 void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size);
 
 uint8_t gammaCorrection(uint8_t color);
+
+void Init_PixelMap(void);
 
 void refreshLedStrip(void);
 
