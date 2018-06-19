@@ -298,7 +298,7 @@ void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
 #ifdef DEBUG_DMA_BUFFER_FILL_UP
 	GPIOC->ODR &= (~GPIO_Pin_13);
 #endif
-	uint16_t id0 = (pixel_idx%2)*DMA_PIXEL_SIZE;
+	uint16_t id0 = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
 	uint16_t id1;
 	uint16_t id2;
 	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
@@ -320,8 +320,9 @@ void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
 void Init_DMA_Buffer(void){
 	/* buffer for the first pixel -> [0] */
 //	FillUp_DMA_Buffer(0, DMA_BUFFER_SIZE, 0);
-	FillUp_DMA_HalfBuffer_BGR_map(0);
-	FillUp_DMA_HalfBuffer_BGR_map(1);
+	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
+		FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
+	}
 }
 
 void refreshLedStrip(void){
@@ -388,11 +389,13 @@ void DMA1_Channel3_IRQHandler(void){
 	} /* endif - Transfer complete */
 
 
-	if(pixel_id >= LED_STRIP_SIZE){
+	if(pixel_id + PIXEL_PER_BUFFER/2 >= LED_STRIP_SIZE){
 		DMA_Cmd(DMA1_Channel3, DISABLE);
 		TIM_Cmd(TIM3, DISABLE);
 	}else{
-		FillUp_DMA_HalfBuffer_BGR_map(pixel_id);
+		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
+			FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
+		}
 	}
 
 #ifdef DEBUG_DMA_BUFFER_IRQ
