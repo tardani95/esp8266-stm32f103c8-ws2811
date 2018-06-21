@@ -120,7 +120,7 @@ int main(void)
 	/**************************************************/
 	/* WS2811 INIT									  */
 	/**************************************************/
-	Init_WS2811(uart_receive_array,receive_array_length);
+	Init_WS2811((uint8_t*)uart_receive_array,receive_array_length);
 
 	/* send out initial array */
 //	InitLookUpTable();
@@ -145,7 +145,7 @@ void OnUART_DataReceived(void){
 	switch(uart_receive_array[12]){
 		case 0 :{
 			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-			RefreshLookUpTable1(50);
+//			RefreshLookUpTable1(50);
 			refreshLedStrip();
 		}break;
 

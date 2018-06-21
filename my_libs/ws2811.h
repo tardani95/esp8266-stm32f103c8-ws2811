@@ -62,12 +62,22 @@ Info        : 16.06.2018
 #define SERIES_STRIPS      		1   /* 1-.. depends on power supply */
 #define PIXEL_ARRAY_SIZE   		( PARALELL_STRIPS * (SERIES_STRIPS * DIFFERENT_LEDGROUPS * 3))
 
-#define LED_BITS           		24
-#define PIXEL_PER_BUFFER		1 /* 1 or even */
+#define COLOR_NUM				3
+#define COLOR_BITS				8
+#define LED_BITS           		( COLOR_NUM * COLOR_BITS ) /* = 24 */
+#define BITS_PER_COLOR			( PARALELL_STRIPS * COLOR_BITS )
+
+#define PIXEL_PER_BUFFER		4 /* only even */
 #define DMA_PIXEL_SIZE			( PARALELL_STRIPS * LED_BITS )			 /* 3*24 = 72 */
 #define DMA_BUFFER_SIZE   		( PIXEL_PER_BUFFER * DMA_PIXEL_SIZE )
-#define LED_STRIP_SIZE    		( SERIES_STRIPS * DIFFERENT_LEDGROUPS)
+#define LED_STRIP_SIZE    		( SERIES_STRIPS * DIFFERENT_LEDGROUPS)+PIXEL_PER_BUFFER
+
+#define R						1
+#define G						2
+#define B						0
 /*========================================================================*/
+extern __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE];
+extern __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];
 
 void InitGPIO_LSSs(GPIO_InitTypeDef*);
 void InitNVIC_LSS(NVIC_InitTypeDef*);

@@ -9,7 +9,7 @@
 /*                               Includes									  */
 /******************************************************************************/
 #include "periph.h"
-
+#include "ws2811.h"
 /******************************************************************************/
 /*                               Variables									  */
 /******************************************************************************/
@@ -85,13 +85,20 @@ void RefreshLookUpTable1(uint8_t first_x_byte){
   * @param  B: Blue value in range 0-255
   * @retval None
   */
-void RefreshLookUpTable(uint8_t R, uint8_t G, uint8_t B){
-	uint8_t look_up_table_3[4][3]={{B,R,G},{B,R,G},{B,R,G},{B,R,G}};
-	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE/24;++i){
-		for(uint16_t j=0;j<3;++j){
-			for(uint16_t k = 0; k<8; ++k){
-				look_up_table_2[i*24 + j*8 + k] = look_up_table_3[i%4][j] & (0x80 >> k);
-			}
+void RefreshLookUpTable(uint8_t r_t, uint8_t g_t, uint8_t b_t){
+//	uint8_t look_up_table_3[4][3]={{b_t,r_t,g_t},{b_t,r_t,g_t},{b_t,r_t,g_t},{b_t,r_t,g_t}};
+//	for(uint16_t i=0;i<LOOK_UP_TABLE_SIZE/24;++i){
+//		for(uint16_t j=0;j<3;++j){
+//			for(uint16_t k = 0; k<8; ++k){
+//				look_up_table_2[i*24 + j*8 + k] = look_up_table_3[i%4][j] & (0x80 >> k);
+//			}
+//		}
+//	}
+	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
+		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
+			pixel_mapBRG[j][i][R] = /*r_t;*/ gammaCorrection(r_t);
+			pixel_mapBRG[j][i][G] = /*g_t;*/ gammaCorrection(g_t);
+			pixel_mapBRG[j][i][B] = /*b_t;*/ gammaCorrection(b_t);
 		}
 	}
 }
