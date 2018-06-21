@@ -120,7 +120,7 @@ int main(void)
 	/**************************************************/
 	/* WS2811 INIT									  */
 	/**************************************************/
-	Init_WS2811(uart_receive_array,receive_array_length);
+	Init_WS2811((uint8_t*)uart_receive_array,receive_array_length);
 
 	/* send out initial array */
 //	InitLookUpTable();
