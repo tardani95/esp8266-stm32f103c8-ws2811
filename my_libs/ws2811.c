@@ -52,12 +52,11 @@ const uint8_t gammaCorrectionTable[] = {
       215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
 
-__IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; /* DMA buffer for TIMx OutputCompare (OC) values */
+__IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; 					/* DMA buffer for TIMx OutputCompare (OC) values */
+__IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];	/* array to store all the pixel colors */
 
-__IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];  /* array to store all the pixel colors */
-
-__IO uint16_t HT_counter = 0; /* current processed half buffer */
-__IO uint16_t pixel_id = 0; /* current processed half buffer */
+__IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
+__IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
 
 
 
@@ -169,7 +168,6 @@ void InitTIM3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
 	/* TIM_Cmd(TIM3, ENABLE); */
 }
 
-
 /**
   * @brief  This function initialize the DMA controller for the TIM3 OC values
   * 		from CH2 to CH4 (PA7 PB0 PB1)
@@ -208,6 +206,11 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_
 	DMA_ITConfig(DMA1_Channel3, DMA_IT_HT, ENABLE); /* half transfer complete */
 }
 
+/**
+  * @brief  This function initialize the WS2811 LED strip
+  * @param  @TODO
+  * @retval None
+  */
 void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
 
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -227,23 +230,45 @@ void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
 
 }
 
+/**
+  * @brief  This function corrects the LED color to light with true RGB values
+  * @param  color	the color to correct
+  * @retval gamma corrected color
+  */
 uint8_t gammaCorrection(uint8_t color){
 	return gammaCorrectionTable[color];
 }
 
+/**
+  * @brief  This function initialize updates the pixel_map with the initial color palette
+  * @param  None
+  * @retval None
+  */
 void Init_PixelMap(void){
-	/* @TODO brg  - change to rgb */
-//	uint8_t init_color[4][3]={{0,255,0},{125,0,125},{0,0,255},{125,125,0}};
-	uint8_t init_color[4][3]={{255,0,0},{0,255,0},{0,0,255},{125,0,125}};
+	uint32_t init_paletteRGB[]={ 4, 0xFF0000, 0x00FF00, 0x0000FF, 0x7D007D };
+	update_PixelMapWithPalette(init_paletteRGB);
+}
+
+
+void update_PixelMapWithPalette(uint32_t * palette){
+	uint16_t palette_length = palette[0];
+	uint8_t r_t;
+	uint8_t g_t;
+	uint8_t b_t;
 	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
 		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
-			pixel_mapBRG[j][i][R] = init_color[i%4][0]; // gammaCorrection(init_color[i%4][0]);
-			pixel_mapBRG[j][i][G] = init_color[i%4][1]; // gammaCorrection(init_color[i%4][1]);
-			pixel_mapBRG[j][i][B] = init_color[i%4][2]; // gammaCorrection(init_color[i%4][2]);
+			r_t = (palette[i%palette_length+1] >> 16);
+			g_t = (palette[i%palette_length+1] >> 8);
+			b_t = palette[i%palette_length+1];
+
+			pixel_mapBRG[j][i][R] = gammaCorrection(r_t);
+			pixel_mapBRG[j][i][G] = gammaCorrection(g_t);
+			pixel_mapBRG[j][i][B] = gammaCorrection(b_t);
 		}
 	}
 }
 
+/*
 void Clear_DMA_Buffer(uint16_t offset, uint16_t cleared_buff_size){
 	for(uint16_t i = offset ; i < (offset + cleared_buff_size) ; ++i ){
 		TIMx_OC_DMA_Buffer_BRG[i] = 0;
@@ -257,6 +282,7 @@ void Clear_FH_DMA_Buffer(void){
 void Clear_SH_DMA_Buffer(void){
 	Clear_DMA_Buffer(DMA_BUFFER_SIZE/2 , DMA_BUFFER_SIZE/2);
 }
+*/
 
 /*void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
 
@@ -294,6 +320,11 @@ void Clear_SH_DMA_Buffer(void){
 #endif
 }*/
 
+/**
+  * @brief  Fills up the next half of the dma buffer starting with the pixel_idx
+  * @param  pixel_idx	start the buffer filling with this pixel
+  * @retval None
+  */
 void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
 #ifdef DEBUG_DMA_BUFFER_FILL_UP
 	GPIOC->ODR &= (~GPIO_Pin_13);
@@ -317,14 +348,28 @@ void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
 #endif
 } /*end - FillUp_DMA_Buffer_BGR_map()*/
 
+/**
+  * @brief  This function initialize the first whole DMA Buffer
+  * @param  None
+  * @retval None
+  */
 void Init_DMA_Buffer(void){
 	/* buffer for the first pixel -> [0] */
-//	FillUp_DMA_Buffer(0, DMA_BUFFER_SIZE, 0);
 	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
 		FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
 	}
 }
 
+/**
+  * @brief  - disables the TIM, sets its CCRx register values to 0
+  * 		- set the DMA data counter
+  * 		- initialize the buffer and pixel_id variables
+  * 		- set the transmission flag to ON
+  * 		- clear the DMA Flags
+  * 		- enable the DMA and TIM controllers
+  * @param  None
+  * @retval None
+  */
 void refreshLedStrip(void){
 
 	TIM_Cmd(TIM3, DISABLE);
@@ -337,8 +382,8 @@ void refreshLedStrip(void){
 
 	/* buffer initialization*/
 	pixel_id = 0;
-//	HT_counter = 0;
 	Init_DMA_Buffer();
+	txOn = 1;
 
 	DMA_ClearFlag(DMA1_FLAG_HT3);
 	DMA_ClearFlag(DMA1_FLAG_TC3);
@@ -347,15 +392,13 @@ void refreshLedStrip(void){
 
 }
 
-/* DMA circular buffer handling*/
+
+/* DMA circular buffer handling IRQ */
 void DMA1_Channel3_IRQHandler(void){
 
 #ifdef DEBUG_DMA_BUFFER_IRQ
 	GPIOC->ODR &= (~GPIO_Pin_13);
 #endif
-
-
-
 
 	/* Half transfer */
 	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
@@ -388,10 +431,12 @@ void DMA1_Channel3_IRQHandler(void){
 //#endif
 	} /* endif - Transfer complete */
 
-
+	/* filling up the next half of the buffer with new data */
 	if(pixel_id + PIXEL_PER_BUFFER/2 >= LED_STRIP_SIZE){
 		DMA_Cmd(DMA1_Channel3, DISABLE);
 		TIM_Cmd(TIM3, DISABLE);
+		txOn = 0;
+
 	}else{
 		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
 			FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
