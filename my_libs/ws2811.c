@@ -252,9 +252,9 @@ void update_PixelMapWithPalette(uint32_t * palette){
 			g_t = (palette[i_per_pl+1] >> 8);
 			b_t =  palette[i_per_pl+1];
 
-			pixel_mapBRG[j][i][R] = r_t;//gammaCorrection(r_t);
-			pixel_mapBRG[j][i][G] = g_t;//gammaCorrection(g_t);
-			pixel_mapBRG[j][i][B] = b_t;//gammaCorrection(b_t);
+			pixel_mapBRG[j][i][R] = gammaCorrection(r_t);
+			pixel_mapBRG[j][i][G] = gammaCorrection(g_t);
+			pixel_mapBRG[j][i][B] = gammaCorrection(b_t);
 		}
 	}
 }
