@@ -66,9 +66,6 @@ void AnimFadeInFadeOut(uint16_t, uint16_t, uint16_t);
 
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);
-
-void InitGPIO_PWM_EXTI(GPIO_InitTypeDef*);
-
 void InitEXTI_BTN(EXTI_InitTypeDef*, NVIC_InitTypeDef*);
 
 #endif /* PERIPH_H_ */
