@@ -239,35 +239,39 @@ uint8_t gammaCorrection(uint8_t color){
 	return gammaCorrectionTable[color];
 }
 
+void update_PixelMapWithPalette(uint32_t * palette){
+	uint16_t palette_length = palette[0];
+	uint8_t r_t;
+	uint8_t g_t;
+	uint8_t b_t;
+	uint8_t i_per_pl;
+	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
+		i_per_pl = (i%palette_length);
+		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
+			r_t = (palette[i_per_pl+1] >> 16);
+			g_t = (palette[i_per_pl+1] >> 8);
+			b_t =  palette[i_per_pl+1];
+
+			pixel_mapBRG[j][i][R] = r_t;//gammaCorrection(r_t);
+			pixel_mapBRG[j][i][G] = g_t;//gammaCorrection(g_t);
+			pixel_mapBRG[j][i][B] = b_t;//gammaCorrection(b_t);
+		}
+	}
+}
+
 /**
   * @brief  This function initialize updates the pixel_map with the initial color palette
   * @param  None
   * @retval None
   */
 void Init_PixelMap(void){
-	uint32_t init_paletteRGB[]={ 4, 0xFF0000, 0x00FF00, 0x0000FF, 0x7D007D };
+	uint32_t init_paletteRGB[]={ 5, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x007d007d, 0x007d7d00 };
+//	uint32_t init_paletteRGB[]={ 4, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d};
+//	uint32_t init_paletteRGB[]={ 6, 0x00FF00, 0x00FF00, 0x0000FF, 0x0000FF, 0x7d007d, 0x7d007d };
 	update_PixelMapWithPalette(init_paletteRGB);
 }
 
-
-void update_PixelMapWithPalette(uint32_t * palette){
-	uint16_t palette_length = palette[0];
-	uint8_t r_t;
-	uint8_t g_t;
-	uint8_t b_t;
-	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
-		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
-			r_t = (palette[i%palette_length+1] >> 16);
-			g_t = (palette[i%palette_length+1] >> 8);
-			b_t = palette[i%palette_length+1];
-
-			pixel_mapBRG[j][i][R] = gammaCorrection(r_t);
-			pixel_mapBRG[j][i][G] = gammaCorrection(g_t);
-			pixel_mapBRG[j][i][B] = gammaCorrection(b_t);
-		}
-	}
-}
-
+/* buffer clearing functions */
 /*
 void Clear_DMA_Buffer(uint16_t offset, uint16_t cleared_buff_size){
 	for(uint16_t i = offset ; i < (offset + cleared_buff_size) ; ++i ){
@@ -355,9 +359,11 @@ void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
   */
 void Init_DMA_Buffer(void){
 	/* buffer for the first pixel -> [0] */
+	pixel_id = 0;
 	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
 		FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
 	}
+	pixel_id = PIXEL_PER_BUFFER/2 - 1;
 }
 
 /**
@@ -381,7 +387,6 @@ void refreshLedStrip(void){
 	DMA_SetCurrDataCounter(DMA1_Channel3, DMA_BUFFER_SIZE);
 
 	/* buffer initialization*/
-	pixel_id = 0;
 	Init_DMA_Buffer();
 	txOn = 1;
 
@@ -434,9 +439,12 @@ void DMA1_Channel3_IRQHandler(void){
 	/* filling up the next half of the buffer with new data */
 	if(pixel_id + PIXEL_PER_BUFFER/2 >= LED_STRIP_SIZE){
 		DMA_Cmd(DMA1_Channel3, DISABLE);
-		TIM_Cmd(TIM3, DISABLE);
+		TIM3->CCR2 = 0;
+		TIM3->CCR3 = 0;
+		TIM3->CCR4 = 0;
 		txOn = 0;
 
+		TIM_Cmd(TIM3, DISABLE);
 	}else{
 		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
 			FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
