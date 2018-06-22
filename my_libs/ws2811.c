@@ -265,9 +265,9 @@ void update_PixelMapWithPalette(uint32_t * palette){
   * @retval None
   */
 void Init_PixelMap(void){
-	uint32_t init_paletteRGB[]={ 5, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x007d007d, 0x007d7d00 };
+//	uint32_t init_paletteRGB[]={ 5, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00 };
 //	uint32_t init_paletteRGB[]={ 4, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d};
-//	uint32_t init_paletteRGB[]={ 6, 0x00FF00, 0x00FF00, 0x0000FF, 0x0000FF, 0x7d007d, 0x7d007d };
+	uint32_t init_paletteRGB[]={ 8+5, 0x00FF00, 0x7d007d, 0xFF0000, 0x7d7d00, 0x0000FF,  0x7d007d, 0xFFFFFF, 0x000000, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00 };
 	update_PixelMapWithPalette(init_paletteRGB);
 }
 
