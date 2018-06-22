@@ -22,6 +22,7 @@ Info        : 2018-04-09
 /* Private typedef */
 /* Private define  */
 // #define DEBUG
+
 /* Private macro */
 
 /* Private variables */
@@ -112,7 +113,7 @@ int main(void)
 	/**************************************************/
 	/* ESP-01 INIT									  */
 	/**************************************************/
-	/* init receive array with dummy data to see if the dma is working */
+
 	uint8_t receive_array_length = 13; //13
 	InitESP8266((uint8_t*)uart_receive_array/*, receive_array_length*/);
 	StartUDPReceivingWithCallback(receive_array_length, OnUART_DataReceived );
@@ -146,7 +147,9 @@ void OnUART_DataReceived(void){
 		case 0 :{
 			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
 //			RefreshLookUpTable1(50);
-			refreshLedStrip();
+			if(!txOn){
+				refreshLedStrip();
+			}
 		}break;
 
 		default:break;
