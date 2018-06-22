@@ -14,20 +14,24 @@ Info        : 16.06.2018
 /******************************************************************************/
 #include "ws2811.h"
 
-#define DEBUG_PINS_ON
-#define DEBUG_DMA_BUFFER_FILL_UP
+/******************************************************************************/
+/*                             Debug options								  */
+/******************************************************************************/
+//#define DEBUG_PINS_ON
+//#define DEBUG_DMA_BUFFER_FILL_UP
 //#define DEBUG_DMA_BUFFER_IRQ
-#define DEBUG_DMA_BUFFER_HT
-#define DEBUG_DMA_BUFFER_TC
+//#define DEBUG_DMA_BUFFER_HT
+//#define DEBUG_DMA_BUFFER_TC
 
 /******************************************************************************/
-/*                          Private typedef                                   */
+/*                           Private typedef                                  */
 /******************************************************************************/
 typedef struct RGB{
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
 }RGB_Pixel;
+
 /******************************************************************************/
 /*                          Private variables                                 */
 /******************************************************************************/
@@ -59,12 +63,9 @@ __IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
 __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
 
 
-
 /******************************************************************************/
 /*                    Callback function declaration                           */
 /******************************************************************************/
-
-
 
 /******************************************************************************/
 /*                          Function definitions                              */
@@ -271,22 +272,26 @@ void Init_PixelMap(void){
 	update_PixelMapWithPalette(init_paletteRGB);
 }
 
-/* buffer clearing functions */
-/*
-void Clear_DMA_Buffer(uint16_t offset, uint16_t cleared_buff_size){
-	for(uint16_t i = offset ; i < (offset + cleared_buff_size) ; ++i ){
-		TIMx_OC_DMA_Buffer_BRG[i] = 0;
+/**
+  * @brief  This function clears the buffer at the pixel_idx position
+  * @param  pixel_idx	position where to clear the buffer
+  * @retval None
+  */
+void Clear_DMA_Buffer(uint16_t pixel_idx){
+	uint16_t id0 = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
+	uint16_t id1;
+	uint16_t id2;
+	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
+		id1 = colorID*BITS_PER_COLOR;
+		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
+			id2 = colorBit*PARALELL_STRIPS;
+			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
+				TIMx_OC_DMA_Buffer_BRG[ id0 + id1 + id2 + parallelStripID] = 0;
+			}
+		}
 	}
 }
 
-void Clear_FH_DMA_Buffer(void){
-	Clear_DMA_Buffer(0 , DMA_BUFFER_SIZE/2);
-}
-
-void Clear_SH_DMA_Buffer(void){
-	Clear_DMA_Buffer(DMA_BUFFER_SIZE/2 , DMA_BUFFER_SIZE/2);
-}
-*/
 
 /*void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
 
@@ -329,7 +334,7 @@ void Clear_SH_DMA_Buffer(void){
   * @param  pixel_idx	start the buffer filling with this pixel
   * @retval None
   */
-void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
+void FillUp_DMA_Buffer_BGR_map(uint16_t pixel_idx){
 #ifdef DEBUG_DMA_BUFFER_FILL_UP
 	GPIOC->ODR &= (~GPIO_Pin_13);
 #endif
@@ -358,16 +363,16 @@ void FillUp_DMA_HalfBuffer_BGR_map(uint16_t pixel_idx){
   * @retval None
   */
 void Init_DMA_Buffer(void){
-	/* buffer for the first pixel -> [0] */
 	pixel_id = 0;
 	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
-		FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
+		FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
 	}
-	pixel_id = PIXEL_PER_BUFFER/2 - 1;
+	pixel_id = PIXEL_PER_BUFFER/2;
 }
 
 /**
-  * @brief  - disables the TIM, sets its CCRx register values to 0
+  * @brief  Sends out the color data to the led strip:
+  * 		- disables the TIM, sets its CCRx register values to 0
   * 		- set the DMA data counter
   * 		- initialize the buffer and pixel_id variables
   * 		- set the transmission flag to ON
@@ -379,10 +384,6 @@ void Init_DMA_Buffer(void){
 void refreshLedStrip(void){
 
 	TIM_Cmd(TIM3, DISABLE);
-	TIM3->CCR2 = 0;
-	TIM3->CCR3 = 0;
-	TIM3->CCR4 = 0;
-
 	DMA_Cmd(DMA1_Channel3, DISABLE);
 	DMA_SetCurrDataCounter(DMA1_Channel3, DMA_BUFFER_SIZE);
 
@@ -394,9 +395,7 @@ void refreshLedStrip(void){
 	DMA_ClearFlag(DMA1_FLAG_TC3);
 	DMA_Cmd(DMA1_Channel3, ENABLE);
 	TIM_Cmd(TIM3, ENABLE);
-
 }
-
 
 /* DMA circular buffer handling IRQ */
 void DMA1_Channel3_IRQHandler(void){
@@ -410,14 +409,10 @@ void DMA1_Channel3_IRQHandler(void){
 #ifdef DEBUG_DMA_BUFFER_HT
 	GPIOC->ODR ^= (GPIO_Pin_14); // half transfer flag set
 #endif
+
 		DMA_ClearFlag(DMA1_FLAG_HT3);
+		pixel_id += PIXEL_PER_BUFFER/2; /* PIXEL_PER_BUFFER/2 pixel sent out */
 
-		/* PIXEL_PER_BUFFER/2 pixel sent out */
-		pixel_id += PIXEL_PER_BUFFER/2;
-
-//#ifdef DEBUG_DMA_BUFFER_HT
-//	GPIOC->ODR &= (~GPIO_Pin_14);
-//#endif
 	} /* endif - Half transfer */
 
 	/* Transfer Complete */
@@ -427,28 +422,31 @@ void DMA1_Channel3_IRQHandler(void){
 #endif
 
 		DMA_ClearFlag(DMA1_FLAG_TC3);
+		pixel_id += PIXEL_PER_BUFFER/2; /* PIXEL_PER_BUFFER/2 pixel sent out */
 
-		/* PIXEL_PER_BUFFER/2 pixel sent out */
-		pixel_id += PIXEL_PER_BUFFER/2;
-
-//#ifdef DEBUG_DMA_BUFFER_TC
-//	GPIOC->ODR &= (~GPIO_Pin_15);
-//#endif
 	} /* endif - Transfer complete */
 
+
 	/* filling up the next half of the buffer with new data */
-	if(pixel_id + PIXEL_PER_BUFFER/2 >= LED_STRIP_SIZE){
+	if(pixel_id + PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
+		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
+			FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
+		}
+	}else if(pixel_id-PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
+		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
+			Clear_DMA_Buffer(pixel_id+buff_px);
+		}
+	}else{
 		DMA_Cmd(DMA1_Channel3, DISABLE);
+		TIM3->CCR1 = 0;
 		TIM3->CCR2 = 0;
 		TIM3->CCR3 = 0;
 		TIM3->CCR4 = 0;
-		txOn = 0;
-
-		TIM_Cmd(TIM3, DISABLE);
-	}else{
-		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
-			FillUp_DMA_HalfBuffer_BGR_map(pixel_id+buff_px);
+		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
+			Clear_DMA_Buffer(buff_px);
 		}
+		txOn = 0;
+		TIM_Cmd(TIM3, DISABLE);
 	}
 
 #ifdef DEBUG_DMA_BUFFER_IRQ
