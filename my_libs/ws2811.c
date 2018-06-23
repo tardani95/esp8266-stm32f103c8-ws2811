@@ -96,9 +96,24 @@ void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
 uint8_t gammaCorrection(uint8_t color){
 	return gammaCorrectionTable[color];
 }
+ColorHex gammaCorrHEX(ColorHex color){
+	ColorRGB newColor = colorHexToRGB(color);
+	newColor.r = gammaCorrection(newColor.r);
+	newColor.g = gammaCorrection(newColor.g);
+	newColor.b = gammaCorrection(newColor.b);
+
+	return colorRGBToHex(newColor);
+}
+ColorRGB gammaCorrRGB(ColorRGB color){
+	ColorRGB newColor;
+	newColor.r = gammaCorrection(color.r);
+	newColor.g = gammaCorrection(color.g);
+	newColor.b = gammaCorrection(color.b);
+	return newColor;
+}
 
 /* color convert functions */
-uint32_t colorToHex(uint8_t red, uint8_t green, uint8_t blue){
+ColorHex colorToHex(uint8_t red, uint8_t green, uint8_t blue){
 	ColorHex color = EMPTY_COLOR;
 	color |= ((red << RED_S) & RED);
 	color |= ((green << GREEN_S) & GREEN);
@@ -114,7 +129,7 @@ ColorRGB colorToRGB(uint8_t red, uint8_t green, uint8_t blue){
 
 	return color;
 }
-uint32_t colorRGBToHex(ColorRGB color){
+ColorHex colorRGBToHex(ColorRGB color){
 	ColorHex colorHex = EMPTY_COLOR;
 	colorHex |= ((color.r << RED_S) & RED);
 	colorHex |= ((color.g << GREEN_S) & GREEN);
@@ -133,27 +148,46 @@ ColorRGB colorHexToRGB(ColorHex color){
 }
 
 
-void setPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID, ColorHex color){
+void setPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID, ColorHex color){
 	ColorRGB newColor = colorHexToRGB(color);
-	pixel_map[pxNr][parrallelLedStripID] = newColor;
+	pixel_map[pxNr][parallelLedStripID] = newColor;
 }
-void setPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID, ColorRGB pxColor){
-	pixel_map[pxNr][parrallelLedStripID] = pxColor;
+void setPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID, ColorRGB pxColor){
+	pixel_map[pxNr][parallelLedStripID] = pxColor;
 }
-void setPixelColor(uint16_t pxNr, uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
-	pixel_map[pxNr][parrallelLedStripID].r = red;
-	pixel_map[pxNr][parrallelLedStripID].g = green;
-	pixel_map[pxNr][parrallelLedStripID].b = blue;
+void setPixelColor(uint16_t pxNr, uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
+	pixel_map[pxNr][parallelLedStripID].r = red;
+	pixel_map[pxNr][parallelLedStripID].g = green;
+	pixel_map[pxNr][parallelLedStripID].b = blue;
 }
 
-ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID);
-ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID);
+ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID){
+	colorRGBToHex(pixel_map[pxNr][parallelLedStripID]);
+}
+ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID){
+	return pixel_map[pxNr][parallelLedStripID];
+}
 
-void setAllPixelColorHexOnLedStrip(uint8_t parrallelLedStripID, ColorHex pxColor);
-void setAllPixelColorRGBOnLedStrip(uint8_t parrallelLedStripID, ColorRGB pxColor);
-void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
+void setAllPixelColorHexOnLedStrip(uint8_t parallelLedStripID, ColorHex pxColor){
+	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+		setPixelColorHex(pxID, parallelLedStripID, pxColor);
+	}
+}
+void setAllPixelColorRGBOnLedStrip(uint8_t parrallelLedStripID, ColorRGB pxColor){
+	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+		setPixelColorRGB(pxID, parallelLedStripID, pxColor);
+	}
+}
+void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
+	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+		setPixelColor(pxID, parallelLedStripID, red, green, blue);
+	}
+}
 
 
+/*
+ * @TODO - move this function to ws2811_util lib
+ */
 void update_PixelMapWithPalette(uint32_t * palette){
 	uint16_t palette_length = palette[0];
 	uint8_t r_t;
@@ -173,17 +207,6 @@ void update_PixelMapWithPalette(uint32_t * palette){
 		}
 	}
 }
-
-void setPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID, ColorHex color){}
-void setPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID, ColorRGB pxColor){}
-void setPixelColor(uint16_t pxNr, uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){}
-
-uint32_t getPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID){}
-ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID){}
-
-void setAllPixelColorHexOnLedStrip(uint8_t parrallelLedStripID, ColorHex pxColor){}
-void setAllPixelColorRGBOnLedStrip(uint8_t parrallelLedStripID, ColorRGB pxColor){}
-void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){}
 
 /**
   * @brief  This function initialize updates the pixel_map with the initial color palette
@@ -218,41 +241,49 @@ void Clear_DMA_Buffer(uint16_t pixel_idx){
 }
 
 
-/*void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
+void FillUp_DMA_Buffer(uint16_t pixel_idx){
 
 #ifdef DEBUG_DMA_BUFFER_FILL_UP
 	GPIOC->ODR &= (~GPIO_Pin_13);
 #endif
+	ColorRGB gCC; /* gamma corrected color*/
+	uint16_t errorCounter = 0;
 
-	uint16_t i_percent_PS;
-	uint16_t i_per_PS;
-
-	for(uint16_t i = offset; i < (offset + fillUp_length) ; ++i ){
-		i_percent_PS = i % PARALELL_STRIPS;
-		i_per_PS = i / PARALELL_STRIPS;
-		switch(i / (PARALELL_STRIPS*8)){
-			case 0 : {
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
-			}
-			case 1 : {
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].r & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
-			}
-			case 2 : {
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
-			}
-			default:{ // the same as case 0
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
+	uint16_t pxOffset = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
+	uint16_t colorOffset;
+	uint16_t parallelStripOffset;
+	for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
+		gCC = gammaCorrRGB(getPixelColorRGB(pixel_idx,parallelStripID));
+		for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
+			colorOffset = colorID*BITS_PER_COLOR;
+			for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
+				parallelStripOffset = colorBit*PARALELL_STRIPS;
+				switch(colorID){
+					case R:{
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.r & (0x80 >> colorBit)) ? T1H : T0H;
+						break;
+					}
+					case G:{
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.g & (0x80 >> colorBit)) ? T1H : T0H;
+						break;
+					}
+					case B:{
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.b & (0x80 >> colorBit)) ? T1H : T0H;
+						break;
+					}
+					default:{
+						/*something not working correctly*/
+						errorCounter++;
+						break;
+					}
+				}
 			}
 		}
 	}
 #ifdef DEBUG_DMA_BUFFER_FILL_UP
 	GPIOC->ODR |= (GPIO_Pin_13);
 #endif
-}*/
+}
 
 /**
   * @brief  Fills up the next half of the dma buffer starting with the pixel_idx
