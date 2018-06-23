@@ -13,6 +13,7 @@ Info        : 16.06.2018
 /*                               Includes									  */
 /******************************************************************************/
 #include "ws2811.h"
+#include "ws2811_util.h"
 
 /******************************************************************************/
 /*                             Debug options								  */
@@ -22,15 +23,6 @@ Info        : 16.06.2018
 //#define DEBUG_DMA_BUFFER_IRQ
 //#define DEBUG_DMA_BUFFER_HT
 //#define DEBUG_DMA_BUFFER_TC
-
-/******************************************************************************/
-/*                           Private typedef                                  */
-/******************************************************************************/
-typedef struct RGB{
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-}RGB_Pixel;
 
 /******************************************************************************/
 /*                          Private variables                                 */
@@ -58,6 +50,7 @@ const uint8_t gammaCorrectionTable[] = {
 
 __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; 					/* DMA buffer for TIMx OutputCompare (OC) values */
 __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];	/* array to store all the pixel colors */
+__IO ColorRGB pixel_map[PARALELL_STRIPS][LED_STRIP_SIZE];
 
 __IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
 __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
@@ -70,142 +63,6 @@ __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
 /******************************************************************************/
 /*                          Function definitions                              */
 /******************************************************************************/
-
-/**
-  * @brief  This function initialize the led strip signals on PA7, PB0, PB1
-  * @param  GPIO_InitTypeDef variable address
-  * @retval None
-  */
-void InitGPIO_LSSs(GPIO_InitTypeDef* GPIO_InitStructure){
-
-	uint16_t ledstrip_signal1 = GPIO_Pin_7; 	/* PA7  */
-	uint16_t ledstrip_signal2 = GPIO_Pin_0; 	/* PB0  */
-	uint16_t ledstrip_signal3 = GPIO_Pin_1; 	/* PB1  */
-
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
-
-	/* PA7  */
-	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal1;
-	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
-	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
-	GPIO_Init(GPIOA, GPIO_InitStructure); /* !GPIOA! */
-
-	/* PB0 & PB1  */
-	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal2 | ledstrip_signal3;
-	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
-	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
-	GPIO_Init(GPIOB, GPIO_InitStructure); /* !GPIOB! */
-
-#ifdef DEBUG_PINS_ON
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-
-	/* PC14 & PC15  */
-	GPIO_InitStructure->GPIO_Pin   = GPIO_Pin_14 | GPIO_Pin_15;
-	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
-	GPIO_Init(GPIOC, GPIO_InitStructure); /* !GPIOC! */
-
-	GPIO_ResetBits(GPIOC,GPIO_Pin_14 | GPIO_Pin_15);
-#endif
-
-}
-
-/**
-  * @brief  This function initialize the nested vectored interrupt controller for the DMA CH3 - TIM3
-  * @param  NVIC_InitTypeDef variable
-  * @retval None
-  */
-void InitNVIC_LSS(NVIC_InitTypeDef* NVIC_InitStructure){
-	/* DMA1 CH3 - TIM3 OC*/
-	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel3_IRQn;
-	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(NVIC_InitStructure);
-}
-
-/**
-  * @brief  This function initialize TIM3 clock to a 800/400kHz frequency - 1.25/2.5us time constant
-  *         depends on the prescaler value
-  * @param  TIM_TimeBaseInitTypeDef variable address
-  * @retval None
-  */
-void InitTIM3_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-
-	TIM_TimeBaseStructInit(TIM_TimeBase_InitStructure);
-
-	TIM_TimeBase_InitStructure->TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBase_InitStructure->TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBase_InitStructure->TIM_Period = TIM_PERIOD-1;
-	TIM_TimeBase_InitStructure->TIM_Prescaler = TIM_PRESCALER; // divider = prescaler + 1
-	TIM_TimeBaseInit(TIM3, TIM_TimeBase_InitStructure);
-}
-
-/**
-  * @brief  This function initialize TIM3 output compare mode to pwm1 on ch2, ch3, ch4
-  * @param  TIM_OCInitTypeDef variable address
-  * @retval None
-  */
-void InitTIM3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
-	TIM_OCStructInit(TIM_OC_InitStructure);
-
-	TIM_OC_InitStructure->TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OC_InitStructure->TIM_OCIdleState = TIM_OCIdleState_Reset;
-	TIM_OC_InitStructure->TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC_InitStructure->TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC_InitStructure->TIM_Pulse = 0x0000;
-
-	TIM_OC2Init(TIM3, TIM_OC_InitStructure);
-	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-	TIM_OC3Init(TIM3, TIM_OC_InitStructure);
-	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-	TIM_OC4Init(TIM3, TIM_OC_InitStructure);
-	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-	/* Enable the TIM Counter */
-	/* TIM_Cmd(TIM3, ENABLE); */
-}
-
-/**
-  * @brief  This function initialize the DMA controller for the TIM3 OC values
-  * 		from CH2 to CH4 (PA7 PB0 PB1)
-  * 		Initialize TIMx (TIM3) first
-  * @param  DMA_InitTypeDef variable
-  * @param  ledstrip_transmit_dma_buffer - uint8_t[] buffer to send
-  * @retval None
-  */
-void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_transmit_dma_buffer){
-	/* DMA 1, Channel 2 for TIM3 CH4 */
-
-	/* using TIM DMA burst feature page 421 in Reference Manual 02-06-2018 */
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-	/* DMA ch3 receives the TIM3 Update event - page 281 in RM 02-06-2018 */
-	DMA_DeInit(DMA1_Channel3);
-	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->DMAR);
-	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_dma_buffer;
-	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
-	/*
-	 * 24 bits need to determine the color of one led
-	 * 3  there are 3 strips (ch2,ch3,ch4)
-	 */
-	DMA_InitStructure->DMA_BufferSize = DMA_BUFFER_SIZE;
-	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure->DMA_Mode = DMA_Mode_Circular;
-	DMA_InitStructure->DMA_Priority = DMA_Priority_High;
-	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(DMA1_Channel3, DMA_InitStructure);
-
-	TIM_DMAConfig(TIM3, TIM_DMABase_CCR2, TIM_DMABurstLength_3Transfers);
-	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
-	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE); /* transmission complete */
-	DMA_ITConfig(DMA1_Channel3, DMA_IT_HT, ENABLE); /* half transfer complete */
-}
 
 /**
   * @brief  This function initialize the WS2811 LED strip
@@ -240,6 +97,63 @@ uint8_t gammaCorrection(uint8_t color){
 	return gammaCorrectionTable[color];
 }
 
+/* color convert functions */
+uint32_t colorToHex(uint8_t red, uint8_t green, uint8_t blue){
+	ColorHex color = EMPTY_COLOR;
+	color |= ((red << RED_S) & RED);
+	color |= ((green << GREEN_S) & GREEN);
+	color |= (blue & BLUE);
+
+	return color;
+}
+ColorRGB colorToRGB(uint8_t red, uint8_t green, uint8_t blue){
+	ColorRGB color;
+	color.r = red;
+	color.g = green;
+	color.b = blue;
+
+	return color;
+}
+uint32_t colorRGBToHex(ColorRGB color){
+	ColorHex colorHex = EMPTY_COLOR;
+	colorHex |= ((color.r << RED_S) & RED);
+	colorHex |= ((color.g << GREEN_S) & GREEN);
+	colorHex |= ((color.b & BLUE));
+
+	return colorHex;
+}
+ColorRGB colorHexToRGB(ColorHex color){
+	ColorRGB colorRGB;
+
+	colorRGB.r = ((color & RED) >> RED_S);
+	colorRGB.g = ((color & GREEN) >> GREEN_S);
+	colorRGB.b = ((color & BLUE));
+
+	return colorRGB;
+}
+
+
+void setPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID, ColorHex color){
+	ColorRGB newColor = colorHexToRGB(color);
+	pixel_map[pxNr][parrallelLedStripID] = newColor;
+}
+void setPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID, ColorRGB pxColor){
+	pixel_map[pxNr][parrallelLedStripID] = pxColor;
+}
+void setPixelColor(uint16_t pxNr, uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
+	pixel_map[pxNr][parrallelLedStripID].r = red;
+	pixel_map[pxNr][parrallelLedStripID].g = green;
+	pixel_map[pxNr][parrallelLedStripID].b = blue;
+}
+
+ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID);
+ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID);
+
+void setAllPixelColorHexOnLedStrip(uint8_t parrallelLedStripID, ColorHex pxColor);
+void setAllPixelColorRGBOnLedStrip(uint8_t parrallelLedStripID, ColorRGB pxColor);
+void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
+
+
 void update_PixelMapWithPalette(uint32_t * palette){
 	uint16_t palette_length = palette[0];
 	uint8_t r_t;
@@ -259,6 +173,17 @@ void update_PixelMapWithPalette(uint32_t * palette){
 		}
 	}
 }
+
+void setPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID, ColorHex color){}
+void setPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID, ColorRGB pxColor){}
+void setPixelColor(uint16_t pxNr, uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){}
+
+uint32_t getPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID){}
+ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID){}
+
+void setAllPixelColorHexOnLedStrip(uint8_t parrallelLedStripID, ColorHex pxColor){}
+void setAllPixelColorRGBOnLedStrip(uint8_t parrallelLedStripID, ColorRGB pxColor){}
+void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){}
 
 /**
   * @brief  This function initialize updates the pixel_map with the initial color palette
@@ -461,4 +386,145 @@ void DMA1_Channel3_IRQHandler(void){
 	GPIOC->ODR &= (~GPIO_Pin_15);
 #endif
 
+}
+
+
+/******************************************************************************/
+/*                    Initializer function definitions                        */
+/******************************************************************************/
+
+/**
+  * @brief  This function initialize the led strip signals on PA7, PB0, PB1
+  * @param  GPIO_InitTypeDef variable address
+  * @retval None
+  */
+void InitGPIO_LSSs(GPIO_InitTypeDef* GPIO_InitStructure){
+
+	uint16_t ledstrip_signal1 = GPIO_Pin_7; 	/* PA7  */
+	uint16_t ledstrip_signal2 = GPIO_Pin_0; 	/* PB0  */
+	uint16_t ledstrip_signal3 = GPIO_Pin_1; 	/* PB1  */
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+
+	/* PA7  */
+	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal1;
+	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
+	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
+	GPIO_Init(GPIOA, GPIO_InitStructure); /* !GPIOA! */
+
+	/* PB0 & PB1  */
+	GPIO_InitStructure->GPIO_Pin   = ledstrip_signal2 | ledstrip_signal3;
+	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_AF_PP;
+	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
+	GPIO_Init(GPIOB, GPIO_InitStructure); /* !GPIOB! */
+
+#ifdef DEBUG_PINS_ON
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	/* PC14 & PC15  */
+	GPIO_InitStructure->GPIO_Pin   = GPIO_Pin_14 | GPIO_Pin_15;
+	GPIO_InitStructure->GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure->GPIO_Speed = GPIO_Speed_10MHz;
+	GPIO_Init(GPIOC, GPIO_InitStructure); /* !GPIOC! */
+
+	GPIO_ResetBits(GPIOC,GPIO_Pin_14 | GPIO_Pin_15);
+#endif
+
+}
+
+/**
+  * @brief  This function initialize the nested vectored interrupt controller for the DMA CH3 - TIM3
+  * @param  NVIC_InitTypeDef variable
+  * @retval None
+  */
+void InitNVIC_LSS(NVIC_InitTypeDef* NVIC_InitStructure){
+	/* DMA1 CH3 - TIM3 OC*/
+	NVIC_InitStructure->NVIC_IRQChannel = DMA1_Channel3_IRQn;
+	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(NVIC_InitStructure);
+}
+
+/**
+  * @brief  This function initialize TIM3 clock to a 800/400kHz frequency - 1.25/2.5us time constant
+  *         depends on the prescaler value
+  * @param  TIM_TimeBaseInitTypeDef variable address
+  * @retval None
+  */
+void InitTIM3_CLK(TIM_TimeBaseInitTypeDef* TIM_TimeBase_InitStructure){
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+
+	TIM_TimeBaseStructInit(TIM_TimeBase_InitStructure);
+
+	TIM_TimeBase_InitStructure->TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBase_InitStructure->TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBase_InitStructure->TIM_Period = TIM_PERIOD-1;
+	TIM_TimeBase_InitStructure->TIM_Prescaler = TIM_PRESCALER; // divider = prescaler + 1
+	TIM_TimeBaseInit(TIM3, TIM_TimeBase_InitStructure);
+}
+
+/**
+  * @brief  This function initialize TIM3 output compare mode to pwm1 on ch2, ch3, ch4
+  * @param  TIM_OCInitTypeDef variable address
+  * @retval None
+  */
+void InitTIM3_PWM(TIM_OCInitTypeDef* TIM_OC_InitStructure){
+	TIM_OCStructInit(TIM_OC_InitStructure);
+
+	TIM_OC_InitStructure->TIM_OCMode = TIM_OCMode_PWM1;
+	TIM_OC_InitStructure->TIM_OCIdleState = TIM_OCIdleState_Reset;
+	TIM_OC_InitStructure->TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OC_InitStructure->TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OC_InitStructure->TIM_Pulse = 0x0000;
+
+	TIM_OC2Init(TIM3, TIM_OC_InitStructure);
+	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+	TIM_OC3Init(TIM3, TIM_OC_InitStructure);
+	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+	TIM_OC4Init(TIM3, TIM_OC_InitStructure);
+	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+	/* Enable the TIM Counter */
+	/* TIM_Cmd(TIM3, ENABLE); */
+}
+
+/**
+  * @brief  This function initialize the DMA controller for the TIM3 OC values
+  * 		from CH2 to CH4 (PA7 PB0 PB1)
+  * 		Initialize TIMx (TIM3) first
+  * @param  DMA_InitTypeDef variable
+  * @param  ledstrip_transmit_dma_buffer - uint8_t[] buffer to send
+  * @retval None
+  */
+void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_transmit_dma_buffer){
+	/* DMA 1, Channel 2 for TIM3 CH4 */
+
+	/* using TIM DMA burst feature page 421 in Reference Manual 02-06-2018 */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+	/* DMA ch3 receives the TIM3 Update event - page 281 in RM 02-06-2018 */
+	DMA_DeInit(DMA1_Channel3);
+	DMA_InitStructure->DMA_PeripheralBaseAddr = (uint32_t)&(TIM3->DMAR);
+	DMA_InitStructure->DMA_MemoryBaseAddr = (uint32_t) ledstrip_transmit_dma_buffer;
+	DMA_InitStructure->DMA_DIR = DMA_DIR_PeripheralDST;
+	/*
+	 * 24 bits need to determine the color of one led
+	 * 3  there are 3 strips (ch2,ch3,ch4)
+	 */
+	DMA_InitStructure->DMA_BufferSize = DMA_BUFFER_SIZE;
+	DMA_InitStructure->DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure->DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure->DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure->DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure->DMA_Mode = DMA_Mode_Circular;
+	DMA_InitStructure->DMA_Priority = DMA_Priority_High;
+	DMA_InitStructure->DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel3, DMA_InitStructure);
+
+	TIM_DMAConfig(TIM3, TIM_DMABase_CCR2, TIM_DMABurstLength_3Transfers);
+	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
+	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE); /* transmission complete */
+	DMA_ITConfig(DMA1_Channel3, DMA_IT_HT, ENABLE); /* half transfer complete */
 }
