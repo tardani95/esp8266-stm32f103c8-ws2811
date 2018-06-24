@@ -130,6 +130,7 @@ int main(void)
 	Init_PixelMap();
 	refreshLedStrip();
 
+	DelaySec(3);
 
 	while(1){
 		/*if(isNewDataArrived){
@@ -139,11 +140,15 @@ int main(void)
 				showAnim[uart_receive_array[12]](&animOff);
 			}
 		}*/
-
-		anim_meteorRainOnLedStrip(1,0xffffff,10,64,1,30);
-		DelayMs(200);
-		anim_meteorRainOnLedStrip(2,0xff0000,10,64,1,30);
-		DelayMs(200);
+		for(uint8_t paletteID = 0; paletteID < PALETTES_SIZE; paletteID++){
+			fillPattern(paletteID);
+			refreshLedStrip();
+			DelaySec(30);
+		}
+		anim_meteorRainOnLedStrip(1,0xff00ff,6,64,1,55);
+		DelaySec(60);
+		//anim_meteorRainOnLedStrip(2,0xff0000,10,64,1,30);
+		//DelayMs(200);
 	}
 }
 

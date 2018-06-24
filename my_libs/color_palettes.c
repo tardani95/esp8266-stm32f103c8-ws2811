@@ -92,7 +92,6 @@ uint32_t ro[]={
 
 
 /******************************************************************************/
-#define PALETTES_SIZE 8
 
 uint32_t * palettes[PALETTES_SIZE]={
 	init_palette,

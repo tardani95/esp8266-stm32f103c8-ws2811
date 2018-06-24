@@ -25,6 +25,7 @@ extern uint32_t fire[];
 extern uint32_t hun[];
 extern uint32_t ro[];
 
-extern uint32_t * palettes[];
+#define PALETTES_SIZE 8
+extern uint32_t * palettes[PALETTES_SIZE];
 
 #endif /* _COLOR_PALETTES_H_ */
