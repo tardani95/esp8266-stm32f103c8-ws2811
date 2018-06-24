@@ -16,15 +16,15 @@ Info        : 22.06.2018
 /*========================================================================*/
 #include "ws2811.h"
 #include "color_palettes.h"
-#include <stdlib.h> /* for rand() function */
+#include <stdlib.h>         /* for rand() function */
 
 void notIncomingCall();
 void notSMS();
 
 void notification(uint8_t mode, uint32_t color);
 
-void fill_solid();
-void fill_pattern(uint8_t palette);
+void fillSolid();
+void fillPattern(uint8_t paletteID);
 
 void fill(uint8_t mode, uint32_t value);
 

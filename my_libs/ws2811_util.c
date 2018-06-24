@@ -19,8 +19,24 @@ void notSMS(){}
 
 void notification(uint8_t mode, uint32_t color){}
 
-void fill_solid(){}
-void fill_pattern(uint8_t palette){}
+void fillSolid(){}
+
+void fillPattern(uint8_t paletteID){
+	uint16_t palette_length = palettes[paletteID][0];
+	ColorRGB pxColor;
+	uint8_t i_percent_palette_length_plus_offset;
+
+	for( uint16_t pxID = 0 ; pxID < LED_STRIP_SIZE ; ++pxID ){
+		i_percent_palette_length_plus_offset = (pxID%palette_length) + 1;
+		for( uint8_t parallelLedStripID = 0; parallelLedStripID < PARALELL_STRIPS; ++parallelLedStripID ){
+			pxColor.r = ((palettes[paletteID][i_percent_palette_length_plus_offset] & RED  ) >> RED_S);
+			pxColor.g = ((palettes[paletteID][i_percent_palette_length_plus_offset] & GREEN) >> GREEN_S);
+			pxColor.b = ((palettes[paletteID][i_percent_palette_length_plus_offset] & BLUE ));
+
+			setPixelColorRGB(pxID, parallelLedStripID, pxColor);
+		}
+	}
+}
 
 void fill(uint8_t mode, uint32_t value){}
 
