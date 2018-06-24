@@ -50,7 +50,7 @@ const uint8_t gammaCorrectionTable[] = {
 
 __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; 					/* DMA buffer for TIMx OutputCompare (OC) values */
 __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];	/* array to store all the pixel colors */
-__IO ColorRGB pixel_map[PARALELL_STRIPS][LED_STRIP_SIZE];
+__IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];
 
 __IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
 __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
@@ -162,7 +162,7 @@ void setPixelColor(uint16_t pxNr, uint8_t parallelLedStripID, uint8_t red, uint8
 }
 
 ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID){
-	colorRGBToHex(pixel_map[pxNr][parallelLedStripID]);
+	return colorRGBToHex(pixel_map[pxNr][parallelLedStripID]);
 }
 ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID){
 	return pixel_map[pxNr][parallelLedStripID];
@@ -173,12 +173,12 @@ void setAllPixelColorHexOnLedStrip(uint8_t parallelLedStripID, ColorHex pxColor)
 		setPixelColorHex(pxID, parallelLedStripID, pxColor);
 	}
 }
-void setAllPixelColorRGBOnLedStrip(uint8_t parrallelLedStripID, ColorRGB pxColor){
+void setAllPixelColorRGBOnLedStrip(uint8_t parallelLedStripID, ColorRGB pxColor){
 	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
 		setPixelColorRGB(pxID, parallelLedStripID, pxColor);
 	}
 }
-void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
+void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
 	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
 		setPixelColor(pxID, parallelLedStripID, red, green, blue);
 	}
@@ -186,7 +186,7 @@ void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_
 
 
 /*
- * @TODO - move this function to ws2811_util lib
+ * @TODO - move this function to ws2811_util lib - fill_pattern
  */
 void update_PixelMapWithPalette(uint32_t * palette){
 	uint16_t palette_length = palette[0];
@@ -209,15 +209,12 @@ void update_PixelMapWithPalette(uint32_t * palette){
 }
 
 /**
-  * @brief  This function initialize updates the pixel_map with the initial color palette
+  * @brief  This function initialize updates the pixel_map with the initial color palette [id=0]
   * @param  None
   * @retval None
   */
 void Init_PixelMap(void){
-//	uint32_t init_paletteRGB[]={ 5, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00 };
-//	uint32_t init_paletteRGB[]={ 4, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d};
-	uint32_t init_paletteRGB[]={ 8+5, 0x00FF00, 0x7d007d, 0xFF0000, 0x7d7d00, 0x0000FF,  0x7d007d, 0xFFFFFF, 0x000000, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00 };
-	update_PixelMapWithPalette(init_paletteRGB);
+	fillPattern(1); // id = 0
 }
 
 /**
@@ -321,7 +318,8 @@ void FillUp_DMA_Buffer_BGR_map(uint16_t pixel_idx){
 void Init_DMA_Buffer(void){
 	pixel_id = 0;
 	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
-		FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
+//		FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
+		FillUp_DMA_Buffer(pixel_id+buff_px);
 	}
 	pixel_id = PIXEL_PER_BUFFER/2;
 }
@@ -386,7 +384,8 @@ void DMA1_Channel3_IRQHandler(void){
 	/* filling up the next half of the buffer with new data */
 	if(pixel_id + PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
 		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
-			FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
+//			FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
+			FillUp_DMA_Buffer(pixel_id+buff_px);
 		}
 	}else if(pixel_id-PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
 		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
