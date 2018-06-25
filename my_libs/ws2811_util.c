@@ -14,12 +14,22 @@ Info        : 22.06.2018
 /******************************************************************************/
 #include "ws2811_util.h"
 
-void notIncomingCall(){}
-void notSMS(){}
+void notIncomingCall(ColorHex color){
 
-void notification(uint8_t mode, uint32_t color){}
+}
+void notSMS(ColorHex color){
 
-void fillSolid(){}
+}
+
+void notification(uint8_t mode, ColorHex color){
+
+}
+
+void fillSolid(ColorRGB color){
+	for( uint8_t parallelLedStripID = 0; parallelLedStripID < PARALELL_STRIPS; ++parallelLedStripID ){
+		setAllPixelColorRGBOnLedStrip(parallelLedStripID, color);
+	}
+}
 
 void fillPattern(uint8_t paletteID){
 	uint16_t palette_length = palettes[paletteID][0];
@@ -41,32 +51,60 @@ void fillPattern(uint8_t paletteID){
 void fill(uint8_t mode, uint32_t value){}
 
 void anim_pattern(){}
+
 void anim_bouncingBalls(){}
 
-void anim_meteorRain(){
+void anim_meteorRainOnAllLedStrip(ColorHex meteorColor, uint8_t meteorSize, uint8_t meteorTrailDecay,
+		uint8_t meteorRandomDecay, uint16_t SpeedDelay_ms){
+
+	srand(meteorColor);
+	ColorHex black = 0x000000;
+	setAllPixelColorHexOnLedStrip(0, black);
+	setAllPixelColorHexOnLedStrip(1, black);
+	setAllPixelColorHexOnLedStrip(2, black);
+
+	for(int i = 0; i < LED_STRIP_SIZE + LED_STRIP_SIZE; i++) {
+
+		for(uint8_t pLSid = 0; pLSid < PARALELL_STRIPS; pLSid++){
+			// fade brightness all LEDs one step
+			for(int j=0; j<LED_STRIP_SIZE; j++) {
+				if( (!meteorRandomDecay) || ((rand()%10)>5) ) {
+					fadeToBlack(j, pLSid, meteorTrailDecay );
+				}
+			}
+
+			// draw meteor
+			for(int j = 0; j < meteorSize; j++) {
+				if( ( i-j <LED_STRIP_SIZE) && (i-j>=0) ) {
+					setPixelColorHex(i-j, pLSid, meteorColor);
+				}
+			}
+		}
+		refreshLedStrip();
+		DelayMs(SpeedDelay_ms);
+	}
 }
 
-
-void anim_meteorRainOnLedStrip(uint8_t parrallelLedStripID,
+void anim_meteorRainOnLedStrip(uint8_t parallelLedStripID,
 			ColorHex meteorColor, uint8_t meteorSize, uint8_t meteorTrailDecay,
 			uint8_t meteorRandomDecay, uint16_t SpeedDelay_ms) {
 
 	srand(meteorColor);
 	ColorHex black = 0x000000;
-	setAllPixelColorHexOnLedStrip(parrallelLedStripID, black);
+	setAllPixelColorHexOnLedStrip(parallelLedStripID, black);
 
 	for(int i = 0; i < LED_STRIP_SIZE + LED_STRIP_SIZE; i++) {
 		// fade brightness all LEDs one step
 		for(int j=0; j<LED_STRIP_SIZE; j++) {
 			if( (!meteorRandomDecay) || ((rand()%10)>5) ) {
-				fadeToBlack(j, parrallelLedStripID, meteorTrailDecay );
+				fadeToBlack(j, parallelLedStripID, meteorTrailDecay );
 			}
 		}
 
 		// draw meteor
 		for(int j = 0; j < meteorSize; j++) {
 			if( ( i-j <LED_STRIP_SIZE) && (i-j>=0) ) {
-				setPixelColorHex(i-j, parrallelLedStripID, meteorColor);
+				setPixelColorHex(i-j, parallelLedStripID, meteorColor);
 			}
 		}
 
@@ -75,19 +113,18 @@ void anim_meteorRainOnLedStrip(uint8_t parrallelLedStripID,
 	}
 }
 
-void fadeToBlack(uint16_t pxNr, uint8_t parrallelLedStripID, uint8_t fadeValue) {
-//    uint32_t oldColor;
+void fadeToBlack(uint16_t pxNr, uint8_t parallelLedStripID, uint8_t fadeValue) {
     ColorRGB oldColor;
     uint8_t r, g, b;
 
-    oldColor = getPixelColorRGB(pxNr, parrallelLedStripID);
-    r = oldColor.r; //(oldColor & 0x00ff0000UL) >> 16;
-    g = oldColor.g; //(oldColor & 0x0000ff00UL) >> 8;
-    b = oldColor.b; //(oldColor & 0x000000ffUL);
+    oldColor = getPixelColorRGB(pxNr, parallelLedStripID);
+    r = oldColor.r;
+    g = oldColor.g;
+    b = oldColor.b;
 
     r=(r<=10)? 0 : (uint8_t) r-(r*fadeValue/256);
     g=(g<=10)? 0 : (uint8_t) g-(g*fadeValue/256);
     b=(b<=10)? 0 : (uint8_t) b-(b*fadeValue/256);
 
-    setPixelColor(pxNr, parrallelLedStripID, r, g, b);
+    setPixelColor(pxNr, parallelLedStripID, r, g, b);
 }
