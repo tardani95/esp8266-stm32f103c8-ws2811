@@ -130,6 +130,11 @@ int main(void){
 				showAnim[uart_receive_array[12]](&animOff);
 			}
 		}*/
+
+//		anim_strobe(0xff00ff,10,50,1000);
+//		ColorHex colors[] = {0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00};
+//		anim_bouncingBallsOnLedStrip(1, 10000*1000, 1, colors);
+
 		anim_fadeInFadeOut(4,2000,7);
 
 		for(uint8_t paletteID = 0; paletteID < PALETTES_SIZE; paletteID++){
