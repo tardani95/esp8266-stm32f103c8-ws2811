@@ -130,6 +130,7 @@ int main(void)
 				showAnim[uart_receive_array[12]](&animOff);
 			}
 		}*/
+		anim_fadeInFadeOut(30,50,40);
 
 		for(uint8_t paletteID = 0; paletteID < PALETTES_SIZE; paletteID++){
 			fillPattern(paletteID);
