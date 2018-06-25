@@ -170,55 +170,6 @@ void SysTick_Handler(void)
   * @}
   */
 
-
-void EXTI0_IRQHandler(void){
-	EXTI->PR = EXTI_Line0;
-	//EXTI_ClearITPendingBit(EXTI_Line0);
-	counter3++;
-
-	/* switch off pwm signal if counter equals with 3xled_number*/
-	if(counter3 == (24*LED_NUMBER)){
-		TIM3->CCR3=0;
-		TIM3->CCR4=0;
-		counter3 = 0;
-		TIM2->CCR2=50;
-		return;
-	}
-
-	if(counter3 < (24*LIGHT_UP_FROM_LED)){
-		TIM3->CCR3 = 18;
-		TIM3->CCR4 = 18;
-		return;
-	}
-
-	TIM3->CCR3 = TIM3->CCR4 = look_up_table_2[counter3%96] ? 43 : 18;
-
-	if(counter3 > (24*LIGHT_UP_TO_LED)){
-		TIM3->CCR3 = 18;
-		TIM3->CCR4 = 18;
-	}
-
-}
-
-void EXTI1_IRQHandler(void){
-	EXTI->PR = EXTI_Line1;
-	//EXTI_ClearITPendingBit(EXTI_Line1);
-	counter2++;
-
-
-	if(counter2>25){
-		TIM2->CCR2=0;
-		counter2 = 0;
-		if(LIGHT_UP_FROM_LED==0){
-			TIM3->CCR3 = TIM3->CCR4 = look_up_table_2[0] ? 43 : 18;
-		}else{
-			TIM3->CCR3 = 18;
-			TIM3->CCR4 = 18;
-		}
-
-	}
-}
-
 /**
   * @brief  This function handles the button interrupt request on portB, pin14.
   * @param  None
