@@ -44,6 +44,14 @@ void InitSysTick(void){
 	SysTick_Config(RCC_ClockStruct.SYSCLK_Frequency/SYS_TICK_FREQ-1); /* 1ms/SysClk tick */
 }
 
+uint32_t GetSysTickCount(void){
+	return SysTickCount;
+}
+
+uint32_t Millis(void){
+	return SysTickCount/1000;
+}
+
 /**
   * @brief  This function freeze the cpu for x [us]
   * @param  time in [us]

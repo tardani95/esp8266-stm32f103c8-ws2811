@@ -22,6 +22,8 @@ typedef void (*callback)(void); /* callback function definition */
 
 void SysTick_Handler(void);
 void InitSysTick(void);
+uint32_t GetSysTickCount(void);
+uint32_t Millis(void);
 void DelayUs(uint32_t us);
 void DelayMs(uint32_t ms);
 void DelaySec(uint32_t sec);
