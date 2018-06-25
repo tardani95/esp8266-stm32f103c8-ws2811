@@ -30,7 +30,7 @@ Info        : 16.06.2018
 #include "misc.h"
 
 #include "util.h" 			/* my lib - delay functions */
-#include "ws2811_util.h"	/* utility functions for this library */
+//#include "ws2811_util.h"	/* utility functions for this library */
 
 /*==========================================================================*/
 /*                           WS2811  SETTINGS								*/

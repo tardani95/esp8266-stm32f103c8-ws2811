@@ -54,9 +54,9 @@ void anim_pattern(){}
 
 /**
   * @brief  This function modifies the lookup table so, that it makes a fade in fade out animation
-  * @param  fade_in_time: it will fade in in 255*fade_in_time [us]
-  * @param  hold_time: hold the color at the same value for hold_time [us]
-  * @param  fade_out_time:it will fade out in 255*fade_out_time [us]
+  * @param  fade_in_time: it will fade in in 255*fade_in_time [ms]
+  * @param  hold_time: hold the color at the same value for hold_time [ms]
+  * @param  fade_out_time:it will fade out in 255*fade_out_time [ms]
   * @retval None
   */
 void anim_fadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade_out_time){
@@ -75,9 +75,9 @@ void anim_fadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade
 				}
 			}
 			refreshLedStrip();
-			DelayUs(fade_in_time);
+			DelayMs(fade_in_time);
 		}
-		DelayUs(hold_time);
+		DelayMs(hold_time);
 		/* watch out! negative overflow! --> int16_t */
 		for(int16_t temp = 255; temp>=0; temp-=1){
 			for(uint8_t pLSid = 0; pLSid < PARALELL_STRIPS; pLSid++){
@@ -93,7 +93,7 @@ void anim_fadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade
 				}
 			}
 			refreshLedStrip();
-			DelayUs(fade_out_time);
+			DelayMs(fade_out_time);
 		}
 	}
 }
