@@ -13,7 +13,7 @@ Info        : 16.06.2018
 /*                               Includes									  */
 /******************************************************************************/
 #include "ws2811.h"
-#include "ws2811_util.h"
+#include "ws2811_util.h" /* for fillPattern method in Init_PixelMap function */
 /******************************************************************************/
 /*                             Debug options								  */
 /******************************************************************************/
@@ -48,8 +48,7 @@ const uint8_t gammaCorrectionTable[] = {
 
 
 __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; 					/* DMA buffer for TIMx OutputCompare (OC) values */
-__IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];	/* array to store all the pixel colors */
-__IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];
+__IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];				/* array to store all the pixel colors */
 
 __IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
 __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
@@ -236,15 +235,18 @@ void FillUp_DMA_Buffer(uint16_t pixel_idx){
 				parallelStripOffset = colorBit*PARALELL_STRIPS;
 				switch(colorID){
 					case R:{
-						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.r & (0x80 >> colorBit)) ? T1H : T0H;
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID]
+										= (gCC.r & (0x80 >> colorBit)) ? T1H : T0H;
 						break;
 					}
 					case G:{
-						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.g & (0x80 >> colorBit)) ? T1H : T0H;
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID]
+										= (gCC.g & (0x80 >> colorBit)) ? T1H : T0H;
 						break;
 					}
 					case B:{
-						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.b & (0x80 >> colorBit)) ? T1H : T0H;
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID]
+										= (gCC.b & (0x80 >> colorBit)) ? T1H : T0H;
 						break;
 					}
 					default:{
@@ -262,34 +264,6 @@ void FillUp_DMA_Buffer(uint16_t pixel_idx){
 }
 
 /**
-  * @brief  Fills up the next half of the dma buffer starting with the pixel_idx
-  * @param  pixel_idx	start the buffer filling with this pixel
-  * @retval None
-  */
-void FillUp_DMA_Buffer_BGR_map(uint16_t pixel_idx){
-#ifdef DEBUG_DMA_BUFFER_FILL_UP
-	GPIOC->ODR &= (~GPIO_Pin_13);
-#endif
-	uint16_t id0 = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
-	uint16_t id1;
-	uint16_t id2;
-	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
-		id1 = colorID*BITS_PER_COLOR;
-		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
-			id2 = colorBit*PARALELL_STRIPS;
-			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
-				TIMx_OC_DMA_Buffer_BRG[ id0 + id1 + id2 + parallelStripID] =
-						(pixel_mapBRG[parallelStripID][pixel_idx][colorID] & (0x80 >> colorBit)) ? T1H : T0H;
-			}
-		}
-	}
-
-#ifdef DEBUG_DMA_BUFFER_FILL_UP
-	GPIOC->ODR |= (GPIO_Pin_13);
-#endif
-} /*end - FillUp_DMA_Buffer_BGR_map()*/
-
-/**
   * @brief  This function initialize the first whole DMA Buffer
   * @param  None
   * @retval None
@@ -297,7 +271,6 @@ void FillUp_DMA_Buffer_BGR_map(uint16_t pixel_idx){
 void Init_DMA_Buffer(void){
 	pixel_id = 0;
 	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
-//		FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
 		FillUp_DMA_Buffer(pixel_id+buff_px);
 	}
 	pixel_id = PIXEL_PER_BUFFER/2;
@@ -363,7 +336,6 @@ void DMA1_Channel3_IRQHandler(void){
 	/* filling up the next half of the buffer with new data */
 	if(pixel_id + PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
 		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
-//			FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
 			FillUp_DMA_Buffer(pixel_id+buff_px);
 		}
 	}else if(pixel_id-PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
