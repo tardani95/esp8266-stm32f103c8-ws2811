@@ -113,7 +113,6 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef*,uint8_t*);
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
 void InitTIM3_PWM(TIM_OCInitTypeDef*);
 
-
 void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size);
 
 uint8_t gammaCorrection(uint8_t color);
@@ -125,16 +124,16 @@ ColorHex colorRGBToHex(ColorRGB color);
 ColorRGB colorHexToRGB(ColorHex color);
 
 
-void setPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID, ColorHex color);
-void setPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID, ColorRGB pxColor);
-void setPixelColor(uint16_t pxNr, uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
+void setPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID, ColorHex color);
+void setPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID, ColorRGB pxColor);
+void setPixelColor(uint16_t pxNr, uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
 
-ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parrallelLedStripID);
-ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parrallelLedStripID);
+ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID);
+ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID);
 
-void setAllPixelColorHexOnLedStrip(uint8_t parrallelLedStripID, ColorHex pxColor);
-void setAllPixelColorRGBOnLedStrip(uint8_t parrallelLedStripID, ColorRGB pxColor);
-void setAllPixelColorOnLedStrip(uint8_t parrallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
+void setAllPixelColorHexOnLedStrip(uint8_t parallelLedStripID, ColorHex pxColor);
+void setAllPixelColorRGBOnLedStrip(uint8_t parallelLedStripID, ColorRGB pxColor);
+void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
 
 void Init_PixelMap(void);
 void refreshLedStrip(void);
