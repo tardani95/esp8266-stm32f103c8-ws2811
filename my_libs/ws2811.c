@@ -147,7 +147,7 @@ ColorRGB colorHexToRGB(ColorHex color){
 	return colorRGB;
 }
 
-
+/* setters and getters */
 void setPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID, ColorHex color){
 	ColorRGB newColor = colorHexToRGB(color);
 	pixel_map[pxNr][parallelLedStripID] = newColor;
@@ -184,37 +184,13 @@ void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t
 	}
 }
 
-
-/*
- * @TODO - move this function to ws2811_util lib - fill_pattern
- */
-void update_PixelMapWithPalette(uint32_t * palette){
-	uint16_t palette_length = palette[0];
-	uint8_t r_t;
-	uint8_t g_t;
-	uint8_t b_t;
-	uint8_t i_per_pl;
-	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
-		i_per_pl = (i%palette_length);
-		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
-			r_t = (palette[i_per_pl+1] >> 16);
-			g_t = (palette[i_per_pl+1] >> 8);
-			b_t =  palette[i_per_pl+1];
-
-			pixel_mapBRG[j][i][R] = gammaCorrection(r_t);
-			pixel_mapBRG[j][i][G] = gammaCorrection(g_t);
-			pixel_mapBRG[j][i][B] = gammaCorrection(b_t);
-		}
-	}
-}
-
 /**
   * @brief  This function initialize updates the pixel_map with the initial color palette [id=0]
   * @param  None
   * @retval None
   */
 void Init_PixelMap(void){
-	fillPattern(1); // id = 0
+	fillPattern(0); // id = 0
 }
 
 /**
@@ -237,7 +213,11 @@ void Clear_DMA_Buffer(uint16_t pixel_idx){
 	}
 }
 
-
+/**
+  * @brief  Fills up the dma buffer section with the pixel_idx data
+  * @param  pixel_idx	color data at this pixel
+  * @retval None
+  */
 void FillUp_DMA_Buffer(uint16_t pixel_idx){
 
 #ifdef DEBUG_DMA_BUFFER_FILL_UP

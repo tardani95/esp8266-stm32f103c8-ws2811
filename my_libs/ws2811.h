@@ -97,9 +97,9 @@ typedef struct RGB{
 typedef uint32_t ColorHex;
 /*============================================================================*/
 
-extern __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE];
-extern __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];
-extern __IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];
+//extern __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE];
+//extern __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];
+//extern __IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];
 
 extern __IO uint8_t  txOn; /* @TODO - init function pointer parameter passing*/
 
