@@ -44,6 +44,11 @@ void InitSysTick(void){
 	SysTick_Config(RCC_ClockStruct.SYSCLK_Frequency/SYS_TICK_FREQ-1); /* 1ms/SysClk tick */
 }
 
+/**
+  * @brief  This function freeze the cpu for x [us]
+  * @param  time in [us]
+  * @retval None
+  */
 void DelayUs(uint32_t us){
 	uint32_t startTick=SysTickCount;
 
@@ -55,12 +60,22 @@ void DelayUs(uint32_t us){
 	while(SysTickCount-startTick <= us){}
 }
 
+/**
+  * @brief  This function freeze the cpu for x [ms]
+  * @param  time in [ms]
+  * @retval None
+  */
 void DelayMs(uint32_t ms){
 	for(uint32_t i = 0; i<ms; ++i){
 		DelayUs(1000); /*  the error grows with higher ms values*/
 	}
 }
 
+/**
+  * @brief  This function freeze the cpu for x [sec]
+  * @param  time in [sec]
+  * @retval None
+  */
 void DelaySec(uint32_t sec){
 	for(uint32_t i = 0; i<sec; ++i){
 		DelayMs(999); /*  the error grows with higher sec values*/
