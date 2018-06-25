@@ -14,10 +14,11 @@ Info        : 2018-04-09
 #include <stdio.h>
 #include "stm32f10x.h"
 
-#include "esp8266.h" /* my lib */
-#include "ws2811.h"  /* my lib */
-#include "periph.h"  /* my lib */
-#include "util.h"    /* my lib */
+#include "esp8266.h" 		/* my lib */
+#include "ws2811.h"  		/* my lib */
+#include "ws2811_util.h"	/* my lib */
+#include "periph.h"  		/* my lib */
+#include "util.h"    		/* my lib */
 
 /* Private typedef */
 /* Private define  */
@@ -58,8 +59,7 @@ void OnUART_DataReceived(void);
  * Die OCN Ausgaenge gibt es allgemein nur bei den Timern 1, 8, 15, 16 und 17.
  */
 
-int main(void)
-{
+int main(void){
 
 	SystemInit();
 
@@ -120,7 +120,7 @@ int main(void)
 	refreshLedStrip();
 
 	/* wait 3 seconds */
-	DelaySec(3);
+	DelaySec(1);
 
 	while(1){
 		/*if(isNewDataArrived){
@@ -130,7 +130,7 @@ int main(void)
 				showAnim[uart_receive_array[12]](&animOff);
 			}
 		}*/
-		anim_fadeInFadeOut(30,50,40);
+		anim_fadeInFadeOut(4,2000,7);
 
 		for(uint8_t paletteID = 0; paletteID < PALETTES_SIZE; paletteID++){
 			fillPattern(paletteID);
