@@ -13,6 +13,7 @@ Info        : 16.06.2018
 /*                               Includes									  */
 /******************************************************************************/
 #include "ws2811.h"
+#include "ws2811_util.h"
 
 /******************************************************************************/
 /*                             Debug options								  */
@@ -22,15 +23,6 @@ Info        : 16.06.2018
 //#define DEBUG_DMA_BUFFER_IRQ
 //#define DEBUG_DMA_BUFFER_HT
 //#define DEBUG_DMA_BUFFER_TC
-
-/******************************************************************************/
-/*                           Private typedef                                  */
-/******************************************************************************/
-typedef struct RGB{
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-}RGB_Pixel;
 
 /******************************************************************************/
 /*                          Private variables                                 */
@@ -58,6 +50,7 @@ const uint8_t gammaCorrectionTable[] = {
 
 __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE]; 					/* DMA buffer for TIMx OutputCompare (OC) values */
 __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];	/* array to store all the pixel colors */
+__IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];
 
 __IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
 __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
@@ -69,6 +62,345 @@ __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
 
 /******************************************************************************/
 /*                          Function definitions                              */
+/******************************************************************************/
+
+/**
+  * @brief  This function initialize the WS2811 LED strip
+  * @param  @TODO
+  * @retval None
+  */
+void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
+
+	GPIO_InitTypeDef GPIO_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
+	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; /* timer init */
+	TIM_OCInitTypeDef TIM_OC_InitStructure; /* output compare init */
+	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
+
+	/* ledstrip signal pin init*/
+	InitGPIO_LSSs(&GPIO_InitStructure);
+	InitNVIC_LSS(&NVIC_InitStructure);
+
+	/* tim3 clock init */
+	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
+	InitTIM3_PWM(&TIM_OC_InitStructure);
+	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, (uint8_t*) TIMx_OC_DMA_Buffer_BRG ); /* look_up_table_1 */
+
+}
+
+/**
+  * @brief  This function corrects the LED color to light with true RGB values
+  * @param  color	the color to correct
+  * @retval gamma corrected color
+  */
+uint8_t gammaCorrection(uint8_t color){
+	return gammaCorrectionTable[color];
+}
+ColorHex gammaCorrHEX(ColorHex color){
+	ColorRGB newColor = colorHexToRGB(color);
+	newColor.r = gammaCorrection(newColor.r);
+	newColor.g = gammaCorrection(newColor.g);
+	newColor.b = gammaCorrection(newColor.b);
+
+	return colorRGBToHex(newColor);
+}
+ColorRGB gammaCorrRGB(ColorRGB color){
+	ColorRGB newColor;
+	newColor.r = gammaCorrection(color.r);
+	newColor.g = gammaCorrection(color.g);
+	newColor.b = gammaCorrection(color.b);
+	return newColor;
+}
+
+/* color convert functions */
+ColorHex colorToHex(uint8_t red, uint8_t green, uint8_t blue){
+	ColorHex color = EMPTY_COLOR;
+	color |= ((red << RED_S) & RED);
+	color |= ((green << GREEN_S) & GREEN);
+	color |= (blue & BLUE);
+
+	return color;
+}
+ColorRGB colorToRGB(uint8_t red, uint8_t green, uint8_t blue){
+	ColorRGB color;
+	color.r = red;
+	color.g = green;
+	color.b = blue;
+
+	return color;
+}
+ColorHex colorRGBToHex(ColorRGB color){
+	ColorHex colorHex = EMPTY_COLOR;
+	colorHex |= ((color.r << RED_S) & RED);
+	colorHex |= ((color.g << GREEN_S) & GREEN);
+	colorHex |= ((color.b & BLUE));
+
+	return colorHex;
+}
+ColorRGB colorHexToRGB(ColorHex color){
+	ColorRGB colorRGB;
+
+	colorRGB.r = ((color & RED) >> RED_S);
+	colorRGB.g = ((color & GREEN) >> GREEN_S);
+	colorRGB.b = ((color & BLUE));
+
+	return colorRGB;
+}
+
+/* setters and getters */
+void setPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID, ColorHex color){
+	ColorRGB newColor = colorHexToRGB(color);
+	pixel_map[pxNr][parallelLedStripID] = newColor;
+}
+void setPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID, ColorRGB pxColor){
+	pixel_map[pxNr][parallelLedStripID] = pxColor;
+}
+void setPixelColor(uint16_t pxNr, uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
+	pixel_map[pxNr][parallelLedStripID].r = red;
+	pixel_map[pxNr][parallelLedStripID].g = green;
+	pixel_map[pxNr][parallelLedStripID].b = blue;
+}
+
+ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID){
+	return colorRGBToHex(pixel_map[pxNr][parallelLedStripID]);
+}
+ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID){
+	return pixel_map[pxNr][parallelLedStripID];
+}
+
+void setAllPixelColorHexOnLedStrip(uint8_t parallelLedStripID, ColorHex pxColor){
+	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+		setPixelColorHex(pxID, parallelLedStripID, pxColor);
+	}
+}
+void setAllPixelColorRGBOnLedStrip(uint8_t parallelLedStripID, ColorRGB pxColor){
+	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+		setPixelColorRGB(pxID, parallelLedStripID, pxColor);
+	}
+}
+void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
+	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+		setPixelColor(pxID, parallelLedStripID, red, green, blue);
+	}
+}
+
+/**
+  * @brief  This function initialize updates the pixel_map with the initial color palette [id=0]
+  * @param  None
+  * @retval None
+  */
+void Init_PixelMap(void){
+	fillPattern(0); // id = 0
+}
+
+/**
+  * @brief  This function clears the buffer at the pixel_idx position
+  * @param  pixel_idx	position where to clear the buffer
+  * @retval None
+  */
+void Clear_DMA_Buffer(uint16_t pixel_idx){
+	uint16_t id0 = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
+	uint16_t id1;
+	uint16_t id2;
+	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
+		id1 = colorID*BITS_PER_COLOR;
+		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
+			id2 = colorBit*PARALELL_STRIPS;
+			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
+				TIMx_OC_DMA_Buffer_BRG[ id0 + id1 + id2 + parallelStripID] = 0;
+			}
+		}
+	}
+}
+
+/**
+  * @brief  Fills up the dma buffer section with the pixel_idx data
+  * @param  pixel_idx	color data at this pixel
+  * @retval None
+  */
+void FillUp_DMA_Buffer(uint16_t pixel_idx){
+
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR &= (~GPIO_Pin_13);
+#endif
+	ColorRGB gCC; /* gamma corrected color*/
+	uint16_t errorCounter = 0;
+
+	uint16_t pxOffset = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
+	uint16_t colorOffset;
+	uint16_t parallelStripOffset;
+	for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
+		gCC = gammaCorrRGB(getPixelColorRGB(pixel_idx,parallelStripID));
+		for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
+			colorOffset = colorID*BITS_PER_COLOR;
+			for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
+				parallelStripOffset = colorBit*PARALELL_STRIPS;
+				switch(colorID){
+					case R:{
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.r & (0x80 >> colorBit)) ? T1H : T0H;
+						break;
+					}
+					case G:{
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.g & (0x80 >> colorBit)) ? T1H : T0H;
+						break;
+					}
+					case B:{
+						TIMx_OC_DMA_Buffer_BRG[ pxOffset + colorOffset + parallelStripOffset + parallelStripID] = (gCC.b & (0x80 >> colorBit)) ? T1H : T0H;
+						break;
+					}
+					default:{
+						/*something not working correctly*/
+						errorCounter++;
+						break;
+					}
+				}
+			}
+		}
+	}
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR |= (GPIO_Pin_13);
+#endif
+}
+
+/**
+  * @brief  Fills up the next half of the dma buffer starting with the pixel_idx
+  * @param  pixel_idx	start the buffer filling with this pixel
+  * @retval None
+  */
+void FillUp_DMA_Buffer_BGR_map(uint16_t pixel_idx){
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR &= (~GPIO_Pin_13);
+#endif
+	uint16_t id0 = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
+	uint16_t id1;
+	uint16_t id2;
+	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
+		id1 = colorID*BITS_PER_COLOR;
+		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
+			id2 = colorBit*PARALELL_STRIPS;
+			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
+				TIMx_OC_DMA_Buffer_BRG[ id0 + id1 + id2 + parallelStripID] =
+						(pixel_mapBRG[parallelStripID][pixel_idx][colorID] & (0x80 >> colorBit)) ? T1H : T0H;
+			}
+		}
+	}
+
+#ifdef DEBUG_DMA_BUFFER_FILL_UP
+	GPIOC->ODR |= (GPIO_Pin_13);
+#endif
+} /*end - FillUp_DMA_Buffer_BGR_map()*/
+
+/**
+  * @brief  This function initialize the first whole DMA Buffer
+  * @param  None
+  * @retval None
+  */
+void Init_DMA_Buffer(void){
+	pixel_id = 0;
+	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
+//		FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
+		FillUp_DMA_Buffer(pixel_id+buff_px);
+	}
+	pixel_id = PIXEL_PER_BUFFER/2;
+}
+
+/**
+  * @brief  Sends out the color data to the led strip:
+  * 		- disables the TIM, sets its CCRx register values to 0
+  * 		- set the DMA data counter
+  * 		- initialize the buffer and pixel_id variables
+  * 		- set the transmission flag to ON
+  * 		- clear the DMA Flags
+  * 		- enable the DMA and TIM controllers
+  * @param  None
+  * @retval None
+  */
+void refreshLedStrip(void){
+
+	TIM_Cmd(TIM3, DISABLE);
+	DMA_Cmd(DMA1_Channel3, DISABLE);
+	DMA_SetCurrDataCounter(DMA1_Channel3, DMA_BUFFER_SIZE);
+
+	/* buffer initialization*/
+	Init_DMA_Buffer();
+	txOn = 1;
+
+	DMA_ClearFlag(DMA1_FLAG_HT3);
+	DMA_ClearFlag(DMA1_FLAG_TC3);
+	DMA_Cmd(DMA1_Channel3, ENABLE);
+	TIM_Cmd(TIM3, ENABLE);
+}
+
+/* DMA circular buffer handling IRQ */
+void DMA1_Channel3_IRQHandler(void){
+
+#ifdef DEBUG_DMA_BUFFER_IRQ
+	GPIOC->ODR &= (~GPIO_Pin_13);
+#endif
+
+	/* Half transfer */
+	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
+#ifdef DEBUG_DMA_BUFFER_HT
+	GPIOC->ODR ^= (GPIO_Pin_14); // half transfer flag set
+#endif
+
+		DMA_ClearFlag(DMA1_FLAG_HT3);
+		pixel_id += PIXEL_PER_BUFFER/2; /* PIXEL_PER_BUFFER/2 pixel sent out */
+
+	} /* endif - Half transfer */
+
+	/* Transfer Complete */
+	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) != RESET){
+#ifdef DEBUG_DMA_BUFFER_TC
+	GPIOC->ODR ^= (GPIO_Pin_15); // transfer complete flag set
+#endif
+
+		DMA_ClearFlag(DMA1_FLAG_TC3);
+		pixel_id += PIXEL_PER_BUFFER/2; /* PIXEL_PER_BUFFER/2 pixel sent out */
+
+	} /* endif - Transfer complete */
+
+
+	/* filling up the next half of the buffer with new data */
+	if(pixel_id + PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
+		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
+//			FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
+			FillUp_DMA_Buffer(pixel_id+buff_px);
+		}
+	}else if(pixel_id-PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
+		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
+			Clear_DMA_Buffer(pixel_id+buff_px);
+		}
+	}else{
+		DMA_Cmd(DMA1_Channel3, DISABLE);
+		TIM3->CCR1 = 0;
+		TIM3->CCR2 = 0;
+		TIM3->CCR3 = 0;
+		TIM3->CCR4 = 0;
+		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
+			Clear_DMA_Buffer(buff_px);
+		}
+		txOn = 0;
+		TIM_Cmd(TIM3, DISABLE);
+	}
+
+#ifdef DEBUG_DMA_BUFFER_IRQ
+	GPIOC->ODR |= (GPIO_Pin_13);
+#endif
+
+#ifdef DEBUG_DMA_BUFFER_HT
+	GPIOC->ODR &= (~GPIO_Pin_14);
+#endif
+
+#ifdef DEBUG_DMA_BUFFER_TC
+	GPIOC->ODR &= (~GPIO_Pin_15);
+#endif
+
+}
+
+
+/******************************************************************************/
+/*                    Initializer function definitions                        */
 /******************************************************************************/
 
 /**
@@ -205,260 +537,4 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef* DMA_InitStructure, uint8_t* ledstrip_
 	TIM_DMACmd(TIM3, TIM_DMA_Update, ENABLE);
 	DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE); /* transmission complete */
 	DMA_ITConfig(DMA1_Channel3, DMA_IT_HT, ENABLE); /* half transfer complete */
-}
-
-/**
-  * @brief  This function initialize the WS2811 LED strip
-  * @param  @TODO
-  * @retval None
-  */
-void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
-
-	GPIO_InitTypeDef GPIO_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure; /* nested vector interrupt controller init */
-	TIM_TimeBaseInitTypeDef TIM_TimeBase_InitStructure; /* timer init */
-	TIM_OCInitTypeDef TIM_OC_InitStructure; /* output compare init */
-	DMA_InitTypeDef DMA_InitStructure;		/* dma init  */
-
-	/* ledstrip signal pin init*/
-	InitGPIO_LSSs(&GPIO_InitStructure);
-	InitNVIC_LSS(&NVIC_InitStructure);
-
-	/* tim3 clock init */
-	InitTIM3_CLK(&TIM_TimeBase_InitStructure);
-	InitTIM3_PWM(&TIM_OC_InitStructure);
-	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, (uint8_t*) TIMx_OC_DMA_Buffer_BRG ); /* look_up_table_1 */
-
-}
-
-/**
-  * @brief  This function corrects the LED color to light with true RGB values
-  * @param  color	the color to correct
-  * @retval gamma corrected color
-  */
-uint8_t gammaCorrection(uint8_t color){
-	return gammaCorrectionTable[color];
-}
-
-void update_PixelMapWithPalette(uint32_t * palette){
-	uint16_t palette_length = palette[0];
-	uint8_t r_t;
-	uint8_t g_t;
-	uint8_t b_t;
-	uint8_t i_per_pl;
-	for( uint16_t i = 0 ; i < LED_STRIP_SIZE ; ++i ){
-		i_per_pl = (i%palette_length);
-		for( uint8_t j = 0; j < PARALELL_STRIPS; ++j ){
-			r_t = (palette[i_per_pl+1] >> 16);
-			g_t = (palette[i_per_pl+1] >> 8);
-			b_t =  palette[i_per_pl+1];
-
-			pixel_mapBRG[j][i][R] = gammaCorrection(r_t);
-			pixel_mapBRG[j][i][G] = gammaCorrection(g_t);
-			pixel_mapBRG[j][i][B] = gammaCorrection(b_t);
-		}
-	}
-}
-
-/**
-  * @brief  This function initialize updates the pixel_map with the initial color palette
-  * @param  None
-  * @retval None
-  */
-void Init_PixelMap(void){
-//	uint32_t init_paletteRGB[]={ 5, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00 };
-//	uint32_t init_paletteRGB[]={ 4, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d};
-	uint32_t init_paletteRGB[]={ 8+5, 0x00FF00, 0x7d007d, 0xFF0000, 0x7d7d00, 0x0000FF,  0x7d007d, 0xFFFFFF, 0x000000, 0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00 };
-	update_PixelMapWithPalette(init_paletteRGB);
-}
-
-/**
-  * @brief  This function clears the buffer at the pixel_idx position
-  * @param  pixel_idx	position where to clear the buffer
-  * @retval None
-  */
-void Clear_DMA_Buffer(uint16_t pixel_idx){
-	uint16_t id0 = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
-	uint16_t id1;
-	uint16_t id2;
-	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
-		id1 = colorID*BITS_PER_COLOR;
-		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
-			id2 = colorBit*PARALELL_STRIPS;
-			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
-				TIMx_OC_DMA_Buffer_BRG[ id0 + id1 + id2 + parallelStripID] = 0;
-			}
-		}
-	}
-}
-
-
-/*void FillUp_DMA_Buffer(uint16_t offset, uint16_t fillUp_length, uint16_t pixel_idx){
-
-#ifdef DEBUG_DMA_BUFFER_FILL_UP
-	GPIOC->ODR &= (~GPIO_Pin_13);
-#endif
-
-	uint16_t i_percent_PS;
-	uint16_t i_per_PS;
-
-	for(uint16_t i = offset; i < (offset + fillUp_length) ; ++i ){
-		i_percent_PS = i % PARALELL_STRIPS;
-		i_per_PS = i / PARALELL_STRIPS;
-		switch(i / (PARALELL_STRIPS*8)){
-			case 0 : {
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
-			}
-			case 1 : {
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].r & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
-			}
-			case 2 : {
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].g & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
-			}
-			default:{ // the same as case 0
-				TIMx_OC_DMA_Buffer_BRG[i] = (pixel_map[i_percent_PS][pixel_idx].b & (0x80 >> (i_per_PS%8))) ? T1H : T0H;
-				break;
-			}
-		}
-	}
-#ifdef DEBUG_DMA_BUFFER_FILL_UP
-	GPIOC->ODR |= (GPIO_Pin_13);
-#endif
-}*/
-
-/**
-  * @brief  Fills up the next half of the dma buffer starting with the pixel_idx
-  * @param  pixel_idx	start the buffer filling with this pixel
-  * @retval None
-  */
-void FillUp_DMA_Buffer_BGR_map(uint16_t pixel_idx){
-#ifdef DEBUG_DMA_BUFFER_FILL_UP
-	GPIOC->ODR &= (~GPIO_Pin_13);
-#endif
-	uint16_t id0 = (pixel_idx%PIXEL_PER_BUFFER)*DMA_PIXEL_SIZE;
-	uint16_t id1;
-	uint16_t id2;
-	for(uint8_t colorID = 0; colorID < COLOR_NUM ; ++colorID){
-		id1 = colorID*BITS_PER_COLOR;
-		for(uint8_t colorBit = 0; colorBit < COLOR_BITS; ++colorBit){
-			id2 = colorBit*PARALELL_STRIPS;
-			for(uint8_t parallelStripID = 0; parallelStripID < PARALELL_STRIPS; ++parallelStripID){
-				TIMx_OC_DMA_Buffer_BRG[ id0 + id1 + id2 + parallelStripID] =
-						(pixel_mapBRG[parallelStripID][pixel_idx][colorID] & (0x80 >> colorBit)) ? T1H : T0H;
-			}
-		}
-	}
-
-#ifdef DEBUG_DMA_BUFFER_FILL_UP
-	GPIOC->ODR |= (GPIO_Pin_13);
-#endif
-} /*end - FillUp_DMA_Buffer_BGR_map()*/
-
-/**
-  * @brief  This function initialize the first whole DMA Buffer
-  * @param  None
-  * @retval None
-  */
-void Init_DMA_Buffer(void){
-	pixel_id = 0;
-	for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
-		FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
-	}
-	pixel_id = PIXEL_PER_BUFFER/2;
-}
-
-/**
-  * @brief  Sends out the color data to the led strip:
-  * 		- disables the TIM, sets its CCRx register values to 0
-  * 		- set the DMA data counter
-  * 		- initialize the buffer and pixel_id variables
-  * 		- set the transmission flag to ON
-  * 		- clear the DMA Flags
-  * 		- enable the DMA and TIM controllers
-  * @param  None
-  * @retval None
-  */
-void refreshLedStrip(void){
-
-	TIM_Cmd(TIM3, DISABLE);
-	DMA_Cmd(DMA1_Channel3, DISABLE);
-	DMA_SetCurrDataCounter(DMA1_Channel3, DMA_BUFFER_SIZE);
-
-	/* buffer initialization*/
-	Init_DMA_Buffer();
-	txOn = 1;
-
-	DMA_ClearFlag(DMA1_FLAG_HT3);
-	DMA_ClearFlag(DMA1_FLAG_TC3);
-	DMA_Cmd(DMA1_Channel3, ENABLE);
-	TIM_Cmd(TIM3, ENABLE);
-}
-
-/* DMA circular buffer handling IRQ */
-void DMA1_Channel3_IRQHandler(void){
-
-#ifdef DEBUG_DMA_BUFFER_IRQ
-	GPIOC->ODR &= (~GPIO_Pin_13);
-#endif
-
-	/* Half transfer */
-	if(DMA_GetFlagStatus(DMA1_FLAG_HT3) != RESET){
-#ifdef DEBUG_DMA_BUFFER_HT
-	GPIOC->ODR ^= (GPIO_Pin_14); // half transfer flag set
-#endif
-
-		DMA_ClearFlag(DMA1_FLAG_HT3);
-		pixel_id += PIXEL_PER_BUFFER/2; /* PIXEL_PER_BUFFER/2 pixel sent out */
-
-	} /* endif - Half transfer */
-
-	/* Transfer Complete */
-	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) != RESET){
-#ifdef DEBUG_DMA_BUFFER_TC
-	GPIOC->ODR ^= (GPIO_Pin_15); // transfer complete flag set
-#endif
-
-		DMA_ClearFlag(DMA1_FLAG_TC3);
-		pixel_id += PIXEL_PER_BUFFER/2; /* PIXEL_PER_BUFFER/2 pixel sent out */
-
-	} /* endif - Transfer complete */
-
-
-	/* filling up the next half of the buffer with new data */
-	if(pixel_id + PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
-		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
-			FillUp_DMA_Buffer_BGR_map(pixel_id+buff_px);
-		}
-	}else if(pixel_id-PIXEL_PER_BUFFER/2 <= LED_STRIP_SIZE){
-		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER/2; buff_px++){
-			Clear_DMA_Buffer(pixel_id+buff_px);
-		}
-	}else{
-		DMA_Cmd(DMA1_Channel3, DISABLE);
-		TIM3->CCR1 = 0;
-		TIM3->CCR2 = 0;
-		TIM3->CCR3 = 0;
-		TIM3->CCR4 = 0;
-		for(uint8_t buff_px = 0; buff_px < PIXEL_PER_BUFFER; buff_px++){
-			Clear_DMA_Buffer(buff_px);
-		}
-		txOn = 0;
-		TIM_Cmd(TIM3, DISABLE);
-	}
-
-#ifdef DEBUG_DMA_BUFFER_IRQ
-	GPIOC->ODR |= (GPIO_Pin_13);
-#endif
-
-#ifdef DEBUG_DMA_BUFFER_HT
-	GPIOC->ODR &= (~GPIO_Pin_14);
-#endif
-
-#ifdef DEBUG_DMA_BUFFER_TC
-	GPIOC->ODR &= (~GPIO_Pin_15);
-#endif
-
 }

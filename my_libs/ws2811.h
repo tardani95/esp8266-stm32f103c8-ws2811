@@ -29,10 +29,12 @@ Info        : 16.06.2018
  */
 #include "misc.h"
 
-#include "util.h" /* my lib - delay functions */
-/*========================================================================*/
-/*                           WS2811  SETTINGS							  */
-/*========================================================================*/
+#include "util.h" 			/* my lib - delay functions */
+#include "ws2811_util.h"	/* utility functions for this library */
+
+/*==========================================================================*/
+/*                           WS2811  SETTINGS								*/
+/*==========================================================================*/
 
 /* Select operating mode according to your led strip */
 /*#define MODE_800kHz*/
@@ -52,7 +54,7 @@ Info        : 16.06.2018
 #define TIM_PERIOD 90	/* 90 */
 #define T1H        43	/* 43 */
 #define T0H        18	/* 18 */
-/*========================================================================*/
+/*==========================================================================*/
 
 #define LED_NUMBER_ON_ONE_STRIP 150
 #define LED_PER_IC              3
@@ -75,11 +77,35 @@ Info        : 16.06.2018
 #define R						1
 #define G						2
 #define B						0
-/*========================================================================*/
-extern __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE];
-extern __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];
+
+#define RED						0x00FF0000
+#define GREEN					0x0000FF00
+#define BLUE					0x000000FF
+#define EMPTY_COLOR				0x00000000
+#define RED_S 		16
+#define GREEN_S		8
+#define BLUE_S		0
+/*==========================================================================*/
+/*                             Private typedef                              */
+/*==========================================================================*/
+typedef struct RGB{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+}ColorRGB;
+
+typedef uint32_t ColorHex;
+/*============================================================================*/
+
+//extern __IO uint8_t TIMx_OC_DMA_Buffer_BRG[DMA_BUFFER_SIZE];
+//extern __IO uint8_t pixel_mapBRG[PARALELL_STRIPS][LED_STRIP_SIZE][COLOR_NUM];
+//extern __IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];
+
 extern __IO uint8_t  txOn; /* @TODO - init function pointer parameter passing*/
 
+
+
+/*========================================================================*/
 
 void InitGPIO_LSSs(GPIO_InitTypeDef*);
 void InitNVIC_LSS(NVIC_InitTypeDef*);
@@ -87,13 +113,29 @@ void InitDMA_CH3_TIM3_CHs(DMA_InitTypeDef*,uint8_t*);
 void InitTIM3_CLK(TIM_TimeBaseInitTypeDef*);
 void InitTIM3_PWM(TIM_OCInitTypeDef*);
 
-/* interval: [ fromCH ; toCh ) */
 void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size);
 
 uint8_t gammaCorrection(uint8_t color);
 
-void Init_PixelMap(void);
+/* color convert functions */
+ColorHex colorToHex(uint8_t red, uint8_t green, uint8_t blue);
+ColorRGB colorToRGB(uint8_t red, uint8_t green, uint8_t blue);
+ColorHex colorRGBToHex(ColorRGB color);
+ColorRGB colorHexToRGB(ColorHex color);
 
+
+void setPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID, ColorHex color);
+void setPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID, ColorRGB pxColor);
+void setPixelColor(uint16_t pxNr, uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
+
+ColorHex getPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID);
+ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID);
+
+void setAllPixelColorHexOnLedStrip(uint8_t parallelLedStripID, ColorHex pxColor);
+void setAllPixelColorRGBOnLedStrip(uint8_t parallelLedStripID, ColorRGB pxColor);
+void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
+
+void Init_PixelMap(void);
 void refreshLedStrip(void);
 
 /* dma buffer handling*/
