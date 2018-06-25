@@ -17,6 +17,7 @@ Info        : 22.06.2018
 #include "ws2811.h"
 #include "color_palettes.h"
 #include <stdlib.h>         /* for rand() function */
+#include <math.h>			/* for bouncing ball effect */
 
 
 void notIncomingCall(ColorHex color);
@@ -33,7 +34,13 @@ void anim_pattern();
 
 void anim_fadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade_out_time);
 
-void anim_bouncingBalls();
+void anim_strobe(ColorHex color, uint16_t StrobeCount, uint16_t FlashDelay, uint16_t EndPause);
+
+void anim_bouncingBallsOnLedStrip(
+		uint8_t parallelLedStripID,
+		uint32_t timeout_in_us,
+		uint8_t BallCount,
+		ColorHex colors[]);
 
 void anim_meteorRainOnAllLedStrip(
 		ColorHex meteorColor,

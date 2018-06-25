@@ -98,7 +98,76 @@ void anim_fadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade
 	}
 }
 
-void anim_bouncingBalls(){}
+void anim_strobe(ColorHex color, uint16_t StrobeCount, uint16_t FlashDelay, uint16_t EndPause){
+
+	for(uint16_t j = 0; j < StrobeCount; j++) {
+		for(uint8_t pLSid = 0; pLSid < PARALELL_STRIPS; ++pLSid){
+			setAllPixelColorHexOnLedStrip(pLSid, color);
+		}
+		refreshLedStrip();
+		DelayMs(FlashDelay);
+		for(uint8_t pLSid = 0; pLSid < PARALELL_STRIPS; ++pLSid){
+			setAllPixelColorHexOnLedStrip(pLSid, 0x000000);
+		}
+		refreshLedStrip();
+		DelayMs(FlashDelay);
+	}
+	DelayMs(EndPause);
+}
+
+void anim_bouncingBallsOnLedStrip(uint8_t parallelLedStripID ,uint32_t timeout_in_us ,uint8_t BallCount, ColorHex colors[]) {
+
+	float Gravity = -9.81;
+	uint16_t StartHeight = 10;
+
+	float Height[BallCount];
+	float ImpactVelocityStart = sqrt( -2 * Gravity * StartHeight );
+	float ImpactVelocity[BallCount];
+	float TimeSinceLastBounce[BallCount];
+	uint16_t   Position[BallCount];
+	uint32_t  ClockTimeSinceLastBounce[BallCount];
+	float Dampening[BallCount];
+
+	for (uint8_t i = 0 ; i < BallCount ; i++) {
+		ClockTimeSinceLastBounce[i] = Millis();
+		Height[i] = StartHeight;
+		Position[i] = 0;
+		ImpactVelocity[i] = ImpactVelocityStart;
+		TimeSinceLastBounce[i] = 0;
+		Dampening[i] = 0.90 - (float)i/pow(BallCount,2);
+	}
+
+	uint32_t startTime = GetSysTickCount();
+
+	while (GetSysTickCount() < startTime+timeout_in_us) {
+
+		for (uint8_t i = 0 ; i < BallCount ; i++) {
+
+			TimeSinceLastBounce[i] =  Millis() - ClockTimeSinceLastBounce[i];
+			Height[i] = 0.5 * Gravity * pow( TimeSinceLastBounce[i]/1000 , 2.0 )
+							+ ImpactVelocity[i] * TimeSinceLastBounce[i]/1000;
+
+			if ( Height[i] < 0 ) {
+
+				Height[i] = 0;
+				ImpactVelocity[i] = Dampening[i] * ImpactVelocity[i];
+				ClockTimeSinceLastBounce[i] = Millis();
+
+				if ( ImpactVelocity[i] < 0.01 ) {
+					ImpactVelocity[i] = ImpactVelocityStart;
+				}
+			}
+			Position[i] = round( Height[i] * (LED_STRIP_SIZE - 1) / StartHeight);
+		}
+
+		for (uint8_t i = 0 ; i < BallCount ; i++) {
+			setPixelColorHex(Position[i],parallelLedStripID,colors[i]);
+		}
+
+		refreshLedStrip();
+		setAllPixelColorHexOnLedStrip(parallelLedStripID, 0x000000);
+	}
+}
 
 void anim_meteorRainOnAllLedStrip(ColorHex meteorColor, uint8_t meteorSize, uint8_t meteorTrailDecay,
 		uint8_t meteorRandomDecay, uint16_t SpeedDelay_ms){
