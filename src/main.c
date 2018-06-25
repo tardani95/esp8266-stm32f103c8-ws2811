@@ -90,17 +90,9 @@ int main(void)
 	/* button init */
 	InitGPIO_BTN(&GPIO_InitStructure);
 
-	/* pwm for external interrupt register init*/
-//	InitGPIO_PWM_EXTI(&GPIO_InitStructure);
-
 	/**************************************************/
 	/* TIMER INIT */
 	/**************************************************/
-	/* tim2 clock init */
-	//InitTIM2_CLK(&TIM_TimeBase_InitStructure);
-
-	/* tim2 ch2 pwm inti */
-	//InitTIM2_CH2_PWM(&TIM_OC_InitStructure);
 
 	/**************************************************/
 	/* INTERRUPT INIT */
@@ -124,12 +116,10 @@ int main(void)
 	Init_WS2811((uint8_t*)uart_receive_array,receive_array_length);
 
 	/* send out initial array */
-//	InitLookUpTable();
-//	RefreshLookUpTable1(50);
-
 	Init_PixelMap();
 	refreshLedStrip();
 
+	/* wait 3 seconds */
 	DelaySec(3);
 
 	while(1){
@@ -140,13 +130,30 @@ int main(void)
 				showAnim[uart_receive_array[12]](&animOff);
 			}
 		}*/
+
 		for(uint8_t paletteID = 0; paletteID < PALETTES_SIZE; paletteID++){
 			fillPattern(paletteID);
 			refreshLedStrip();
-			DelaySec(30);
+			DelaySec(20);
 		}
-		anim_meteorRainOnLedStrip(1,0xff00ff,6,64,1,55);
-		DelaySec(60);
+
+		ColorHex color;
+		for(uint8_t i=0;i<7;++i){
+			uint16_t temp = 255;
+			switch(i){
+				case 0: color = colorToHex(temp,0,0); break;
+				case 1: color = colorToHex(0,temp,0); break;
+				case 2: color = colorToHex(0,0,temp); break;
+				case 3: color = colorToHex(temp,temp,0); break;
+				case 4: color = colorToHex(0,temp,temp); break;
+				case 5: color = colorToHex(temp,0,temp); break;
+				case 6: color = colorToHex(temp,temp,temp); break;
+				default: break;
+			}
+			anim_meteorRainOnLedStrip(1,color,6,64,1,60);
+			DelaySec(20);
+		}
+
 		//anim_meteorRainOnLedStrip(2,0xff0000,10,64,1,30);
 		//DelayMs(200);
 	}
@@ -155,9 +162,13 @@ int main(void)
 void OnUART_DataReceived(void){
 	switch(uart_receive_array[12]){
 		case 0 :{
-			RefreshLookUpTable(uart_receive_array[9],uart_receive_array[10],uart_receive_array[11]);
-//			RefreshLookUpTable1(50);
+			ColorRGB solidColor;
+			solidColor.r = uart_receive_array[9];
+			solidColor.g = uart_receive_array[10];
+			solidColor.b = uart_receive_array[11];
+
 			if(!txOn){
+				fillSolid(solidColor);
 				refreshLedStrip();
 			}
 		}break;
