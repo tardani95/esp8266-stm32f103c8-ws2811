@@ -52,6 +52,52 @@ void fill(uint8_t mode, uint32_t value){}
 
 void anim_pattern(){}
 
+/**
+  * @brief  This function modifies the lookup table so, that it makes a fade in fade out animation
+  * @param  fade_in_time: it will fade in in 255*fade_in_time [us]
+  * @param  hold_time: hold the color at the same value for hold_time [us]
+  * @param  fade_out_time:it will fade out in 255*fade_out_time [us]
+  * @retval None
+  */
+void anim_fadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade_out_time){
+	for(uint8_t i=0;i<7;++i){
+		for(uint16_t temp = 0; temp<256; temp+=1){
+			for(uint8_t pLSid = 0; pLSid < PARALELL_STRIPS; pLSid++){
+				switch(i){
+					case 0: setAllPixelColorOnLedStrip(pLSid,temp,0,0); break;
+					case 1: setAllPixelColorOnLedStrip(pLSid,0,temp,0); break;
+					case 2: setAllPixelColorOnLedStrip(pLSid,0,0,temp); break;
+					case 3: setAllPixelColorOnLedStrip(pLSid,temp,temp,0); break;
+					case 4: setAllPixelColorOnLedStrip(pLSid,0,temp,temp); break;
+					case 5: setAllPixelColorOnLedStrip(pLSid,temp,0,temp); break;
+					case 6: setAllPixelColorOnLedStrip(pLSid,temp,temp,temp); break;
+					default: break;
+				}
+			}
+			refreshLedStrip();
+			DelayUs(fade_in_time);
+		}
+		DelayUs(hold_time);
+		/* watch out! negative overflow! --> int16_t */
+		for(int16_t temp = 255; temp>=0; temp-=1){
+			for(uint8_t pLSid = 0; pLSid < PARALELL_STRIPS; pLSid++){
+				switch(i){
+					case 0: setAllPixelColorOnLedStrip(pLSid,temp,0,0); break;
+					case 1: setAllPixelColorOnLedStrip(pLSid,0,temp,0); break;
+					case 2: setAllPixelColorOnLedStrip(pLSid,0,0,temp); break;
+					case 3: setAllPixelColorOnLedStrip(pLSid,temp,temp,0); break;
+					case 4: setAllPixelColorOnLedStrip(pLSid,0,temp,temp); break;
+					case 5: setAllPixelColorOnLedStrip(pLSid,temp,0,temp); break;
+					case 6: setAllPixelColorOnLedStrip(pLSid,temp,temp,temp); break;
+					default: break;
+				}
+			}
+			refreshLedStrip();
+			DelayUs(fade_out_time);
+		}
+	}
+}
+
 void anim_bouncingBalls(){}
 
 void anim_meteorRainOnAllLedStrip(ColorHex meteorColor, uint8_t meteorSize, uint8_t meteorTrailDecay,

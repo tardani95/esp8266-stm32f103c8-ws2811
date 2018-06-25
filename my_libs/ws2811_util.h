@@ -18,6 +18,7 @@ Info        : 22.06.2018
 #include "color_palettes.h"
 #include <stdlib.h>         /* for rand() function */
 
+
 void notIncomingCall(ColorHex color);
 void notSMS(ColorHex color);
 
@@ -29,6 +30,9 @@ void fillPattern(uint8_t paletteID);
 void fill(uint8_t mode, uint32_t value);
 
 void anim_pattern();
+
+void anim_fadeInFadeOut(uint16_t fade_in_time, uint16_t hold_time, uint16_t fade_out_time);
+
 void anim_bouncingBalls();
 
 void anim_meteorRainOnAllLedStrip(
