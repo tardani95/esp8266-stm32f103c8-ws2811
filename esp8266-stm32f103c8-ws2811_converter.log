@@ -1,0 +1,5 @@
+Project: esp8266-stm32f103c8-ws2811
+Converter: IARProjectParser
+Date: 20180627
+
+Failed to parse IAR project format file, if possible please send the Project.ewp file together with the workspace log file to Atollic support.

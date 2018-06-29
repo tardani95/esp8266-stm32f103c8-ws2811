@@ -37,7 +37,7 @@ Info        : 16.06.2018
 /*==========================================================================*/
 
 /* Select operating mode according to your led strip */
-/*#define MODE_800kHz*/
+//#define MODE_800kHz
 #define MODE_400kHz
 
 /* high period times in counter ticks @72MHz */

@@ -304,7 +304,7 @@ void InitESP8266(uint8_t* uart_receive_array){
 
 	/*wait for esp8266 system startup and clear the rx buffer*/
 	ClearRX_DMA_Buffer();
-	DelaySec(1); //10
+	DelaySec(10); //10
 
 	SendDataToESP8266(transmit_array_length);
 

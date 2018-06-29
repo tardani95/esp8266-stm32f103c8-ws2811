@@ -135,6 +135,7 @@ int main(void){
 //		ColorHex colors[] = {0xFF0000, 0x00FF00, 0x0000FF, 0x7d007d, 0x7d7d00};
 //		anim_bouncingBallsOnLedStrip(1, 10000*1000, 1, colors);
 
+		/*
 		anim_fadeInFadeOut(4,2000,7);
 
 		for(uint8_t paletteID = 0; paletteID < PALETTES_SIZE; paletteID++){
@@ -158,7 +159,7 @@ int main(void){
 			}
 			anim_meteorRainOnLedStrip(1,color,6,64,1,60);
 			DelaySec(20);
-		}
+		}*/
 
 		//anim_meteorRainOnLedStrip(2,0xff0000,10,64,1,30);
 		//DelayMs(200);
