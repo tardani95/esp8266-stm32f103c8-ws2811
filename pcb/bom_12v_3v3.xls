@@ -1,0 +1,10 @@
+Part	Manufacturer	Part Number	Quantity	Price	Attribute 1 Name	Attribute 1 Value	Attribute 2 Name	Attribute 2 Value	Attribute 3 Name	Attribute 3 Value	Footprint
+"L1"	"Bourns"	"SRR4028-3R3Y"	"1"	"0.31"	"L"	"3.3uH"	"DCR"	"0.035Ohm"	"IDC"	"1.65A"	"SRR4028"
+"Cout"	"TDK"	"C1608X5R1A226M080AC"	"1"	"0.13"	"Cap"	"22uF"	"ESR"	"3.71mOhm"	"Total Derated Cap"	"7.4E-6F"	"0603"
+"Rfbt"	"Vishay-Dale"	"CRCW040233K2FKED"	"1"	"0.01"	"Resistance"	"33.2kOhm"	"Tolerance"	"1%"	"Power"	"0.063W"	"0402"
+"U1"	"Texas Instruments"	"TPS562219DDFR"	"1"	"0.54"	""	""	""	""	""	""	"DDF0008A"
+"Cbst"	"Kemet"	"C0603C104Z3VACTU"	"1"	"0.01"	"Cap"	"100nF"	"ESR"	"1mOhm"	"Total Derated Cap"	"1.0E-7F"	"0603"
+"Cin"	"TDK"	"C2012X5R1V226M125AC"	"1"	"0.38"	"Cap"	"22uF"	"ESR"	"2.05mOhm"	"Total Derated Cap"	"1.4E-5F"	"0805"
+"Css"	"MuRata"	"GRM033R61A822KA01D"	"1"	"0.01"	"Cap"	"8.2nF"	"ESR"	"1mOhm"	"Total Derated Cap"	"8.2E-9F"	"0201"
+"Rfbb"	"Stackpole Electronics Inc"	"RMCF0402FT10K0"	"1"	"0.01"	"Resistance"	"10kOhm"	"Tolerance"	"1%"	"Power"	"0.063W"	"0402"
+"Rpg"	"Panasonic"	"ERJ-6ENF1003V"	"1"	"0.01"	"Resistance"	"100kOhm"	"Tolerance"	"1%"	"Power"	"0.125W"	"0805"
