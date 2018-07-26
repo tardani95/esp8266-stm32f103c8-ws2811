@@ -11271,8 +11271,8 @@ Source: AVX .. aphvc.pdf</description>
 <part name="P+12" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="VCC" device="" value="3V3"/>
 <part name="P+13" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="VCC" device="" value="3V3"/>
 <part name="Q1" library="special" library_urn="urn:adsk.eagle:library:367" deviceset="XTAL/S" device="" package3d_urn="urn:adsk.eagle:package:26647/2" value="8MHz"/>
-<part name="C3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2"/>
-<part name="C7" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2"/>
+<part name="C3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="20p"/>
+<part name="C7" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="20p"/>
 <part name="GND16" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="R11" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="10k"/>
 <part name="R10" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="100k"/>
@@ -11283,12 +11283,12 @@ Source: AVX .. aphvc.pdf</description>
 <plain>
 </plain>
 <instances>
-<instance part="IC1" gate="PORTA_L" x="220.98" y="-30.48"/>
-<instance part="IC1" gate="PORTA_H" x="241.3" y="-33.02"/>
-<instance part="IC1" gate="PORTB_L" x="264.16" y="-33.02"/>
-<instance part="IC1" gate="PORTB_H" x="284.48" y="-30.48"/>
+<instance part="IC1" gate="PORTA_L" x="160.02" y="-43.18" rot="MR0"/>
+<instance part="IC1" gate="PORTA_H" x="213.36" y="-45.72" rot="MR0"/>
+<instance part="IC1" gate="PORTB_L" x="157.48" y="-71.12"/>
+<instance part="IC1" gate="PORTB_H" x="210.82" y="-68.58"/>
 <instance part="IC1" gate="POWER" x="66.04" y="-48.26"/>
-<instance part="IC1" gate="PORTC" x="241.3" y="-55.88"/>
+<instance part="IC1" gate="PORTC" x="256.54" y="-38.1" rot="MR0"/>
 <instance part="IC1" gate="PORTD/OSC" x="86.36" y="-81.28"/>
 <instance part="IC1" gate="AN_POWER" x="66.04" y="-86.36" rot="R180"/>
 <instance part="IC1" gate="RESET" x="83.82" y="-33.02"/>
@@ -11565,6 +11565,12 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="73.66" y1="53.34" x2="83.82" y2="53.34" width="0.1524" layer="91"/>
 <label x="83.82" y="53.34" size="1.778" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="IC1" gate="PORTA_L" pin="PA7"/>
+<wire x1="167.64" y1="-53.34" x2="170.18" y2="-53.34" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="-53.34" x2="172.72" y2="-53.34" width="0.1524" layer="91"/>
+<label x="170.18" y="-53.34" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="LED_STRIP_SIGNAL_2" class="0">
 <segment>
@@ -11572,12 +11578,25 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="73.66" y1="68.58" x2="83.82" y2="68.58" width="0.1524" layer="91"/>
 <label x="83.82" y="68.58" size="1.778" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB0"/>
+<wire x1="167.64" y1="-60.96" x2="172.72" y2="-60.96" width="0.1524" layer="91"/>
+<label x="170.18" y="-60.96" size="1.778" layer="95"/>
+<wire x1="172.72" y1="-60.96" x2="182.88" y2="-60.96" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="LED_STRIP_SIGNAL_3" class="0">
 <segment>
 <pinref part="U$2" gate="LOGIC_LEVEL_SHIFTER" pin="LOGIC_IN"/>
 <wire x1="73.66" y1="83.82" x2="83.82" y2="83.82" width="0.1524" layer="91"/>
 <label x="83.82" y="83.82" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB1"/>
+<wire x1="167.64" y1="-63.5" x2="170.18" y2="-63.5" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="-63.5" x2="172.72" y2="-63.5" width="0.1524" layer="91"/>
+<label x="170.18" y="-63.5" size="1.778" layer="95"/>
+<wire x1="172.72" y1="-63.5" x2="182.88" y2="-63.5" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -11718,6 +11737,11 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="38.1" y1="17.78" x2="43.18" y2="17.78" width="0.1524" layer="91"/>
 <label x="43.18" y="17.78" size="1.778" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="IC1" gate="PORTB_H" pin="PB12"/>
+<wire x1="220.98" y1="-71.12" x2="233.68" y2="-71.12" width="0.1524" layer="91"/>
+<label x="226.06" y="-71.12" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="BTN_3" class="0">
 <segment>
@@ -11725,12 +11749,22 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="38.1" y1="10.16" x2="43.18" y2="10.16" width="0.1524" layer="91"/>
 <label x="43.18" y="10.16" size="1.778" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="IC1" gate="PORTB_H" pin="PB13"/>
+<wire x1="220.98" y1="-73.66" x2="233.68" y2="-73.66" width="0.1524" layer="91"/>
+<label x="226.06" y="-73.66" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="BTN_4" class="0">
 <segment>
 <pinref part="SW_4" gate="&gt;NAME" pin="P$4"/>
 <wire x1="38.1" y1="2.54" x2="43.18" y2="2.54" width="0.1524" layer="91"/>
 <label x="43.18" y="2.54" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="PORTB_H" pin="PB14"/>
+<wire x1="220.98" y1="-76.2" x2="233.68" y2="-76.2" width="0.1524" layer="91"/>
+<label x="226.06" y="-76.2" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$4" class="0">
@@ -11771,6 +11805,11 @@ Source: AVX .. aphvc.pdf</description>
 <junction x="88.9" y="-2.54"/>
 <label x="83.82" y="-2.54" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="IC1" gate="PORTA_H" pin="PA10"/>
+<wire x1="220.98" y1="-40.64" x2="226.06" y2="-41.656" width="0.1524" layer="91"/>
+<label x="226.06" y="-41.656" size="1.778" layer="95" xref="yes"/>
+</segment>
 </net>
 <net name="N$9" class="0">
 <segment>
@@ -11788,6 +11827,11 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="137.16" y1="5.08" x2="144.78" y2="5.08" width="0.1524" layer="91"/>
 <junction x="137.16" y="5.08"/>
 <wire x1="144.78" y1="5.08" x2="144.78" y2="7.62" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="PORTA_H" pin="PA9"/>
+<wire x1="220.98" y1="-38.1" x2="226.06" y2="-38.1" width="0.1524" layer="91"/>
+<label x="226.06" y="-38.1" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="N$8" class="0">
@@ -11819,11 +11863,16 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="190.5" y1="0" x2="193.04" y2="0" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="LED7" class="0">
+<net name="LED_7" class="0">
 <segment>
 <pinref part="R8" gate="G$1" pin="1"/>
 <wire x1="177.8" y1="10.16" x2="180.34" y2="10.16" width="0.1524" layer="91"/>
 <label x="177.8" y="10.16" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="PORTC" pin="PC14"/>
+<wire x1="264.16" y1="-38.1" x2="276.86" y2="-38.1" width="0.1524" layer="91"/>
+<label x="269.24" y="-38.1" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="HEARTBEAT" class="0">
@@ -11832,12 +11881,22 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="177.8" y1="20.32" x2="180.34" y2="20.32" width="0.1524" layer="91"/>
 <label x="177.8" y="20.32" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="IC1" gate="PORTC" pin="PC13"/>
+<wire x1="264.16" y1="-35.56" x2="276.86" y2="-35.56" width="0.1524" layer="91"/>
+<label x="269.24" y="-35.56" size="1.778" layer="95"/>
+</segment>
 </net>
-<net name="LED8" class="0">
+<net name="LED_8" class="0">
 <segment>
 <pinref part="R9" gate="G$1" pin="1"/>
 <wire x1="177.8" y1="0" x2="180.34" y2="0" width="0.1524" layer="91"/>
 <label x="177.8" y="0" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="PORTC" pin="PC15"/>
+<wire x1="264.16" y1="-40.64" x2="276.86" y2="-40.64" width="0.1524" layer="91"/>
+<label x="269.24" y="-40.64" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$13" class="0">
@@ -11886,7 +11945,7 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="101.6" y1="-35.56" x2="101.6" y2="-38.1" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$17" class="0">
+<net name="SWCLK" class="0">
 <segment>
 <pinref part="PROGRAMMER" gate="J$1" pin="2"/>
 <wire x1="180.34" y1="35.56" x2="187.96" y2="35.56" width="0.1524" layer="91"/>
@@ -11894,8 +11953,13 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="187.96" y1="33.02" x2="193.04" y2="33.02" width="0.1524" layer="91"/>
 <label x="193.04" y="33.02" size="1.778" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="IC1" gate="PORTA_H" pin="PA14"/>
+<wire x1="220.98" y1="-50.8" x2="226.06" y2="-51.816" width="0.1524" layer="91"/>
+<label x="226.06" y="-51.816" size="1.778" layer="95" xref="yes"/>
+</segment>
 </net>
-<net name="N$18" class="0">
+<net name="SWDIO" class="0">
 <segment>
 <pinref part="PROGRAMMER" gate="J$1" pin="3"/>
 <wire x1="180.34" y1="38.1" x2="190.5" y2="38.1" width="0.1524" layer="91"/>
@@ -11904,6 +11968,66 @@ Source: AVX .. aphvc.pdf</description>
 <junction x="190.5" y="38.1"/>
 <label x="193.04" y="38.1" size="1.778" layer="95" xref="yes"/>
 <pinref part="R10" gate="G$1" pin="1"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="PORTA_H" pin="PA13"/>
+<wire x1="220.98" y1="-48.26" x2="226.06" y2="-48.26" width="0.1524" layer="91"/>
+<label x="226.06" y="-48.26" size="1.778" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="N$18" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB3"/>
+<wire x1="167.64" y1="-68.58" x2="182.88" y2="-68.58" width="0.1524" layer="91"/>
+<label x="170.18" y="-68.58" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$19" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB4"/>
+<wire x1="167.64" y1="-71.12" x2="182.88" y2="-71.12" width="0.1524" layer="91"/>
+<label x="170.18" y="-71.12" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$20" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB5"/>
+<wire x1="167.64" y1="-73.66" x2="182.88" y2="-73.66" width="0.1524" layer="91"/>
+<label x="170.18" y="-73.66" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$21" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB6"/>
+<wire x1="167.64" y1="-76.2" x2="182.88" y2="-76.2" width="0.1524" layer="91"/>
+<label x="170.18" y="-76.2" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$22" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB7"/>
+<wire x1="167.64" y1="-78.74" x2="182.88" y2="-78.74" width="0.1524" layer="91"/>
+<label x="170.18" y="-78.74" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$23" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_H" pin="PB8"/>
+<wire x1="220.98" y1="-60.96" x2="233.68" y2="-60.96" width="0.1524" layer="91"/>
+<label x="226.06" y="-60.96" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$24" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_H" pin="PB9"/>
+<wire x1="220.98" y1="-63.5" x2="233.68" y2="-63.5" width="0.1524" layer="91"/>
+<label x="226.06" y="-63.5" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$27" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_H" pin="PB15"/>
+<wire x1="220.98" y1="-78.74" x2="233.68" y2="-78.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
