@@ -12478,6 +12478,13 @@ Source: AVX .. aphvc.pdf</description>
 </nets>
 </sheet>
 </sheets>
+<errors>
+<approved hash="113,1,18.6085,70.0126,LED_STRIP_SIGNAL,,,,,"/>
+<approved hash="113,1,143.388,67.4726,LED_STRIP_12V,,,,,"/>
+<approved hash="113,1,141.177,52.2326,LED_STRIP_GND,,,,,"/>
+<approved hash="113,1,139.023,86.5226,POWER,,,,,"/>
+<approved hash="113,1,178.048,36.9926,PROGRAMMER,,,,,"/>
+</errors>
 </schematic>
 </drawing>
 <compatibility>
