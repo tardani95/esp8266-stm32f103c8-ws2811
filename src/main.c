@@ -107,7 +107,7 @@ int main(void){
 	/**************************************************/
 
 	uint8_t receive_array_length = 13; //13
-	InitESP8266((uint8_t*)uart_receive_array/*, receive_array_length*/);
+ 	InitESP8266((uint8_t*)uart_receive_array/*, receive_array_length*/);
 	StartUDPReceivingWithCallback(receive_array_length, OnUART_DataReceived );
 
 	/**************************************************/

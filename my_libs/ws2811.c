@@ -64,7 +64,7 @@ __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
 
 /**
   * @brief  This function initialize the WS2811 LED strip
-  * @param  @TODO
+  * @param  @TODO - extend parameter list
   * @retval None
   */
 void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
