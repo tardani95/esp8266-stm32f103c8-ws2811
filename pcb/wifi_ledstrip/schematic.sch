@@ -11410,14 +11410,14 @@ Source: AVX .. aphvc.pdf</description>
 <part name="R4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2"/>
 <part name="R5" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2"/>
 <part name="R6" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="10k"/>
-<part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2"/>
+<part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="220u"/>
 <part name="R7" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2"/>
 <part name="R8" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2"/>
 <part name="R9" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2"/>
 <part name="GND11" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND12" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND13" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
-<part name="C2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="0.1u"/>
+<part name="C2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="100n"/>
 <part name="C_VDD3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="4.7u"/>
 <part name="C4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="100n"/>
 <part name="C5" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="100n"/>
@@ -11439,7 +11439,7 @@ Source: AVX .. aphvc.pdf</description>
 <part name="CBST1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="100n"/>
 <part name="COUT1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="22u"/>
 <part name="RPG1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="100k"/>
-<part name="RFBT1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="33.2"/>
+<part name="RFBT1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="33.2k"/>
 <part name="RFBB1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="10k"/>
 <part name="PSU_5V" library="mylibrary" deviceset="TPS562219A" device=""/>
 <part name="GND22" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
@@ -12433,11 +12433,6 @@ Source: AVX .. aphvc.pdf</description>
 <approved hash="104,1,55.88,-91.44,IC1AN_POWER,VBAT,+3V3,,,"/>
 <approved hash="104,1,55.88,-86.36,IC1AN_POWER,VSSA,GND,,,"/>
 <approved hash="104,1,55.88,-81.28,IC1AN_POWER,VDDA,+3V3,,,"/>
-<approved hash="113,1,18.6085,70.0126,LED_STRIP_SIGNAL,,,,,"/>
-<approved hash="113,1,143.388,67.4726,LED_STRIP_12V,,,,,"/>
-<approved hash="113,1,141.177,52.2326,LED_STRIP_GND,,,,,"/>
-<approved hash="113,1,139.023,86.5226,POWER,,,,,"/>
-<approved hash="113,1,178.048,36.9926,PROGRAMMER,,,,,"/>
 </errors>
 </schematic>
 </drawing>
