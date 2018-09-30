@@ -2555,6 +2555,39 @@ design rules under a new name.</description>
 <wire x1="48.768" y1="26.2348" x2="48.768" y2="22.018" width="0.2032" layer="1"/>
 <wire x1="47.5488" y1="26.4164" x2="47.7304" y2="26.2348" width="0.2032" layer="1"/>
 <wire x1="47.7304" y1="26.2348" x2="48.768" y2="26.2348" width="0.2032" layer="1"/>
+<wire x1="11.42" y1="24.51" x2="13.92" y2="24.51" width="0.6096" layer="16"/>
+<polygon width="0.2032" layer="16">
+<vertex x="12.3952" y="27.432"/>
+<vertex x="10.5664" y="25.6032"/>
+<vertex x="10.5664" y="24.7904"/>
+<vertex x="10.5664" y="22.1488"/>
+<vertex x="11.176" y="21.5392"/>
+<vertex x="12.5984" y="21.5392"/>
+<vertex x="14.8336" y="23.7744"/>
+<vertex x="14.8336" y="24.7904"/>
+<vertex x="15.4432" y="25.4"/>
+<vertex x="16.8656" y="25.4"/>
+<vertex x="17.272" y="25.8064"/>
+<vertex x="17.272" y="26.416"/>
+<vertex x="17.272" y="27.0256"/>
+<vertex x="16.8656" y="27.432"/>
+</polygon>
+<polygon width="0.2032" layer="16">
+<vertex x="31.496" y="19.9136"/>
+<vertex x="34.9504" y="19.9136"/>
+<vertex x="37.592" y="17.272"/>
+<vertex x="37.592" y="16.8656"/>
+<vertex x="37.592" y="14.0208"/>
+<vertex x="37.1856" y="13.6144"/>
+<vertex x="35.7632" y="13.6144"/>
+<vertex x="35.3568" y="14.0208"/>
+<vertex x="35.3568" y="15.6464"/>
+<vertex x="35.56" y="15.8496"/>
+<vertex x="32.9184" y="18.4912"/>
+<vertex x="31.496" y="18.4912"/>
+<vertex x="31.2928" y="18.6944"/>
+<vertex x="31.2928" y="19.7104"/>
+</polygon>
 </signal>
 <signal name="LED_STRIP_SIGNAL_1">
 <contactref element="U$3" pad="2"/>
