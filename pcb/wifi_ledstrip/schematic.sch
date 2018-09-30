@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.1.1">
+<eagle version="9.1.3">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -11472,6 +11472,8 @@ Source: AVX .. aphvc.pdf</description>
 <part name="+3V7" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
 <part name="P+1" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+5V" device=""/>
 <part name="+3V8" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
+<part name="R12" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R1206" package3d_urn="urn:adsk.eagle:package:23540/2" value="10k"/>
+<part name="GND17" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -11490,7 +11492,7 @@ Source: AVX .. aphvc.pdf</description>
 <instance part="LED_STRIP_SIGNAL" gate="J$1" x="10.16" y="68.58"/>
 <instance part="LED_STRIP_12V" gate="J$1" x="149.86" y="66.04" rot="MR0"/>
 <instance part="LED_STRIP_GND" gate="J$1" x="134.62" y="50.8"/>
-<instance part="SW_RESET" gate="&gt;NAME" x="114.3" y="-38.1" rot="MR270"/>
+<instance part="SW_RESET" gate="&gt;NAME" x="121.92" y="-38.1" rot="MR270"/>
 <instance part="WIFI_RECONNECT" gate="&gt;NAME" x="30.48" y="17.78"/>
 <instance part="SW_3" gate="&gt;NAME" x="30.48" y="10.16"/>
 <instance part="SW_4" gate="&gt;NAME" x="30.48" y="2.54"/>
@@ -11530,8 +11532,8 @@ Source: AVX .. aphvc.pdf</description>
 <instance part="R9" gate="G$1" x="185.42" y="0"/>
 <instance part="GND11" gate="1" x="205.74" y="-7.62"/>
 <instance part="GND12" gate="1" x="185.42" y="27.94"/>
-<instance part="GND13" gate="1" x="114.3" y="-55.88"/>
-<instance part="C2" gate="G$1" x="127" y="-39.116"/>
+<instance part="GND13" gate="1" x="121.92" y="-55.88"/>
+<instance part="C2" gate="G$1" x="134.62" y="-39.116"/>
 <instance part="C_VDD3" gate="G$1" x="45.72" y="-48.26"/>
 <instance part="C4" gate="G$1" x="38.1" y="-48.26"/>
 <instance part="C5" gate="G$1" x="30.48" y="-48.26"/>
@@ -11586,6 +11588,8 @@ Source: AVX .. aphvc.pdf</description>
 <instance part="+3V7" gate="G$1" x="353.06" y="91.44"/>
 <instance part="P+1" gate="1" x="190.5" y="91.44"/>
 <instance part="+3V8" gate="G$1" x="190.5" y="55.88"/>
+<instance part="R12" gate="G$1" x="177.8" y="-76.2" rot="R90"/>
+<instance part="GND17" gate="1" x="177.8" y="-86.36"/>
 </instances>
 <busses>
 </busses>
@@ -11717,16 +11721,16 @@ Source: AVX .. aphvc.pdf</description>
 </segment>
 <segment>
 <pinref part="SW_RESET" gate="&gt;NAME" pin="P$4"/>
-<wire x1="114.3" y1="-45.72" x2="114.3" y2="-50.8" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="-45.72" x2="121.92" y2="-50.8" width="0.1524" layer="91"/>
 <pinref part="GND13" gate="1" pin="GND"/>
 <pinref part="C2" gate="G$1" pin="2"/>
-<wire x1="114.3" y1="-50.8" x2="114.3" y2="-53.34" width="0.1524" layer="91"/>
-<wire x1="127" y1="-44.196" x2="127" y2="-50.8" width="0.1524" layer="91"/>
-<wire x1="127" y1="-50.8" x2="114.3" y2="-50.8" width="0.1524" layer="91"/>
-<junction x="114.3" y="-50.8"/>
+<wire x1="121.92" y1="-50.8" x2="121.92" y2="-53.34" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-44.196" x2="134.62" y2="-50.8" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-50.8" x2="121.92" y2="-50.8" width="0.1524" layer="91"/>
+<junction x="121.92" y="-50.8"/>
 <pinref part="R11" gate="G$1" pin="1"/>
 <wire x1="101.6" y1="-48.26" x2="101.6" y2="-50.8" width="0.1524" layer="91"/>
-<wire x1="101.6" y1="-50.8" x2="114.3" y2="-50.8" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="-50.8" x2="121.92" y2="-50.8" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC1" gate="POWER" pin="VSS_3"/>
@@ -11824,6 +11828,11 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="353.06" y1="-1.016" x2="353.06" y2="-15.24" width="0.1524" layer="91"/>
 <wire x1="353.06" y1="-15.24" x2="340.36" y2="-15.24" width="0.1524" layer="91"/>
 <junction x="340.36" y="-15.24"/>
+</segment>
+<segment>
+<pinref part="R12" gate="G$1" pin="1"/>
+<pinref part="GND17" gate="1" pin="GND"/>
+<wire x1="177.8" y1="-81.28" x2="177.8" y2="-83.82" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="LED_STRIP_SIGNAL_1" class="0">
@@ -12037,13 +12046,13 @@ Source: AVX .. aphvc.pdf</description>
 <net name="N$13" class="0">
 <segment>
 <pinref part="IC1" gate="RESET" pin="NRST"/>
-<wire x1="93.98" y1="-30.48" x2="114.3" y2="-30.48" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="-30.48" x2="121.92" y2="-30.48" width="0.1524" layer="91"/>
 <pinref part="SW_RESET" gate="&gt;NAME" pin="P$3"/>
-<wire x1="114.3" y1="-30.48" x2="127" y2="-30.48" width="0.1524" layer="91"/>
-<junction x="114.3" y="-30.48"/>
-<wire x1="127" y1="-30.48" x2="127" y2="-33.02" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="-30.48" x2="134.62" y2="-30.48" width="0.1524" layer="91"/>
+<junction x="121.92" y="-30.48"/>
+<wire x1="134.62" y1="-30.48" x2="134.62" y2="-33.02" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="1"/>
-<wire x1="127" y1="-33.02" x2="127" y2="-36.576" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-33.02" x2="134.62" y2="-36.576" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$14" class="0">
@@ -12072,12 +12081,13 @@ Source: AVX .. aphvc.pdf</description>
 <junction x="114.3" y="-88.9"/>
 </segment>
 </net>
-<net name="N$16" class="0">
+<net name="BOOT0" class="0">
 <segment>
 <pinref part="IC1" gate="RESET" pin="BOOT0"/>
 <wire x1="93.98" y1="-35.56" x2="101.6" y2="-35.56" width="0.1524" layer="91"/>
 <pinref part="R11" gate="G$1" pin="2"/>
 <wire x1="101.6" y1="-35.56" x2="101.6" y2="-38.1" width="0.1524" layer="91"/>
+<label x="101.6" y="-35.56" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="SWCLK" class="0">
@@ -12418,6 +12428,15 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="246.38" y1="17.78" x2="246.38" y2="22.86" width="0.1524" layer="91"/>
 <junction x="246.38" y="22.86"/>
 <pinref part="P+21" gate="1" pin="+12V"/>
+</segment>
+</net>
+<net name="BOOT1" class="0">
+<segment>
+<pinref part="IC1" gate="PORTB_L" pin="PB2"/>
+<pinref part="R12" gate="G$1" pin="2"/>
+<wire x1="167.64" y1="-66.04" x2="177.8" y2="-66.04" width="0.1524" layer="91"/>
+<wire x1="177.8" y1="-66.04" x2="177.8" y2="-71.12" width="0.1524" layer="91"/>
+<label x="177.8" y="-68.58" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
