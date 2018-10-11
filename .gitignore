@@ -1,11 +1,5 @@
-
-\.cproject
-
-\.project
-
 stm32f103c8_ws2811\.elf\.launch
 
-\.settings/
 /Debug/
 
 \.code_review_properties
