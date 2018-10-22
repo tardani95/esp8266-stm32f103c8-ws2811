@@ -3,10 +3,10 @@
 <eagle version="9.2.1">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="8" unitdist="mil" unit="mil" style="lines" multiple="1" display="no" altdistance="0.00999999999" altunitdist="mm" altunit="mm"/>
+<grid distance="8" unitdist="mil" unit="mm" style="lines" multiple="1" display="no" altdistance="0.00999999999" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="16" fill="1" visible="no" active="no"/>
@@ -157,7 +157,7 @@
 <layer number="255" name="routoute" color="7" fill="1" visible="yes" active="yes"/>
 </layers>
 <board>
-<fusionsync huburn="a.cGVyc29uYWw6dWUyOWUzYzUy" projecturn="a.cGVyc29uYWw6dWUyOWUzYzUyI0QyMDE0MTAxOTQ4ODM5MjY" f3durn="urn:adsk.wipprod:dm.lineage:yf1JtIpcRjeyCxVWo20ggg" pcbguid="5fb1720e-d2bc-421e-a3e1-aa555b42d2ac" lastpulledtime="" lastsyncedchangeguid="39ce07e6-a679-94ea-727c-4c97a7c395dd"/>
+<fusionsync huburn="a.cGVyc29uYWw6dWUyOWUzYzUy" projecturn="a.cGVyc29uYWw6dWUyOWUzYzUyI0QyMDE0MTAxOTQ4ODM5MjY" f3durn="urn:adsk.wipprod:dm.lineage:yf1JtIpcRjeyCxVWo20ggg" pcbguid="5fb1720e-d2bc-421e-a3e1-aa555b42d2ac" lastpulledtime="" lastsyncedchangeguid="f0246323-e2f2-c52d-5092-cdf759f5fbb5"/>
 <plain>
 <wire x1="0" y1="0" x2="80.04" y2="0" width="0" layer="20"/>
 <wire x1="80.04" y1="0" x2="80.04" y2="49.5" width="0" layer="20"/>
