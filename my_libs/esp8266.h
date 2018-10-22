@@ -32,6 +32,19 @@ Info        : 31.05.2018
 /* Private define  */
 #define UART_BUFFER_SIZE 20
 
+#define SECURITY_BYTE 	9
+#define MODE_BYTE		10
+
+#define MODE_SIMPLE		0
+#define MODE_EFFECT		1
+#define MODE_FFT_MUSIC	2
+#define MODE_FFT_MICROPHONE 3
+#define MODE_NOTIFICATION 4
+#define MODE_SETTINGS_1	254
+#define MODE_SETTINGS_2	255
+
+#define PARAM_START		11
+
 void InitGPIO_UART1(GPIO_InitTypeDef*);
 void InitNVIC_UART1(NVIC_InitTypeDef*);
 void InitDMA_CH4_UART1_TX(DMA_InitTypeDef*,uint8_t*);

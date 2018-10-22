@@ -27,6 +27,7 @@ Info        : 2018-04-09
 /* Private macro */
 
 /* Private variables */
+uint8_t security_code = 233;
 
 __IO uint8_t uart_receive_array[UART_BUFFER_SIZE]; /* UART_BUFFER_SIZE in esp8266.h */
 
@@ -106,7 +107,7 @@ int main(void){
 	/* ESP-01 INIT									  */
 	/**************************************************/
 
-	uint8_t receive_array_length = 13; //13
+	uint8_t receive_array_length = 14; //13
  	InitESP8266((uint8_t*)uart_receive_array/*, receive_array_length*/);
 	StartUDPReceivingWithCallback(receive_array_length, OnUART_DataReceived );
 
@@ -167,20 +168,22 @@ int main(void){
 }
 
 void OnUART_DataReceived(void){
-	switch(uart_receive_array[12]){
-		case 0 :{
-			ColorRGB solidColor;
-			solidColor.r = uart_receive_array[9];
-			solidColor.g = uart_receive_array[10];
-			solidColor.b = uart_receive_array[11];
+	if(uart_receive_array[SECURITY_BYTE] == security_code){
+		switch(uart_receive_array[MODE_BYTE]){
+				case 0 :{
+					ColorRGB solidColor;
+					solidColor.r = uart_receive_array[PARAM_START];
+					solidColor.g = uart_receive_array[PARAM_START+1];
+					solidColor.b = uart_receive_array[PARAM_START+2];
 
-			if(!txOn){
-				fillSolid(solidColor);
-				refreshLedStrip();
+					if(!txOn){
+						fillSolid(solidColor);
+						refreshLedStrip();
+					}
+				}break;
+
+				default:break;
 			}
-		}break;
-
-		default:break;
 	}
 }
 
