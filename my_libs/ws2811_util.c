@@ -37,7 +37,7 @@ void fillPattern(uint8_t paletteID){
 	uint8_t i_percent_palette_length_plus_offset;
 
 	for( uint16_t pxID = 0 ; pxID < LED_STRIP_SIZE ; ++pxID ){
-		i_percent_palette_length_plus_offset = (pxID%palette_length) + 1;
+		i_percent_palette_length_plus_offset = (pxID % palette_length) + 1;
 		for( uint8_t parallelLedStripID = 0; parallelLedStripID < PARALELL_STRIPS; ++parallelLedStripID ){
 			pxColor.r = ((palettes[paletteID][i_percent_palette_length_plus_offset] & RED  ) >> RED_S);
 			pxColor.g = ((palettes[paletteID][i_percent_palette_length_plus_offset] & GREEN) >> GREEN_S);

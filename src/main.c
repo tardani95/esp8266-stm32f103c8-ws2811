@@ -131,12 +131,12 @@ int main(void){
 
 
 	uint16_t offset_length[2*PARALELL_STRIPS] = {
-			10,40,
-			31,10,
+			0,50,
+			0,50,
 			0,50
 	};
 
-	saveOffsetLengthValues(offset_length);
+//	saveOffsetLengthValues(offset_length);
 
 	if(!loadOffsetLengthValues(offset_length)){
 		setOffsetLengthValues(offset_length); 	// if load was successful then set the values
@@ -149,7 +149,9 @@ int main(void){
 	refreshLedStrip();
 
 	/* wait 3 seconds */
-	DelaySec(1);
+	DelaySec(3);
+
+	Clear_PixelMap();
 
 	while(1){
 		/*if(isNewDataArrived){

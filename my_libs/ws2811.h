@@ -140,6 +140,7 @@ void setAllPixelColorRGBOnLedStrip(uint8_t parallelLedStripID, ColorRGB pxColor)
 void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue);
 
 void Init_PixelMap(void);
+void Clear_PixelMap(void);
 void refreshLedStrip(void);
 
 /* dma buffer handling*/
