@@ -26,6 +26,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "stm32f10x_flash.h"
+#include "periph.h"
 
 /* Exported constants --------------------------------------------------------*/
 /* Define the STM32F10Xxx Flash page size depending on the used STM32 device */
@@ -65,8 +66,7 @@
 /* Page full define */
 #define PAGE_FULL               ((uint8_t)0x80)
 
-/* Variables' number */
-#define NumbOfVar               ((uint8_t)0x03)
+
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/

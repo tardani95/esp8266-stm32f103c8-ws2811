@@ -29,10 +29,16 @@
 #include "misc.h"
 /*========================================================================*/
 
+/* EEPROM DATA */
+/* Variables' number */
+/* 3x offset,length*/
+#define NumbOfVar               ((uint8_t)0x06)
+
+
 extern uint16_t led_pin; 			/* PC13 */
 extern uint16_t button_pin; 		/* PB14 */
 
-
+void Init_EEPROM();
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);
 void InitEXTI_BTN(EXTI_InitTypeDef*, NVIC_InitTypeDef*);

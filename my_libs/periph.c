@@ -9,16 +9,34 @@
 /*                               Includes									  */
 /******************************************************************************/
 #include "periph.h"
+#include "eeprom.h"
 /******************************************************************************/
 /*                               Variables									  */
 /******************************************************************************/
 uint16_t led_pin	= GPIO_Pin_13; 		/* PC13 */
 uint16_t button_pin = GPIO_Pin_14; 		/* PB14 */
 
+uint16_t VirtAddVarTab2[] = {
+		0x0000,
+		0x0001,
+		0x0002,
+		0x0003,
+		0x0004,
+		0x0005};
+
 /******************************************************************************/
 /*            			         Functions                                    */
 /******************************************************************************/
 
+
+void Init_EEPROM(){
+	/* Unlock the Flash Program Erase controller */
+	FLASH_Unlock();
+	/* EEPROM Init */
+	EE_Init();
+	/* Lock the Flash Program Erase controller */
+	FLASH_Lock();
+}
 
 /**
   * @brief  This function initialize the LED on PC13 pin

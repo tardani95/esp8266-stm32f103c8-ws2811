@@ -19,6 +19,7 @@ Info        : 2018-04-09
 #include "ws2811_util.h"	/* my lib */
 #include "periph.h"  		/* my lib */
 #include "util.h"    		/* my lib */
+#include "eeprom.h"			/* my lib */
 
 /* Private typedef */
 /* Private define  */
@@ -30,6 +31,8 @@ Info        : 2018-04-09
 uint8_t security_code = 233;
 
 __IO uint8_t uart_receive_array[UART_BUFFER_SIZE]; /* UART_BUFFER_SIZE in esp8266.h */
+
+
 
 /* Private function prototypes */
 void OnUART_DataReceived(void);
@@ -115,6 +118,39 @@ int main(void){
 	/* WS2811 INIT									  */
 	/**************************************************/
 	Init_WS2811((uint8_t*)uart_receive_array,receive_array_length);
+
+	/**************************************************/
+	/* EEPROM INIT									  */
+	/**************************************************/
+	Init_EEPROM();
+
+	uint8_t error = 0;
+	uint16_t offset_length[]={10,30,20,25,30,15};
+
+	/* WRITE */
+	FLASH_Unlock();
+	for(uint16_t i = 0; i < PARALELL_STRIPS*2 ; i+=2){
+			if(EE_WriteVariable(i,offset_length[i]) != FLASH_COMPLETE) error++;
+			if(EE_WriteVariable(i+1,offset_length[i+1]) != FLASH_COMPLETE) error++;
+	}
+	FLASH_Lock();
+
+	/* READ */
+	for(uint16_t i = 0; i < PARALELL_STRIPS*2 ; i+=2){
+		offset_length[i]=0;
+		offset_length[i+1]=0;
+
+		if(EE_ReadVariable(i,&offset_length[i])) error++;
+		if(EE_ReadVariable(i+1,&offset_length[i+1])) error++;
+	}
+
+	if(error){
+		while(1){
+			/*assert*/
+		}
+	}
+
+//	loadOffsetAndLengthValues();
 
 	/* send out initial array */
 	Init_PixelMap();
