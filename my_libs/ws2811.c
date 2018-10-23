@@ -14,6 +14,7 @@ Info        : 16.06.2018
 /******************************************************************************/
 #include "ws2811.h"
 #include "ws2811_util.h" /* for fillPattern method in Init_PixelMap function */
+#include "util.h"
 /******************************************************************************/
 /*                             Debug options								  */
 /******************************************************************************/
@@ -53,7 +54,7 @@ __IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];				/* array to store a
 __IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
 __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
 
-__IO uint16_t offset_length_values[2*PARALELL_STRIPS];
+uint16_t offset_length_values[2*PARALELL_STRIPS];
 
 /******************************************************************************/
 /*                    Callback function declaration                           */
@@ -85,6 +86,27 @@ void Init_WS2811(uint8_t * ptr_command_array, uint8_t command_array_size){
 	InitTIM3_PWM(&TIM_OC_InitStructure);
 	InitDMA_CH3_TIM3_CHs(&DMA_InitStructure, (uint8_t*) TIMx_OC_DMA_Buffer_BRG ); /* look_up_table_1 */
 
+	InitOffsetLengthValues();
+}
+
+void InitOffsetLengthValues(){
+	for(uint8_t i = 0; i < 2*PARALELL_STRIPS; i=i+2){
+			offset_length_values[i]		= 0;				// offset
+			offset_length_values[i+1]	= LED_STRIP_SIZE;	// length
+	}
+}
+
+void setOffsetLengthValues(uint16_t *array){
+	for(uint8_t i = 0; i < 2*PARALELL_STRIPS; i=i+2){
+			offset_length_values[i]		= array[i];		// offset
+			offset_length_values[i+1]	= array[i+1];	// length
+	}
+}
+
+void getOffsetLengthValues(uint16_t *array){
+	for(uint8_t i = 0; i < 2*PARALELL_STRIPS; ++i){
+			array[i] = offset_length_values[i];
+	};
 }
 
 /**
@@ -168,21 +190,32 @@ ColorRGB getPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID){
 }
 
 void setAllPixelColorHexOnLedStrip(uint8_t parallelLedStripID, ColorHex pxColor){
-	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+
+	uint16_t offset = offset_length_values[parallelLedStripID*2];
+	uint16_t until = offset + offset_length_values[parallelLedStripID*2+1];
+	until = until < LED_STRIP_SIZE ? until : LED_STRIP_SIZE;
+
+	for(uint16_t pxID = offset; pxID < until; ++pxID){
 		setPixelColorHex(pxID, parallelLedStripID, pxColor);
 	}
 }
 void setAllPixelColorRGBOnLedStrip(uint8_t parallelLedStripID, ColorRGB pxColor){
-	/*uint16_t offset = offset_length[parallelLedStripID*2];
-	uint16_t until = offset + offset_length[parallelLedStripID*2+1];
-	until = until < LED_STRIP_SIZE ? until : LED_STRIP_SIZE;*/
 
-	for(uint16_t pxID = 0/*offset*/; pxID < LED_STRIP_SIZE /*until*/; ++pxID){
+	uint16_t offset = offset_length_values[parallelLedStripID*2];
+	uint16_t until = offset + offset_length_values[parallelLedStripID*2+1];
+	until = until < LED_STRIP_SIZE ? until : LED_STRIP_SIZE;
+
+	for(uint16_t pxID = offset; pxID < until; ++pxID){
 		setPixelColorRGB(pxID, parallelLedStripID, pxColor);
 	}
 }
 void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t green, uint8_t blue){
-	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+
+	uint16_t offset = offset_length_values[parallelLedStripID*2];
+	uint16_t until = offset + offset_length_values[parallelLedStripID*2+1];
+	until = until < LED_STRIP_SIZE ? until : LED_STRIP_SIZE;
+
+	for(uint16_t pxID = offset; pxID < until; ++pxID){
 		setPixelColor(pxID, parallelLedStripID, red, green, blue);
 	}
 }
@@ -193,7 +226,11 @@ void setAllPixelColorOnLedStrip(uint8_t parallelLedStripID, uint8_t red, uint8_t
   * @retval None
   */
 void Init_PixelMap(void){
-	fillPattern(0); // id = 0
+	fillPattern(1); // id = 1
+}
+
+void Clear_PixelMap(void){
+	fillPattern(0); // id = 1
 }
 
 /**
@@ -373,6 +410,7 @@ void DMA1_Channel3_IRQHandler(void){
 #endif
 
 }
+
 
 
 /******************************************************************************/

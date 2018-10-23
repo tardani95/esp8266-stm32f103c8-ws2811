@@ -115,6 +115,10 @@ void InitTIM3_PWM(TIM_OCInitTypeDef*);
 
 void Init_WS2811(uint8_t* ptr_command_array, uint8_t command_array_size);
 
+void InitOffsetLengthValues();
+void setOffsetLengthValues(uint16_t *array);
+void getOffsetLengthValues(uint16_t *array);
+
 uint8_t gammaCorrection(uint8_t color);
 
 /* color convert functions */

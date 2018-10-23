@@ -16,6 +16,7 @@ Info        : 22.06.2018
 /*========================================================================*/
 #include "stm32f10x.h"
 
+extern uint32_t clear_palette[];
 extern uint32_t init_palette[];
 extern uint32_t rainbow[];
 extern uint32_t rainbowStripe[];
@@ -25,7 +26,7 @@ extern uint32_t fire[];
 extern uint32_t hun[];
 extern uint32_t ro[];
 
-#define PALETTES_SIZE 8
+#define PALETTES_SIZE 9
 extern uint32_t * palettes[PALETTES_SIZE];
 
 #endif /* _COLOR_PALETTES_H_ */

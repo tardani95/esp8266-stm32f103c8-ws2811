@@ -23,6 +23,9 @@ Info        : 2018-04-09
 
 /* Private typedef */
 /* Private define  */
+#define OFFSET_LENGTH_VIRT_START_ADD	0x0000
+#define OFFSET_LENGTH_SIZE				(2*PARALELL_STRIPS)
+
 // #define DEBUG
 
 /* Private macro */
@@ -36,6 +39,8 @@ __IO uint8_t uart_receive_array[UART_BUFFER_SIZE]; /* UART_BUFFER_SIZE in esp826
 
 /* Private function prototypes */
 void OnUART_DataReceived(void);
+uint16_t loadOffsetLengthValues(uint16_t *);
+uint16_t saveOffsetLengthValues(uint16_t *);
 
 /* Private functions */
 
@@ -124,33 +129,20 @@ int main(void){
 	/**************************************************/
 	Init_EEPROM();
 
-	uint8_t error = 0;
-	uint16_t offset_length[]={10,30,20,25,30,15};
 
-	/* WRITE */
-	FLASH_Unlock();
-	for(uint16_t i = 0; i < PARALELL_STRIPS*2 ; i+=2){
-			if(EE_WriteVariable(i,offset_length[i]) != FLASH_COMPLETE) error++;
-			if(EE_WriteVariable(i+1,offset_length[i+1]) != FLASH_COMPLETE) error++;
-	}
-	FLASH_Lock();
+	uint16_t offset_length[2*PARALELL_STRIPS] = {
+			10,40,
+			31,10,
+			0,50
+	};
 
-	/* READ */
-	for(uint16_t i = 0; i < PARALELL_STRIPS*2 ; i+=2){
-		offset_length[i]=0;
-		offset_length[i+1]=0;
+	saveOffsetLengthValues(offset_length);
 
-		if(EE_ReadVariable(i,&offset_length[i])) error++;
-		if(EE_ReadVariable(i+1,&offset_length[i+1])) error++;
+	if(!loadOffsetLengthValues(offset_length)){
+		setOffsetLengthValues(offset_length); 	// if load was successful then set the values
 	}
 
-	if(error){
-		while(1){
-			/*assert*/
-		}
-	}
 
-//	loadOffsetAndLengthValues();
 
 	/* send out initial array */
 	Init_PixelMap();
@@ -221,6 +213,36 @@ void OnUART_DataReceived(void){
 				default:break;
 			}
 	}
+}
+
+uint16_t loadOffsetLengthValues(uint16_t *offset_length){
+	uint16_t failCounter = 0; // 0 - success
+
+	/* READ */
+	for(uint16_t i = OFFSET_LENGTH_VIRT_START_ADD; i < OFFSET_LENGTH_SIZE ; i+=2){
+		failCounter += EE_ReadVariable(i,&offset_length[i]);
+		failCounter += EE_ReadVariable(i+1,&offset_length[i+1]);
+	}
+
+	return failCounter;
+}
+
+uint16_t saveOffsetLengthValues(uint16_t *offset_length){
+	/* WRITE */
+	FLASH_Unlock();
+
+	for(uint16_t i = OFFSET_LENGTH_VIRT_START_ADD; i < OFFSET_LENGTH_SIZE ; i+=2){
+		if(EE_WriteVariable(i,offset_length[i]) != FLASH_COMPLETE){
+			return 1;
+		}
+		if(EE_WriteVariable(i+1,offset_length[i+1]) != FLASH_COMPLETE){
+			return 1;
+		}
+	}
+
+	FLASH_Lock();
+
+	return 0; // returns 0 if all data are written successfully
 }
 
 
