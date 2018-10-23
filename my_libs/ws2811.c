@@ -53,6 +53,7 @@ __IO ColorRGB pixel_map[LED_STRIP_SIZE][PARALELL_STRIPS];				/* array to store a
 __IO uint16_t pixel_id = 0; 	/* current processed pixel on the strip */
 __IO uint8_t  txOn = 0; 		/* set to 1 if the led strip is refreshing */
 
+__IO uint16_t offset_length_values[2*PARALELL_STRIPS];
 
 /******************************************************************************/
 /*                    Callback function declaration                           */
@@ -172,7 +173,11 @@ void setAllPixelColorHexOnLedStrip(uint8_t parallelLedStripID, ColorHex pxColor)
 	}
 }
 void setAllPixelColorRGBOnLedStrip(uint8_t parallelLedStripID, ColorRGB pxColor){
-	for(uint16_t pxID = 0; pxID < LED_STRIP_SIZE; ++pxID){
+	/*uint16_t offset = offset_length[parallelLedStripID*2];
+	uint16_t until = offset + offset_length[parallelLedStripID*2+1];
+	until = until < LED_STRIP_SIZE ? until : LED_STRIP_SIZE;*/
+
+	for(uint16_t pxID = 0/*offset*/; pxID < LED_STRIP_SIZE /*until*/; ++pxID){
 		setPixelColorRGB(pxID, parallelLedStripID, pxColor);
 	}
 }
