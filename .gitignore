@@ -17,3 +17,5 @@ pcb/wifi_ledstrip/bom_1
 pcb/wifi_ledstrip/bom_2\.csv
 
 *.b##
+
+pcb/wifi_ledstrip/~\$bom\.xlsx

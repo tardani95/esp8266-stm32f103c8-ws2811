@@ -145,13 +145,20 @@ int main(void){
 
 
 	/* send out initial array */
-	Init_PixelMap();
+//	Init_PixelMap();
+	ColorRGB initColor;
+	initColor.r = 244;
+	initColor.g = 194;
+	initColor.b = 66;
+	setAllPixelColorRGBOnLedStrip(0,initColor);
+	setAllPixelColorRGBOnLedStrip(1,initColor);
+	setAllPixelColorRGBOnLedStrip(2,initColor);
 	refreshLedStrip();
 
 	/* wait 3 seconds */
 	DelaySec(3);
 
-	Clear_PixelMap();
+//	Clear_PixelMap();
 
 	while(1){
 		/*if(isNewDataArrived){
