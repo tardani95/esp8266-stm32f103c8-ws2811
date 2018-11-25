@@ -147,12 +147,12 @@ int main(void){
 	/* send out initial array */
 //	Init_PixelMap();
 	ColorRGB initColor;
-	initColor.r = 244;
-	initColor.g = 194;
-	initColor.b = 66;
+	initColor.r = 147;
+	initColor.g = 11;
+	initColor.b = 237;
 	setAllPixelColorRGBOnLedStrip(0,initColor);
-	setAllPixelColorRGBOnLedStrip(1,initColor);
-	setAllPixelColorRGBOnLedStrip(2,initColor);
+//	setAllPixelColorRGBOnLedStrip(1,initColor);
+//	setAllPixelColorRGBOnLedStrip(2,initColor);
 	refreshLedStrip();
 
 	/* wait 3 seconds */

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.2.1">
+<eagle version="9.2.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -11864,7 +11864,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <attribute name="VALUE" x="308.61" y="70.358" size="1.778" layer="96"/>
 </instance>
 <instance part="PSU_3V3" gate="G$1" x="276.86" y="76.2" smashed="yes">
-<attribute name="NAME" x="273.304" y="75.692" size="1.27" layer="95"/>
+<attribute name="NAME" x="273.304" y="73.152" size="1.27" layer="95"/>
 </instance>
 </instances>
 <busses>
