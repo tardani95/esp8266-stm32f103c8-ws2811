@@ -175,16 +175,16 @@ void SysTick_Handler(void)
   * @param  None
   * @retval None
   */
-void EXTI15_10_IRQHandler(void){
-  EXTI_ClearITPendingBit(EXTI_Line14);
-
-  if((GPIOB->IDR & GPIO_Pin_14)){
-	GPIOC->ODR |= GPIO_Pin_13;    /* led not light */
-	//GPIOC->ODR |= GPIO_Pin_15;
-  }else{
-	GPIOC->ODR &= (~GPIO_Pin_13); /* led light */
-	//GPIOC->ODR &= (~GPIO_Pin_15);
-  }
-}
+//void EXTI15_10_IRQHandler(void){
+//  EXTI_ClearITPendingBit(EXTI_Line14);
+//
+//  if((GPIOB->IDR & GPIO_Pin_14)){
+//	GPIOC->ODR |= GPIO_Pin_13;    /* led not light */
+//	//GPIOC->ODR |= GPIO_Pin_15;
+//  }else{
+//	GPIOC->ODR &= (~GPIO_Pin_13); /* led light */
+//	//GPIOC->ODR &= (~GPIO_Pin_15);
+//  }
+//}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

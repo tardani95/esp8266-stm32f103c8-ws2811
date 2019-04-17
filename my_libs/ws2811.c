@@ -171,12 +171,12 @@ void setPixelColorHex(uint16_t pxNr, uint8_t parallelLedStripID, ColorHex color)
 }
 void setPixelColorRGB(uint16_t pxNr, uint8_t parallelLedStripID,
 		ColorRGB pxColor) {
-	if (50 <= pxNr) {
-		setPixelColor(pxNr, parallelLedStripID, pxColor.r, pxColor.b,
-				pxColor.g);
-	} else {
+//	if (50 <= pxNr) {
+//		setPixelColor(pxNr, parallelLedStripID, pxColor.r, pxColor.b,
+//				pxColor.g);
+//	} else {
 		pixel_map[pxNr][parallelLedStripID] = pxColor;
-	}
+//	}
 }
 void setPixelColor(uint16_t pxNr, uint8_t parallelLedStripID, uint8_t red,
 		uint8_t green, uint8_t blue) {

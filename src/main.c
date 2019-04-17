@@ -31,6 +31,10 @@
 /* Private macro */
 
 /* Private variables */
+__IO uint8_t button0_state = 0;
+__IO uint8_t button_palette_pointer = 0;
+__IO uint8_t button_palette_size;
+
 uint8_t security_code = 233;
 
 __IO uint8_t uart_receive_array[UART_BUFFER_SIZE]; /* UART_BUFFER_SIZE in esp8266.h */
@@ -206,7 +210,8 @@ void OnUART_DataReceived(void) {
 				fillSolid(solidColor);
 				refreshLedStrip();
 			}
-		}break;
+		}
+			break;
 
 		case 1: {
 			uint8_t patternID;
@@ -216,7 +221,8 @@ void OnUART_DataReceived(void) {
 				fillPattern(patternID);
 				refreshLedStrip();
 			}
-		}break;
+		}
+			break;
 
 		default:
 			break;
@@ -254,5 +260,70 @@ uint16_t saveOffsetLengthValues(uint16_t *offset_length) {
 	FLASH_Lock();
 
 	return 0; // returns 0 if all data are written successfully
+}
+
+void EXTI15_10_IRQHandler() {
+
+	if (SET == EXTI_GetITStatus(EXTI_Line12)) {
+//		button0_state = !button0_state;
+//
+//		button_palette_pointer = 0;
+//		if (button0_state) {
+//			button_palette_size = rainbow[0];
+//			fillSolid(colorHexToRGB(rainbow[1]));
+//		} else {
+//			button_palette_size = PALETTES_SIZE;
+//			fillPattern(4); /*party palette*/
+//		}
+
+		if ((GPIOB->IDR & GPIO_Pin_14)) {
+			GPIOC->ODR |= GPIO_Pin_13; /* led not light */
+			//GPIOC->ODR |= GPIO_Pin_15;
+		} else {
+			GPIOC->ODR &= (~GPIO_Pin_13); /* led light */
+			//GPIOC->ODR &= (~GPIO_Pin_15);
+		}
+
+		EXTI_ClearITPendingBit(EXTI_Line12);
+	}
+
+	if (SET == EXTI_GetITStatus(EXTI_Line13)) {
+//		button_palette_pointer++;
+//
+//		if (button0_state) {
+//			fillSolid(
+//					colorHexToRGB(
+//							rainbow[(button_palette_pointer
+//									% button_palette_size) + 1]));
+//		} else {
+//			fillPattern(button_palette_pointer % button_palette_size);
+//		}
+
+		EXTI_ClearITPendingBit(EXTI_Line13);
+	}
+
+	if (SET == EXTI_GetITStatus(EXTI_Line14)) {
+//		button_palette_pointer--;
+//
+//		if (button0_state) {
+////			if (button_palette_pointer < 1) {
+////				button_palette_pointer = button_palette_size - 1;
+////			}
+//
+//			fillSolid(
+//					colorHexToRGB(
+//							rainbow[(button_palette_pointer
+//									% button_palette_size) + 1]));
+//		} else {
+////			if (button_palette_pointer > button_palette_size) {
+////				button_palette_pointer = button_palette_size - 1;
+////			}
+//			fillPattern(button_palette_pointer % button_palette_size);
+//		}
+
+		EXTI_ClearITPendingBit(EXTI_Line14);
+	}
+
+//	refreshLedStrip();
 }
 
