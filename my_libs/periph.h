@@ -34,6 +34,8 @@
 /* 3x offset,length*/
 #define NumbOfVar               ((uint8_t)0x06)
 
+/* standard mode to color palettes - change to 1 for rgb color mode*/
+#define STD_MODE 0
 
 extern uint16_t led_pin; 			/* PC13 */
 extern uint16_t button_pin; 		/* PB14 */
@@ -42,5 +44,6 @@ void Init_EEPROM();
 void InitGPIO_LED(GPIO_InitTypeDef*);
 void InitGPIO_BTN(GPIO_InitTypeDef*);
 void InitEXTI_BTN(EXTI_InitTypeDef*, NVIC_InitTypeDef*);
+void EXTI15_10_IRQHandler(void);
 
 #endif /* PERIPH_H_ */

@@ -10,6 +10,8 @@
 /******************************************************************************/
 #include "periph.h"
 #include "eeprom.h"
+#include "ws2811.h"
+#include "ws2811_util.h"
 /******************************************************************************/
 /*                               Variables									  */
 /******************************************************************************/
@@ -17,6 +19,10 @@ uint16_t led_pin = GPIO_Pin_13; /* PC13 */
 uint16_t button_pin0 = GPIO_Pin_12; /* PB12 */
 uint16_t button_pin1 = GPIO_Pin_13; /* PB13 */
 uint16_t button_pin2 = GPIO_Pin_14; /* PB14 */
+
+__IO uint8_t button0_state = STD_MODE;
+__IO uint8_t button_palette_pointer = 0;
+__IO uint8_t button_palette_size;
 
 uint16_t VirtAddVarTab2[] = { 0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005 };
 
@@ -106,6 +112,16 @@ void InitEXTI_BTN(EXTI_InitTypeDef* EXTI_InitStructure,
 	EXTI_InitStructure->EXTI_LineCmd = ENABLE;
 	EXTI_Init(EXTI_InitStructure);
 
+
+	button_palette_pointer = 0;
+	if (button0_state) {
+		button_palette_size = rainbow[0];
+		fillSolid(colorHexToRGB(rainbow[1]));
+	} else {
+		button_palette_size = PALETTES_SIZE;
+		fillPattern(4); /*party palette*/
+	}
+
 //	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource13);
 //
 //	EXTI_InitStructure->EXTI_Line = EXTI_Line13;
@@ -122,5 +138,69 @@ void InitEXTI_BTN(EXTI_InitTypeDef* EXTI_InitStructure,
 //	EXTI_InitStructure->EXTI_LineCmd = ENABLE;
 //	EXTI_Init(EXTI_InitStructure);
 
+}
 
+void EXTI15_10_IRQHandler() {
+
+	if (SET == EXTI_GetITStatus(EXTI_Line12)) {
+		button0_state = !button0_state;
+
+		button_palette_pointer = 0;
+		if (button0_state) {
+			button_palette_size = rainbow[0];
+			fillSolid(colorHexToRGB(rainbow[1]));
+		} else {
+			button_palette_size = PALETTES_SIZE;
+			fillPattern(4); /*party palette*/
+		}
+
+		if ((GPIOB->IDR & GPIO_Pin_14)) {
+			GPIOC->ODR |= GPIO_Pin_13; /* led not light */
+			//GPIOC->ODR |= GPIO_Pin_15;
+		} else {
+			GPIOC->ODR &= (~GPIO_Pin_13); /* led light */
+			//GPIOC->ODR &= (~GPIO_Pin_15);
+		}
+
+		EXTI_ClearITPendingBit(EXTI_Line12);
+	}
+
+	if (SET == EXTI_GetITStatus(EXTI_Line13)) {
+		button_palette_pointer++;
+
+		if (button0_state) {
+			fillSolid(
+					colorHexToRGB(
+							rainbow[(button_palette_pointer
+									% button_palette_size) + 1]));
+		} else {
+			fillPattern(button_palette_pointer % button_palette_size);
+		}
+
+		EXTI_ClearITPendingBit(EXTI_Line13);
+	}
+
+	if (SET == EXTI_GetITStatus(EXTI_Line14)) {
+		button_palette_pointer--;
+
+		if (button0_state) {
+//			if (button_palette_pointer < 1) {
+//				button_palette_pointer = button_palette_size - 1;
+//			}
+
+			fillSolid(
+					colorHexToRGB(
+							rainbow[(button_palette_pointer
+									% button_palette_size) + 1]));
+		} else {
+//			if (button_palette_pointer > button_palette_size) {
+//				button_palette_pointer = button_palette_size - 1;
+//			}
+			fillPattern(button_palette_pointer % button_palette_size);
+		}
+
+		EXTI_ClearITPendingBit(EXTI_Line14);
+	}
+
+	refreshLedStrip();
 }
