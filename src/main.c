@@ -108,7 +108,6 @@ int main(void) {
 	/**************************************************/
 	/* button interrupt init */
 	InitEXTI_BTN(&EXTI_InitStructure, &NVIC_InitStructure);
-
 	/**************************************************/
 	/* ESP-01 INIT									  */
 	/**************************************************/
@@ -265,16 +264,16 @@ uint16_t saveOffsetLengthValues(uint16_t *offset_length) {
 void EXTI15_10_IRQHandler() {
 
 	if (SET == EXTI_GetITStatus(EXTI_Line12)) {
-//		button0_state = !button0_state;
-//
-//		button_palette_pointer = 0;
-//		if (button0_state) {
-//			button_palette_size = rainbow[0];
-//			fillSolid(colorHexToRGB(rainbow[1]));
-//		} else {
-//			button_palette_size = PALETTES_SIZE;
-//			fillPattern(4); /*party palette*/
-//		}
+		button0_state = !button0_state;
+
+		button_palette_pointer = 0;
+		if (button0_state) {
+			button_palette_size = rainbow[0];
+			fillSolid(colorHexToRGB(rainbow[1]));
+		} else {
+			button_palette_size = PALETTES_SIZE;
+			fillPattern(4); /*party palette*/
+		}
 
 		if ((GPIOB->IDR & GPIO_Pin_14)) {
 			GPIOC->ODR |= GPIO_Pin_13; /* led not light */
@@ -288,42 +287,42 @@ void EXTI15_10_IRQHandler() {
 	}
 
 	if (SET == EXTI_GetITStatus(EXTI_Line13)) {
-//		button_palette_pointer++;
-//
-//		if (button0_state) {
-//			fillSolid(
-//					colorHexToRGB(
-//							rainbow[(button_palette_pointer
-//									% button_palette_size) + 1]));
-//		} else {
-//			fillPattern(button_palette_pointer % button_palette_size);
-//		}
+		button_palette_pointer++;
+
+		if (button0_state) {
+			fillSolid(
+					colorHexToRGB(
+							rainbow[(button_palette_pointer
+									% button_palette_size) + 1]));
+		} else {
+			fillPattern(button_palette_pointer % button_palette_size);
+		}
 
 		EXTI_ClearITPendingBit(EXTI_Line13);
 	}
 
 	if (SET == EXTI_GetITStatus(EXTI_Line14)) {
-//		button_palette_pointer--;
-//
-//		if (button0_state) {
-////			if (button_palette_pointer < 1) {
-////				button_palette_pointer = button_palette_size - 1;
-////			}
-//
-//			fillSolid(
-//					colorHexToRGB(
-//							rainbow[(button_palette_pointer
-//									% button_palette_size) + 1]));
-//		} else {
-////			if (button_palette_pointer > button_palette_size) {
-////				button_palette_pointer = button_palette_size - 1;
-////			}
-//			fillPattern(button_palette_pointer % button_palette_size);
-//		}
+		button_palette_pointer--;
+
+		if (button0_state) {
+//			if (button_palette_pointer < 1) {
+//				button_palette_pointer = button_palette_size - 1;
+//			}
+
+			fillSolid(
+					colorHexToRGB(
+							rainbow[(button_palette_pointer
+									% button_palette_size) + 1]));
+		} else {
+//			if (button_palette_pointer > button_palette_size) {
+//				button_palette_pointer = button_palette_size - 1;
+//			}
+			fillPattern(button_palette_pointer % button_palette_size);
+		}
 
 		EXTI_ClearITPendingBit(EXTI_Line14);
 	}
 
-//	refreshLedStrip();
+	refreshLedStrip();
 }
 

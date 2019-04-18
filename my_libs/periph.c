@@ -82,9 +82,23 @@ void InitGPIO_BTN(GPIO_InitTypeDef* GPIO_InitStructure) {
  */
 void InitEXTI_BTN(EXTI_InitTypeDef* EXTI_InitStructure,
 		NVIC_InitTypeDef* NVIC_InitStructure) {
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	/* NVIC_PriorityGroup_4: 4 bits for pre-emption priority
+	 *                       0 bits for subpriority*
+	 */
+
+	NVIC_InitStructure->NVIC_IRQChannel = EXTI15_10_IRQn;
+	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 0x0F;
+	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0x0F;
+	NVIC_Init(NVIC_InitStructure);
+
 	EXTI_StructInit(EXTI_InitStructure);
 
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource12);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource13);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource14);
 
 	EXTI_InitStructure->EXTI_Line = EXTI_Line12 | EXTI_Line13 | EXTI_Line14;
 	EXTI_InitStructure->EXTI_Mode = EXTI_Mode_Interrupt;
@@ -108,14 +122,5 @@ void InitEXTI_BTN(EXTI_InitTypeDef* EXTI_InitStructure,
 //	EXTI_InitStructure->EXTI_LineCmd = ENABLE;
 //	EXTI_Init(EXTI_InitStructure);
 
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	/* NVIC_PriorityGroup_4: 4 bits for pre-emption priority
-	 *                       0 bits for subpriority*
-	 */
 
-	NVIC_InitStructure->NVIC_IRQChannel = EXTI15_10_IRQn;
-	NVIC_InitStructure->NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStructure->NVIC_IRQChannelPreemptionPriority = 0x0F;
-	NVIC_InitStructure->NVIC_IRQChannelSubPriority = 0x0F;
-	NVIC_Init(NVIC_InitStructure);
 }
